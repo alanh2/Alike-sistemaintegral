@@ -2,7 +2,7 @@
             <br>
             <h3>Cobros</h3>
             <br />
-            <button id="agregar" class="btn btn-success" onclick="add_cobro()"><i class="glyphicon glyphicon-plus"></i> Agregar Marca</button>
+            <button id="agregar" class="btn btn-success" onclick="add_cobro()"><i class="glyphicon glyphicon-plus"></i> Agregar Cobro</button>
             <button class="btn btn-default" onclick="reload_table()"><i class="glyphicon glyphicon-refresh"></i> Recargar</button>
             <br />
             <br />
@@ -113,128 +113,12 @@ $(document).ready(function() {
 		}
 	});
 
-    //datepicker
-    $('.datepicker').datepicker({
-        autoclose: true,
-        format: "yyyy-mm-dd",
-        todayHighlight: true,
-        orientation: "top auto",
-        todayBtn: true,
-        todayHighlight: true,  
-    });
-
-    //set input/textarea/select event when change value, remove class error and remove text help block 
-    $("input").change(function(){
-        $(this).parent().parent().removeClass('has-error');
-        $(this).next().empty();
-    });
-    $("textarea").change(function(){
-        $(this).parent().parent().removeClass('has-error');
-        $(this).next().empty();
-    });
-    $("select").change(function(){
-        $(this).parent().parent().removeClass('has-error');
-        $(this).next().empty();
-    });
-
 });
 
-
-
-function add_cobro()
-{
-    save_method = 'add';
-    $('#form')[0].reset(); // reset form on modals
-    $('.form-group').removeClass('has-error'); // clear error class
-    $('.help-block').empty(); // clear error string
-    $('#modal_form').modal('show'); // show bootstrap modal
-    $('.modal-title').text('Agregar Marca'); // Set Title to Bootstrap modal title
-	$('#nombre').focus();
-}
-
-function edit_cobro(id)
-{
-    save_method = 'update';
-    $('#form')[0].reset(); // reset form on modals
-    $('.form-group').removeClass('has-error'); // clear error class
-    $('.help-block').empty(); // clear error string
-
-    //Ajax Load data from ajax
-    $.ajax({
-        url : "<?php echo site_url('cobro/ajax_edit/')?>/" + id,
-        type: "GET",
-        dataType: "JSON",
-        success: function(data)
-        {
-			
-			$('[name="id"]').val(data.id);
-            $('[name="nombre"]').val(data.nombre);
-            $('#modal_form').modal('show'); // show bootstrap modal when complete loaded
-            $('.modal-title').text('Editar Marca'); // Set title to Bootstrap modal title
-			$('[name="nombre"]').focus();
-
-        },
-        error: function (jqXHR, textStatus, errorThrown)
-        {
-            alert('Error get data from ajax');
-        }
-    });
-}
 
 function reload_table()
 {
     table.ajax.reload(null,false); //reload datatable ajax 
-}
-
-function save()
-{
-    $('#btnSave').text('saving...'); //change button text
-    $('#btnSave').attr('disabled',true); //set button disable 
-    var url;
-
-    if(save_method == 'add') {
-        url = "<?php echo site_url('cobro/ajax_add')?>";
-    } else {
-        url = "<?php echo site_url('cobro/ajax_update')?>";
-    }
-
-    // ajax adding data to database
-    $.ajax({
-        url : url,
-        type: "POST",
-        data: $('#form').serialize(),
-        dataType: "JSON",
-        success: function(data)
-        {
-
-            if(data.status) //if success close modal and reload ajax table
-            {
-                $('#modal_form').modal('hide');
-                reload_table();
-            }
-            else
-            {
-                for (var i = 0; i < data.inputerror.length; i++) 
-                {
-                    $('[name="'+data.inputerror[i]+'"]').parent().parent().addClass('has-error'); //select parent twice to select div form-group class and add has-error class
-                    $('[name="'+data.inputerror[i]+'"]').next().text(data.error_string[i]); //select span help-block class set text error string
-                }
-            }
-            $('#btnSave').text('guardar'); //change button text
-            $('#btnSave').attr('disabled',false); //set button enable 
-            $('#nombre').attr('disabled',false); 
-
-
-        },
-        error: function (jqXHR, textStatus, errorThrown)
-        {
-            alert('Error adding / update data');
-            $('#btnSave').text('guardar'); //change button text
-            $('#btnSave').attr('disabled',false); //set button enable 
-            $('#nombre').attr('disabled',false); 
-
-        }
-    });
 }
 
 function delete_cobro(id)
@@ -269,7 +153,7 @@ function delete_cobro(id)
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h3 class="modal-title">Formulario de Marca</h3>
+                <h3 class="modal-title">Formulario de Cobro</h3>
             </div>
             <div class="modal-body form">
                 <form action="#" id="form" class="form-horizontal">

@@ -5,12 +5,55 @@ class Cobro_model extends CI_Model {
 
 	var $table = 'cobros';
 
+	var $column_order = array('monto','fecha', 'medtodo_pago',null); //set column field database for datatable orderable
+	var $column_search = array('cobros.monto','cobros.fecha', 'metodos_pago.nombre'); //set column field database for datatable searchable just firstname , lastname , address are searchable
+	var $order = array('id' => 'desc'); // default order 
+
 	public function __construct()
 	{
 		parent::__construct();
 		$this->load->database();
 	}
+	private function _get_datatables_query()
+	{
+		
+		$this->db->from($this->table);
+		$this->db->join('metodos_pago', 'metodos_pago.id = cobros.metododepagoid');
+		$this->db->select('cobros.*, metodos_pago.nombre as metodo_pago');
 
+		$i = 0;
+		
+		foreach ($this->column_search as $item) // loop column 
+		{
+			if(isset($_POST['search']['value'])) // if datatable send POST for search
+			{
+				
+				if($i===0) // first loop
+				{
+					$this->db->group_start(); // open bracket. query Where with OR clause better with bracket. because maybe can combine with other WHERE with AND.
+					$this->db->like($item, $_POST['search']['value']);
+				}
+				else
+				{
+					$this->db->or_like($item, $_POST['search']['value']);
+				}
+
+				if(count($this->column_search) - 1 == $i) //last loop
+					$this->db->group_end(); //close bracket
+			}
+			$i++;
+		}
+		
+		if(isset($_POST['order'])) // here order processing
+		{
+			$this->db->order_by($this->column_order[$_POST['order']['0']['column']], $_POST['order']['0']['dir']);
+		} 
+		else if(isset($this->order))
+		{
+			$order = $this->order;
+			$this->db->order_by(key($order), $order[key($order)]);
+		}
+	}
 	function get_datatables()
 	{
 		$this->_get_datatables_query();

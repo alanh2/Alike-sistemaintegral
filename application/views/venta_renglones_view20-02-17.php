@@ -1,0 +1,1104 @@
+        <div id="page-wrapper">
+
+            <br>
+
+            <h3></h3>
+            <div class="row">
+                <div class="col-lg-4 col-md-6">
+                    <div class="panel panel-green">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <i class="fa fa-user fa-5x"></i>
+                                </div>
+                                <div class="col-xs-9 text-right">
+                                    <div class="huge"><i class="fa fa-check"></i></div>
+                                    <div>Listo!</div>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="<?php echo site_url('venta/alta_venta/'.$venta)?>">
+                            <div class="panel-footer">
+                                <span class="pull-left">Modificar</span>
+                                <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                <div class="clearfix"></div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="panel panel-green">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <i class="fa fa-shopping-cart fa-5x"></i>
+                                </div>
+                                <div class="col-xs-9 text-right">
+                                    <div class="huge"><i class="fa fa-check"></i></div>
+                                    <div>Listo!</div>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="#">
+                            <div class="panel-footer">
+                                <span class="pull-left">Modificar</span>
+                                <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                <div class="clearfix"></div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="panel panel-red">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <i class="fa fa-money fa-5x"></i>
+                                </div>
+                                <div class="col-xs-9 text-right">
+                                    <div class="huge"><i class="fa fa-times"></i></div>
+                                    <div>Incompleto!</div>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="#">
+                            <div class="panel-footer">
+                                <span class="pull-left">Completar metodo de pago!</span>
+                                <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                <div class="clearfix"></div>
+                            </div>
+                        </a>
+                    </div>
+                </div>-
+            </div>
+
+            <br />
+
+            <button id="agregar" class="btn btn-success" onclick="add_renglon()"><i class="glyphicon glyphicon-plus"></i> Agregar Renglon</button>
+
+            <button class="btn btn-default" onclick="reload_table()"><i class="glyphicon glyphicon-refresh"></i> Recargar</button>
+
+            <br />
+
+            <br />
+
+            <table id="table" class="table table-striped table-bordered" cellspacing="0" width="100%">
+
+                <thead>
+
+                    <tr>
+
+                        <th style="width:25px;">ID</th>
+
+                        <th>Producto</th>
+
+                        <th>Precio</th>
+
+                        <th>Cantidad</th>
+
+                        <th>Subtotal</th>
+
+                        <th style="width:225px;">Accion</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                </tbody>
+
+    
+
+                <tfoot>
+
+                    <tr>
+
+                        <th>ID</th>
+
+                        <th>Producto</th>
+
+                        <th>Precio</th>
+
+                        <th>Cantidad</th>
+
+                        <th>Subtotal</th>
+
+                        <th>Accion</th>
+
+                    </tr>
+
+                </tfoot>
+
+            </table> 
+            <?php //////////////////////////////////////////////////////////////////// ?>
+             <form id="formAddNewRow" title="Add new record">
+        <label for="engine">ID</label><br />
+    <input type="text" name="engine" id="name" class="required" rel="0" />
+        <br />
+        <label for="browser">Precio</label><br />
+    <input type="text" name="browser" id="browser" rel="1" />
+        <br />
+        <label for="platforms">Producto</label><br />
+    <textarea name="platforms" id="platforms" rel="2"></textarea>
+        <br />
+        <label for="version">Cantidad</label><br />
+    <select name="version" id="version" rel="3" multiple="multiple">
+                <option>1.5</option>
+                <option>1.7</option>
+                <option>1.8</option>
+        </select>
+        <br />
+        <label for="grade">Subtotal</label><br />
+        <input type="radio" name="grade" value="A" rel="4"> First<br>
+        <input type="radio" name="grade" value="B" rel="4"> Second<br>
+        <input type="radio" name="grade" value="C" checked rel="4"> Third
+        <br />
+</form>
+
+
+
+            <div id="demo">
+<table cellpadding="0" cellspacing="0" border="0" class="display" id="example">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Producto</th>
+            <th>Precio</th>
+            <th>Cantidad</th>
+            <th>Subtotal</th>
+        </tr>
+    </thead>
+    <tfoot>
+        <tr>
+
+            <th>ID</th>
+            <th>Producto</th>
+            <th>Precio</th>
+            <th>Cantidad</th>
+            <th>Subtotal</th>
+        </tr>
+
+    </tfoot>
+    <tbody>
+        <tr class="odd_gradeX" id="2">
+            <td>Trident</td>
+            <td>Internet Explorer 4.0</td>
+            <td>Win 95+ (Entity: &amp;)</td>
+            <td>4</td>
+
+            <td>X</td>
+        </tr>
+        <tr class="even_gradeC" id="4">
+            <td>Trident</td>
+            <td>Internet Explorer 5.0</td>
+            <td>Win 95+</td>
+            <td>5</td>
+
+            <td>C</td>
+        </tr>
+        <tr class="odd_gradeA" id="5">
+            <td>Trident</td>
+            <td>Internet Explorer 5.5</td>
+            <td>Win 95+</td>
+            <td>5.5</td>
+
+            <td>A</td>
+        </tr>
+        <tr class="even_gradeA" id="1">
+            <td>Trident</td>
+            <td>Internet Explorer 6</td>
+            <td>Win 98+</td>
+            <td>6</td>
+
+            <td>A</td>
+        </tr>
+        <tr class="odd_gradeA" id="5">
+            <td>Trident</td>
+            <td>Internet Explorer 7</td>
+            <td>Win XP SP2+</td>
+            <td>7</td>
+
+            <td>A</td>
+        </tr>
+        <tr class="even_gradeA" id="1">
+            <td>Trident</td>
+            <td>AOL browser (AOL desktop)</td>
+            <td>Win XP</td>
+            <td>6</td>
+
+            <td>A</td>
+        </tr>
+        <tr class="odd_gradeA" id="5">
+            <td>Gecko (UTF-8: $¢€)</td>
+            <td>Firefox 1.0</td>
+            <td>Win 98+ / OSX.2+</td>
+            <td>1.7</td>
+
+            <td>A</td>
+        </tr>
+        <tr class="even_gradeA" id="1">
+            <td>Gecko</td>
+            <td>Firefox 1.5</td>
+            <td>Win 98+ / OSX.2+</td>
+            <td>1.8</td>
+
+            <td>A</td>
+        </tr>
+    </tbody>
+</table>
+<div class="add_delete_toolbar" />
+            </div>
+            <div class="spacer"></div>
+            <?php //////////////////////////////////////////////////////////////////// ?>
+        </div>
+
+
+
+        <style type="text/css" title="currentStyle">
+            @import "<?php echo base_url('assets/datatables/inline/css/demo_page.css')?>";
+            @import "<?php echo base_url('assets/datatables/inline/css/demo_table.css')?>";
+            @import "<?php echo base_url('assets/datatables/inline/css/themes/base/jquery-ui.css')?>";
+            @import "<?php echo base_url('assets/datatables/inline/css/themes/smoothness/jquery-ui-1.7.2.custom.css')?>";
+        </style>
+        <script src="<?php echo base_url('assets/datatables/inline/jquery.min.js')?>"></script>
+<script src="<?php echo base_url('assets/datatables/js/jquery.dataTables.min.js')?>"></script>
+        <script src="<?php echo base_url('assets/datatables/inline/jquery.jeditable.js')?>"></script>
+        <script src="<?php echo base_url('assets/datatables/inline/jquery.validate.js')?>"></script>
+        <script src="<?php echo base_url('assets/datatables/inline/jquery.dataTables.editable.js')?>"></script>
+
+        <script src="<?php echo base_url('assets/jquery/jquery-ui.js')?>"></script>
+<!--<script src="<?php echo base_url('assets/jquery/jquery.min.js')?>"></script>
+
+<script src="<?php echo base_url('assets/jquery/jquery-ui.js')?>"></script>
+
+<script src="<?php echo base_url('assets/bootstrap/js/bootstrap.min.js')?>"></script>
+
+<script src="<?php echo base_url('assets/datatables/js/jquery.dataTables.min.js')?>"></script>
+
+<script src="<?php echo base_url('assets/datatables/js/dataTables.bootstrap.js')?>"></script>
+    <script src="<?php echo base_url('assets/datatables/js/jquery.dataTables.editable.js')?>"></script>
+    <script src="<?php echo base_url('assets/jquery/jquery.jeditable.js')?>"></script>
+<script src="<?php echo base_url('assets/bootstrap-datepicker/js/bootstrap-datepicker.min.js')?>"></script>-->
+
+<script src="<?php echo base_url('assets/js/common.js')?>"></script>
+
+
+
+<script src="<?php echo base_url('assets/dashboard/js/metisMenu.js')?>"></script>
+
+<script src="<?php echo base_url('assets/dashboard/js/raphael-min.js')?>"></script>
+
+<!--<script src="<?php echo base_url('assets/dashboard/js/morris.min.js')?>"></script>
+
+<script src="<?php echo base_url('assets/dashboard/js/morris-data.js')?>"></script>-->
+
+<script src="<?php echo base_url('assets/dashboard/js/sb-admin-2.js')?>"></script>
+
+
+
+<script type="text/javascript">
+
+
+
+var save_method; //for save method string
+
+var table;
+var autocompleteProductos=[];
+$.ajax({
+
+        url: "<?php echo site_url('producto/ajax_autocomplete')?>"
+
+        , "type": "POST"
+
+        , data:{length:'',start:0}
+
+        , dataType: 'JSON'
+
+        , success: function (data) {
+
+
+            //iterate over the data and append a select option
+
+            $.each(data.productos, function (key, val) {
+                var producto=
+                                {
+                                    id:val.id,
+                                    codigo: val.codigo,
+                                    label: val.marca+" "+val.modelo+" "+val.nombre,
+                                    nombre: val.nombre,
+                                    modelo: val.modelo,
+                                    marca:val.marca,
+                                    subcategoria:val.subcategoria
+                                };
+                             
+                autocompleteProductos.push(producto);
+            })
+
+        console.log(autocompleteProductos);
+        }
+
+        , error: function () {
+
+            //if there is an error append a 'none available' option
+
+            //$select_colores.html('<option id="-1">ninguno disponible</option>');
+
+        }
+
+    });
+    /*autocompleteProductos = [
+        {
+            codigo: "1",
+            label: "IPHONE - LCD - 4S",
+            nombre:"512G",
+            marca:"IPHONE",
+            modelo:"4S",
+            categoria:"LCD",
+        },{
+            codigo: "2",
+            label: "IPHONE - LCD - 5S",
+            nombre:"513G",
+            marca:"IPHONE",
+            modelo:"5S",
+            categoria:"LCD",
+        },{
+            codigo: "3",
+            label: "SAMSUNG - LCD - S7",
+            nombre:"514G",
+            marca:"IPHONE",
+            modelo:"S7",
+            categoria:"LCD",
+        },{
+            codigo: "4",
+            label: "SAMSUNG - LCD - S7EDGE",
+            nombre:"512T",
+            marca:"SAMSUNG",
+            modelo:"S7EDGE",
+            categoria:"LCD",
+        }
+    ];
+    console.log(autocompleteProductos);*/
+$(document).ready(function() {
+
+    $(document).keypress(function(event) {
+
+    if(event.charCode==43){//+
+
+        $("#agregar").trigger("click");
+
+    }
+
+    //alert('Handler for .keypress() called. - ' + event.charCode);
+
+    });
+
+    $('#modal_form').on('shown.bs.modal', function () {
+
+        $('#producto').focus();
+
+        //$(this).find('[autofocus]').focus();
+
+    });
+
+    
+
+    $("#modal_form").on('hidden.bs.modal', function () {
+
+        $(this).data('bs.modal', null);
+
+    });
+
+    
+
+    $('#form').submit(function(event) {
+
+        save();
+
+        $('#nombre').attr('disabled',true); 
+
+        $('#name').attr('disabled',true); 
+
+        event.preventDefault();
+
+    });
+
+    //datatables
+        $p=$('#producto').autocomplete({
+          minLength: 0,
+          source: autocompleteProductos,
+          focus: function( event, ui ) {
+            $('#producto').val( ui.item.nombre );
+            $('#productoValue').val( ui.item.id );
+          },
+          change: function( event, ui ) {
+            $('#producto').val( ui.item.nombre );
+            $('#productoValue').val( ui.item.id );
+          },
+          select: function( event, ui ) {
+            $('#producto').val( ui.item.nombre);
+            $('#productoValue').val( ui.item.id );
+            return false;
+          }
+        });
+    $('#producto').change(function() {
+
+        $select_colores = $('#stock');
+
+        $.ajax({
+
+            url: "<?php echo site_url('stock/ajax_dropdown')?>/"+$('#productoValue').val()+"/<?php echo $venta ?>"
+
+            , "type": "POST"
+
+            , data:{length:'',start:0,producto:$('#productoValue').val()}
+
+            , dataType: 'JSON'
+
+            , success: function (data) {
+
+                //clear the current content of the select
+
+                $select_colores.html('');
+
+                //iterate over the data and append a select option
+
+                //var options='';
+                $.each(data.colores, function (key, val) {
+                    $select_colores.append($("<option></option>").attr("value",val.id).text(val.nombre+"*"+val.cantidad+"("+val.l1+","+val.l2+","+val.l3+","+val.l4+")")); 
+                    //options += '<option value="' + val.id + '">' + val.nombre + '</option>'; 
+                    //console.log(val);
+
+                })
+
+                   // $('#color').html(options);
+            }
+
+            , error: function () {
+
+                //if there is an error append a 'none available' option
+
+                //$select_colores.html('<option id="-1">ninguno disponible</option>');
+
+            }
+
+        });
+
+    });
+    /*table = $('#table').DataTable({ 
+
+        "paging": false,
+        "footerCallback": function ( row, data, start, end, display ) {
+            var api = this.api(), data;
+ 
+            // Remove the formatting to get integer data for summation
+            var intVal = function ( i ) {
+                return typeof i === 'string' ?
+                    i.replace(/[\$,]/g, '')*1 :
+                    typeof i === 'number' ?
+                        i : 0;
+            };
+ 
+            // Total over all pages
+            total = api
+                .column( 4 )
+                .data()
+                .reduce( function (a, b) {
+                    return intVal(a) + intVal(b);
+                }, 0 );
+ 
+            // Total over this page
+            pageTotal = api
+                .column( 4, { page: 'current'} )
+                .data()
+                .reduce( function (a, b) {
+                    return intVal(a) + intVal(b);
+                }, 0 );
+ 
+            // Update footer
+            $( api.column( 4 ).footer() ).html(
+                //'$'+pageTotal +' ( $'+ total +' total)'//Esto es para cuando hay paginacion
+                '$'+ total +' total'
+            );
+        },
+
+        "responsive": true,
+
+        "processing": true, //Feature control the processing indicator.
+
+        "serverSide": true, //Feature control DataTables' server-side processing mode.
+
+        "order": [], //Initial no order.
+
+         // Load data for the table's content from an Ajax source
+
+        "ajax": {
+
+            "url": "<?php echo site_url('venta/ajax_renglones/'.$venta)?>",
+
+            "type": "POST"
+
+        },
+
+
+
+        //Set column definition initialisation properties.
+
+        "columnDefs": [
+
+        { 
+
+            "targets": [ -1], //last column
+
+            "orderable": false, //set not orderable
+
+        },
+
+        ],
+
+        "language":{
+
+            "sProcessing":     "Procesando...",
+
+            "sLengthMenu":     "Mostrar _MENU_ registros",
+
+            "sZeroRecords":    "No se encontraron resultados",
+
+            "sEmptyTable":     "Ningún dato disponible en esta tabla",
+
+            "sInfo":           "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+
+            "sInfoEmpty":      "Mostrando registros del 0 al 0 de un total de 0 registros",
+
+            "sInfoFiltered":   "(filtrado de un total de _MAX_ registros)",
+
+            "sInfoPostFix":    "",
+
+            "sSearch":         "Buscar:",
+
+            "sUrl":            "",
+
+            "sInfoThousands":  ",",
+
+            "sLoadingRecords": "Cargando...",
+
+            "oPaginate": {
+
+                "sFirst":    "Primero",
+
+                "sLast":     "Último",
+
+                "sNext":     "Siguiente",
+
+                "sPrevious": "Anterior"
+
+            }
+
+        }
+
+    }).makeEditable({
+        sUpdateURL: "UpdateData.php",
+        sAddURL: "AddData.php",
+        sAddHttpMethod: "GET", //Used only on google.code live example because google.code server do not support POST request
+        sDeleteURL: "DeleteData.php"
+    });*/
+        $('#example').dataTable({
+            "footerCallback": function ( row, data, start, end, display ) {
+            var api = this.api(), data;
+ 
+            // Remove the formatting to get integer data for summation
+            var intVal = function ( i ) {
+                return typeof i === 'string' ?
+                    i.replace(/[\$,]/g, '')*1 :
+                    typeof i === 'number' ?
+                        i : 0;
+            };
+ 
+            // Total over all pages
+            total = api
+                .column( 4 )
+                .data()
+                .reduce( function (a, b) {
+                    return intVal(a) + intVal(b);
+                }, 0 );
+ 
+            // Total over this page
+            pageTotal = api
+                .column( 4, { page: 'current'} )
+                .data()
+                .reduce( function (a, b) {
+                    return intVal(a) + intVal(b);
+                }, 0 );
+ 
+            // Update footer
+            $( api.column( 4 ).footer() ).html(
+                //'$'+pageTotal +' ( $'+ total +' total)'//Esto es para cuando hay paginacion
+                '$'+ total +' total'
+            );
+        },
+
+        "responsive": true,
+
+        "bServerSide": true,
+        "sAjaxSource": "<?php echo site_url('venta/ajax_renglones/'.$venta)?>",
+
+        //Set column definition initialisation properties.
+
+        "columnDefs": [
+
+        { 
+
+            "targets": [ -1], //last column
+
+            "orderable": false, //set not orderable
+
+        },
+
+        ],
+            "language":{
+
+            "sProcessing":     "Procesando...",
+
+            "sLengthMenu":     "Mostrar _MENU_ registros",
+
+            "sZeroRecords":    "No se encontraron resultados",
+
+            "sEmptyTable":     "Ningún dato disponible en esta tabla",
+
+            "sInfo":           "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+
+            "sInfoEmpty":      "Mostrando registros del 0 al 0 de un total de 0 registros",
+
+            "sInfoFiltered":   "(filtrado de un total de _MAX_ registros)",
+
+            "sInfoPostFix":    "",
+
+            "sSearch":         "Buscar:",
+
+            "sUrl":            "",
+
+            "sInfoThousands":  ",",
+
+            "sLoadingRecords": "Cargando...",
+
+            "oPaginate": {
+
+                "sFirst":    "Primero",
+
+                "sLast":     "Último",
+
+                "sNext":     "Siguiente",
+
+                "sPrevious": "Anterior"
+
+            }
+        }
+        }).makeEditable({
+                            sUpdateURL: "UpdateData.php",
+                            sAddURL: "AddData.php",
+                                        sDeleteURL: "DeleteData.php"
+                            });
+
+
+    //datepicker
+
+    $('.datepicker').datepicker({
+
+        autoclose: true,
+
+        format: "yyyy-mm-dd",
+
+        todayHighlight: true,
+
+        orientation: "top auto",
+
+        todayBtn: true,
+
+        todayHighlight: true,  
+
+    });
+
+
+
+    //set input/textarea/select event when change value, remove class error and remove text help block 
+
+    $("input").change(function(){
+
+        $(this).parent().parent().removeClass('has-error');
+
+        $(this).next().empty();
+
+    });
+
+    $("textarea").change(function(){
+
+        $(this).parent().parent().removeClass('has-error');
+
+        $(this).next().empty();
+
+    });
+
+    $("select").change(function(){
+
+        $(this).parent().parent().removeClass('has-error');
+
+        $(this).next().empty();
+
+    });
+
+
+
+});
+
+
+function add_renglon()
+
+{
+
+    save_method = 'add';
+
+    $('#form')[0].reset(); // reset form on modals
+
+    $('.form-group').removeClass('has-error'); // clear error class
+
+    $('.help-block').empty(); // clear error string
+
+    $('#modal_form').modal('show'); // show bootstrap modal
+
+    $('.modal-title').text('Agregar Renglon'); // Set Title to Bootstrap modal title
+
+    $('#producto').focus();
+}
+function edit_renglon(id)
+
+{
+    
+    save_method = 'update';
+
+    $('#form')[0].reset(); // reset form on modals
+
+    $('.form-group').removeClass('has-error'); // clear error class
+
+    $('.help-block').empty(); // clear error string
+
+
+
+    //Ajax Load data from ajax
+
+    $.ajax({
+
+        url : "<?php echo site_url('venta/ajax_edit_renglon/')?>/" + id,
+
+        type: "GET",
+
+        dataType: "JSON",
+
+        success: function(data)
+
+        {
+
+            
+
+            $('[name="id"]').val(data.id);
+
+
+            $('[name="categoria"]').val(data.categoriaid);
+
+            $('#modal_form').modal('show'); // show bootstrap modal when complete loaded
+
+            $('.modal-title').text('Editar Renglon'); // Set title to Bootstrap modal title
+
+            $('#producto').val(data.producto);
+
+            $('#cantidad').val(data.cantidad);
+
+            $('#precio').val(data.precio_unitario);
+            $select_colores = $('#stock');
+            $select_colores.html('');
+            $select_colores.append($("<option></option>").attr("value",0).text(data.color)); 
+                    
+            $('#producto,#stock').attr('disabled',true);
+            //$p.data('uiAutocomplete')._trigger('select', 'autocompleteselect', {item:{value:val.stockid}});
+
+        },
+
+        error: function (jqXHR, textStatus, errorThrown)
+
+        {
+
+            alert('Error get data from ajax');
+
+        }
+
+    });
+
+}
+$( "#producto" ).on( "autocompleteselect", function( event, ui ) {console.log(event);} );
+
+
+function reload_table()
+
+{
+
+    table.ajax.reload(null,false); //reload datatable ajax 
+
+}
+
+
+
+function save()
+
+{
+
+    $('#btnSave').text('saving...'); //change button text
+
+    $('#btnSave').attr('disabled',true); //set button disable 
+
+    var url;
+
+
+
+    if(save_method == 'add') {
+
+        url = "<?php echo site_url('venta/ajax_add_renglon')?>";
+
+    } else {
+
+        url = "<?php echo site_url('venta/ajax_update_renglon')?>";
+
+    }
+
+
+
+    // ajax adding data to database
+
+    $.ajax({
+
+        url : url,
+
+        type: "POST",
+
+        data: $('#form').serialize(),
+
+        dataType: "JSON",
+
+        success: function(data)
+
+        {
+
+
+
+            if(data.status) //if success close modal and reload ajax table
+
+            {
+
+                $('#modal_form').modal('hide');
+
+                reload_table();
+
+            }
+
+            else
+
+            {
+
+                for (var i = 0; i < data.inputerror.length; i++) 
+
+                {
+
+                    $('[name="'+data.inputerror[i]+'"]').parent().parent().addClass('has-error'); //select parent twice to select div form-group class and add has-error class
+
+                    $('[name="'+data.inputerror[i]+'"]').next().text(data.error_string[i]); //select span help-block class set text error string
+
+                }
+
+            }
+
+            $('#btnSave').text('guardar'); //change button text
+
+            $('#btnSave').attr('disabled',false); //set button enable 
+
+
+
+
+
+        },
+
+        error: function (jqXHR, textStatus, errorThrown)
+
+        {
+
+            alert('Error adding / update data');
+
+            $('#btnSave').text('guardar'); //change button text
+
+            $('#btnSave').attr('disabled',false); //set button enable 
+
+
+
+        }
+
+    });
+
+}
+
+
+
+function delete_renglon(id)
+
+{
+
+    if(confirm('Esta seguro que desea borrar este renglon?'))
+
+    {
+
+        // ajax delete data to database
+
+        $.ajax({
+
+            url : "<?php echo site_url('renglon/ajax_delete')?>/"+id,
+
+            type: "POST",
+
+            dataType: "JSON",
+
+            success: function(data)
+
+            {
+
+                //if success reload ajax table
+
+                $('#modal_form').modal('hide');
+
+                reload_table();
+
+            },
+
+            error: function (jqXHR, textStatus, errorThrown)
+
+            {
+
+                alert('Error deleting data');
+
+            }
+
+        });
+
+
+
+    }
+
+}
+
+
+
+</script>
+
+
+
+<!-- Bootstrap modal -->
+
+<div class="modal fade" id="modal_form" role="dialog">
+
+    <div class="modal-dialog">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+
+                <h3 class="modal-title">Formulario de Productos</h3>
+
+            </div>
+
+            <div class="modal-body form">
+
+                <form action="#" id="form" class="form-horizontal">
+
+                    <input type="hidden" value="" name="id"/>
+                    <input type="hidden" value="<?php echo $venta;?>" name="venta"/> 
+
+                    <div class="form-body">
+
+                        <div class="form-group">
+
+                            <label class="control-label col-md-3">Nombre</label>
+
+                            <div class="col-md-9">
+
+                                <input id="producto" name="producto" placeholder="Producto" class="form-control" type="text" autocomplete="off">
+                                <input type="hidden" name="productovalue" id="productoValue" />
+                                <span class="help-block"></span>
+
+                            </div>
+
+                        </div>
+
+                        <div class="form-group">
+
+                            <label class="control-label col-md-3">Color</label>
+
+                            <div class="col-md-9">
+
+                                <select id="stock" name="stock" class="form-control">
+
+                                </select>
+
+                                <span class="help-block"></span>
+
+                            </div>
+
+                        </div>
+
+                        <div class="form-group">
+
+                            <label class="control-label col-md-3">Cantidad</label>
+
+                            <div class="col-md-9">
+
+                                <input id="cantidad" name="cantidad" placeholder="Cantidad" class="form-control" type="text">
+                                <span class="help-block"></span>
+
+                            </div>
+
+                        </div>
+
+                        <div class="form-group">
+
+                            <label class="control-label col-md-3">Precio</label>
+
+                            <div class="col-md-9">
+
+                                <input id="precio" name="precio" placeholder="Precio" class="form-control" type="text">
+                                <span class="help-block"></span>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+            <div class="modal-footer">
+
+                <button type="button" id="btnSave" onclick="save()" class="btn btn-primary">Guardar</button>
+
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+
+            </div>
+
+        </div><!-- /.modal-content -->
+
+    </div><!-- /.modal-dialog -->
+
+</div><!-- /.modal -->
+<style>
+.ui-front{
+    z-index: 99999;
+}
+</style>
+<!-- End Bootstrap modal -->

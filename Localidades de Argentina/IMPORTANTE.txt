@@ -1,0 +1,60 @@
+*** Carga de Localidades de Argentina ***
+
+LEER ANTES DE LA CARGA... IMPORTANTE...
+
+      Las tablas con las que trabajé son las siguientes:
+
+	****** PROVINCIAS ******
+
+	NOMBRE: provincias
+
+	CAMPOS: cod_prov (int 2).
+		desc (varchar 30).
+
+	****** LOCALIDADES ******
+
+	NOMBRE: localidades
+
+	CAMPOS: cod_loc (int 4).
+		cod_prov (int 2).
+		desc (varchar 30).
+
+
+Bueno el tema es así:
+
+1) Primero tienen que hacer correr en la base de datos (yo utilice el phpmyadmin)
+   para las PROVINCIAS, las sentencias SQL que estan en el archivo "Cargas/provincias.txt".
+
+2) Despues, cuando tengan cargadas las provincias, configuren el script php, conecta.php 
+   que se encuentra en la carpeta "Cargas" para que tenga el nombre de su base de datos,
+   y pongan la contraseña que utilicen para que el acceso a la misma se realice correctamente.
+
+3) Luego copien los scripts, "importa.php" y "conecta.php", en la carpeta correspondiente
+   según el servidor que esten utilizando.
+   
+   **EJEMPLO**
+    En tiempo de desarrollo.
+    Yo trabajé con el XAMMP, y tendría que copiar "importa.php y conecta.php" en la carpeta
+    que se encuentra en la ruta por defecto "C:\Archivos de programa\xampp\htdocs\carga".
+
+4) Luego desde localhost en su explorador, entren a importa.php, seleccionen la ubicación del
+   archivo "Argentina-LocalidadesporProvincia.txt", y luego presionan el boton Submit.
+
+** Debería de aparecerles una leyenda que dice que la carga se realizó exitosamente.**
+
+Espero les sea útil esta manera de cargar las provincias y localidades de Argentina.
+
+
+El listado de localidades de Argentina ("Argentina-LocalidadesporProvincia.xls")
+me lo envió un gran amigo, Diego Javier Martinez.
+
+Así que demosle las gracias al amigo Diego por facilitar nuestro trabajo.
+
+Si faltan localidades, les agradecería me lo comuniquen a juanbasterretche@hotmail.com
+Gracias.
+
+
+Basterretche, Juan Felix.
+
+Corrientes, Argentina.
+

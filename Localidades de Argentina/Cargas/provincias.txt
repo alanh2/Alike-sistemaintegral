@@ -1,0 +1,27 @@
+***   PROVINCIAS   ***
+
+INSERT INTO `provincias` ( `cod_prov` , `desc` ) VALUES ('1', 'Buenos Aires');
+INSERT INTO `provincias` ( `cod_prov` , `desc` ) VALUES ('2', 'Buenos Aires-GBA');
+INSERT INTO `provincias` ( `cod_prov` , `desc` ) VALUES ('3', 'Capital Federal');
+INSERT INTO `provincias` ( `cod_prov` , `desc` ) VALUES ('4', 'Catamarca');
+INSERT INTO `provincias` ( `cod_prov` , `desc` ) VALUES ('5', 'Chaco');
+INSERT INTO `provincias` ( `cod_prov` , `desc` ) VALUES ('6', 'Chubut');
+INSERT INTO `provincias` ( `cod_prov` , `desc` ) VALUES ('7', 'Córdoba');
+INSERT INTO `provincias` ( `cod_prov` , `desc` ) VALUES ('8', 'Corrientes');
+INSERT INTO `provincias` ( `cod_prov` , `desc` ) VALUES ('9', 'Entre Ríos');
+INSERT INTO `provincias` ( `cod_prov` , `desc` ) VALUES ('10', 'Formosa');
+INSERT INTO `provincias` ( `cod_prov` , `desc` ) VALUES ('11', 'Jujuy');
+INSERT INTO `provincias` ( `cod_prov` , `desc` ) VALUES ('12', 'La Pampa');
+INSERT INTO `provincias` ( `cod_prov` , `desc` ) VALUES ('13', 'La Rioja');
+INSERT INTO `provincias` ( `cod_prov` , `desc` ) VALUES ('14', 'Mendoza');
+INSERT INTO `provincias` ( `cod_prov` , `desc` ) VALUES ('15', 'Misiones');
+INSERT INTO `provincias` ( `cod_prov` , `desc` ) VALUES ('16', 'Neuquén');
+INSERT INTO `provincias` ( `cod_prov` , `desc` ) VALUES ('17', 'Río Negro');
+INSERT INTO `provincias` ( `cod_prov` , `desc` ) VALUES ('18', 'Salta');
+INSERT INTO `provincias` ( `cod_prov` , `desc` ) VALUES ('19', 'San Juan');
+INSERT INTO `provincias` ( `cod_prov` , `desc` ) VALUES ('20', 'San Luis');
+INSERT INTO `provincias` ( `cod_prov` , `desc` ) VALUES ('21', 'Santa Cruz');
+INSERT INTO `provincias` ( `cod_prov` , `desc` ) VALUES ('22', 'Santa Fe');
+INSERT INTO `provincias` ( `cod_prov` , `desc` ) VALUES ('23', 'Santiago del Estero');
+INSERT INTO `provincias` ( `cod_prov` , `desc` ) VALUES ('24', 'Tierra del Fuego');
+INSERT INTO `provincias` ( `cod_prov` , `desc` ) VALUES ('25', 'Tucumán');

@@ -3,7 +3,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Enviometodo_model extends CI_Model {
 
-	var $tiposenvios = array('0','env_retiros','env_ocas','env_oca_express','env_motos','env_otros');
+	var $tiposenvios = array('0','env_retiros','env_ocas','env_ocaexpress','env_motos','env_otros');
 
 	public function __construct()
 	{
@@ -11,24 +11,22 @@ class Enviometodo_model extends CI_Model {
 		$this->load->database();
 	}
 
-	public function actualizar($data, $operacion)
+	public function actualizar($data)
 	{
-		//Aca se borra siempre, sin importar el metodo de de envio que se haya elegido
-//		if($data['metodo'] != $data['metodo_envio_id_anterior']){
+		if($data['metodo'] != $data['metodo_envio_id_anterior']){
 			$this->db->where('id', $data['metodo_registro_id_anterior']);
 			$this->db->delete($this->tiposenvios[$data['metodo_envio_id_anterior']]);
 
-			return $this->add_envio($data, $operacion);
-/*		}else{
-			$datosEnvio = $this->_armarEnvio($data, $operacion);
-			$aux = $this->update($this->tiposenvios[$data['metodo']], array('id' => $data['metodo_registro_id_anterior']), $datosEnvio);
-			echo $this->db->last_query();
-			return $aux;
-		}*/
+			return $this->add_envio($data);
+		}else{
+			$datosEnvio = $this->_armarEnvio($data);
+			$this->update($this->tiposenvios[$data['metodo']], array('id' => $data['metodo_registro_id_anterior']), $datosEnvio);
+			return $data['metodo_registro_id_anterior'];
+		}
 	}
-	public function add_envio($data, $operacion)
+	public function add_envio($data)
 	{
-		$datosEnvio = $this->_armarEnvio($data, $operacion);
+		$datosEnvio = $this->_armarEnvio($data);
 /*		$this->db->insert($this->tiposenvios[$data['metodo']], $datosEnvio);
 		return $this->db->insert_id();
 		*/
@@ -43,7 +41,7 @@ class Enviometodo_model extends CI_Model {
 		return $query->row();
 	}
 
-	private function _armarEnvio($data, $operacion)
+	private function _armarEnvio($data)
 	{
 		$retiro = 1;
 		$oca = 2;

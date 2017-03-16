@@ -34,7 +34,7 @@
         <div class="form">
 
             <form action="#" id="form" class="form-horizontal">
-                <input id="id" name="id" type="hidden" value="<?php echo $envio->envioid ?>"/>
+                <input id="id" name="id" type="hidden" value="<? if (isset($envio->envioid)){echo $envio->envioid; } ?>"/>
 
                 <input id="ventaid" name="ventaid" type="hidden" value="<?php echo $venta->id ?> " /> 
                 

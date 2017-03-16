@@ -126,8 +126,9 @@ class Venta extends MY_Controller {
 		}else{
 			$this->load->helper('url');
 			$auxiliar = $this->cargar_venta($id);
-
-			$data['metodo_envio'] = $this->enviometodo->get_datos_metodo_by_id($auxiliar['envio']->idregistrometodoenvio, $auxiliar['envio']->metodoenvio);
+			if (isset($auxiliar['envio'])){
+				$data['metodo_envio'] = $this->enviometodo->get_datos_metodo_by_id($auxiliar['envio']->idregistrometodoenvio, $auxiliar['envio']->metodoenvio);
+			}
 			$data['view']='venta_envios_view';
 			$this->load->view('master_view',$data);
 		}
@@ -275,12 +276,12 @@ class Venta extends MY_Controller {
 		$data = $this->input->post();
 //		$this->db->trans_begin(); 
 		if ($data['metodo_envio_id_anterior'] != ''){
-			$metodoenvioid = $this->enviometodo->actualizar($data,1);
+			$metodoenvioid = $this->enviometodo->actualizar($data);
 
 			$this->envio->update(array('id' => $data['id']),array('metodoenvio'=> $data['metodo'], 'operacion'=> 1, 'fechaestimada'=> $data['fecha_estimada'], 'recibe'=> $data['recibe'], 'dni'=> $data['dni'], 'metodoenvioid'=> $metodoenvioid));
 
 		}else{
-			$metodoenvioid = $this->enviometodo->add_envio($data,1);
+			$metodoenvioid = $this->enviometodo->add_envio($data);
 
 			$envioid = $this->envio->save(array('metodoenvio'=> $data['metodo'], 'operacion'=> 1, 'fechaestimada'=> $data['fecha_estimada'], 'recibe'=> $data['recibe'], 'dni'=> $data['dni'], 'metodoenvioid'=> $metodoenvioid));
 			$this->envioventa->save(array('ventaid'=> $data['ventaid'], 'envioid'=> $envioid));

@@ -41,22 +41,7 @@ class Envio_model extends CI_Model {
 
 		return $query->row();
 	}
-
-
-	public function actualizar($data, $operacion, $metodoenvioid)
-	{
-		$this->db->update(array('id' => $data['id']),array('metodoenvio'=> $data['metodo'], 'operacion'=> $data['operacion'], 'fechaestimada'=> $data['fecha_estimada'], 'recibe'=> $data['recibe'], 'dni'=> $data['dni'], 'metodoenvioid'=> $metodoenvioid));
-		//update en tabla envios
-
-		return $this->db->insert_id();
-	}
-
-	public function guardar($data, $operacion)
-	{
-		$this->db->insert(array('metodoenvioid'=> $data['metodo'], 'operacion'=> $data['operacion'], 'fechaestimada'=> $data['fecha_estimada'], 'recibe'=> $data['recibe'], 'dni'=> $data['dni']));
-		return $this->db->insert_id();
-	}
-
+	
 	public function save($data)
 	{
 		$this->db->insert($this->table, $data);

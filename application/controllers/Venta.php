@@ -275,15 +275,15 @@ class Venta extends MY_Controller {
 	public function completar_envio(){
 		$data = $this->input->post();
 //		$this->db->trans_begin(); 
-		if ($data['metodo_envio_id_anterior'] != ''){
-			$metodoenvioid = $this->enviometodo->actualizar($data);
+		if ($data['metodo_envio_anterior'] != ''){
+			$envtablaid = $this->enviometodo->actualizar($data);
 
-			$this->envio->update(array('id' => $data['id']),array('metodoenvio'=> $data['metodo'], 'operacion'=> 1, 'fechaestimada'=> $data['fecha_estimada'], 'recibe'=> $data['recibe'], 'dni'=> $data['dni'], 'metodoenvioid'=> $metodoenvioid));
+			$this->envio->update(array('id' => $data['id']),array('metodoenvio'=> $data['metodo'], 'operacion'=> 1, 'fechaestimada'=> $data['fecha_estimada'], 'recibe'=> $data['recibe'], 'dni'=> $data['dni'], 'envtablaid'=> $envtablaid));
 
 		}else{
-			$metodoenvioid = $this->enviometodo->add_envio($data);
+			$envtablaid = $this->enviometodo->add_envio($data);
 
-			$envioid = $this->envio->save(array('metodoenvio'=> $data['metodo'], 'operacion'=> 1, 'fechaestimada'=> $data['fecha_estimada'], 'recibe'=> $data['recibe'], 'dni'=> $data['dni'], 'metodoenvioid'=> $metodoenvioid));
+			$envioid = $this->envio->save(array('metodoenvio'=> $data['metodo'], 'operacion'=> 1, 'fechaestimada'=> $data['fecha_estimada'], 'recibe'=> $data['recibe'], 'dni'=> $data['dni'], 'envtablaid'=> $envtablaid));
 			$this->envioventa->save(array('ventaid'=> $data['ventaid'], 'envioid'=> $envioid));
 		}
 

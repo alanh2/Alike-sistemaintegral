@@ -47,7 +47,7 @@ class Envioventa_model extends CI_Model {
 		$this->db->from($this->table);
 		$this->db->join('envios', 'ventas_envios.envioid = envios.id');
 		$this->db->join('metodos_envio', 'metodos_envio.id = envios.metodoenvio');
-		$this->db->select('ventas_envios.*, metodos_envio.nombre as nombre_envio, metodos_envio.id as metodoenvio, envios.recibe, envios.dni, envios.metodoenvioid as idregistrometodoenvio, envios.fechaestimada');
+		$this->db->select('ventas_envios.*, metodos_envio.nombre as nombre_envio, metodos_envio.id as metodoenvio, envios.recibe, envios.dni, envios.envtablaid as idregistrometodoenvio, envios.fechaestimada');
 		$this->db->where('ventas_envios.ventaid',$ventaid);
 		$query = $this->db->get();
 		return $query->row();

@@ -13,15 +13,15 @@ class Enviometodo_model extends CI_Model {
 
 	public function actualizar($data)
 	{
-		if($data['metodo'] != $data['metodo_envio_id_anterior']){
-			$this->db->where('id', $data['metodo_registro_id_anterior']);
-			$this->db->delete($this->tiposenvios[$data['metodo_envio_id_anterior']]);
+		if($data['metodo'] != $data['metodo_envio_anterior']){
+			$this->db->where('id', $data['env_tabla_id_anterior']);
+			$this->db->delete($this->tiposenvios[$data['metodo_envio_anterior']]);
 
 			return $this->add_envio($data);
 		}else{
 			$datosEnvio = $this->_armarEnvio($data);
-			$this->update($this->tiposenvios[$data['metodo']], array('id' => $data['metodo_registro_id_anterior']), $datosEnvio);
-			return $data['metodo_registro_id_anterior'];
+			$this->update($this->tiposenvios[$data['metodo']], array('id' => $data['env_tabla_id_anterior']), $datosEnvio);
+			return $data['env_tabla_id_anterior'];
 		}
 	}
 	public function add_envio($data)

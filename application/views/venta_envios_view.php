@@ -40,9 +40,9 @@
                 
                 <input id="clienteid" name="clienteid" type="hidden" value="<?php echo $venta->clienteid ?>"/>
                 
-                <input id="metodo_envio_id_anterior" name="metodo_envio_id_anterior" type="hidden" value="<? if (isset($envio->metodoenvio)){echo $envio->metodoenvio; } ?>" />
+                <input id="metodo_envio_anterior" name="metodo_envio_anterior" type="hidden" value="<? if (isset($envio->metodoenvio)){echo $envio->metodoenvio; } ?>" />
 
-                <input id="metodo_registro_id_anterior" name="metodo_registro_id_anterior" type="hidden" value="<? if (isset($envio->idregistrometodoenvio)){echo $envio->idregistrometodoenvio; } ?>"/>
+                <input id="env_tabla_id_anterior" name="env_tabla_id_anterior" type="hidden" value="<? if (isset($envio->idregistrometodoenvio)){echo $envio->idregistrometodoenvio; } ?>"/>
 
                 <div class="form-body">
                     <div class="form-group">

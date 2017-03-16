@@ -7,6 +7,8 @@ class Cobro extends MY_Controller {
 		parent::__construct();
 		$this->is_logged_in();
 		$this->load->model('cobro_model','cobro');
+		$this->load->model('transaccion_model','transaccion');
+
 	}
 
 	public function index()
@@ -25,6 +27,20 @@ class Cobro extends MY_Controller {
 		$this->load->view('master_view',$data);
 	}
 
+	public function ajax_edit($id)
+	{
+		$data = $this->cobro->get_by_id($id);
+		echo json_encode($data);
+	}
+
+	public function ajax_edit2($id)
+	{
+		$cobro = $this->cobro->get_by_id($id);
+		$metodo = $this->transaccion->get_transaccion($cobro->metododepagoid, $cobro->metodoid);
+		$data = array_merge((array) $cobro,(array) $metodo);
+		echo json_encode($data);
+	}
+
 	public function ajax_list()
 	{
 		$this->load->helper('url');
@@ -38,8 +54,7 @@ class Cobro extends MY_Controller {
 			$row[] = $cobro->monto;
 			$row[] = $cobro->fecha;
 			$row[] = $cobro->metodo_pago;
-			$row[] = '
-			      <a class="btn btn-sm btn-primary" href="'.site_url('cobro/edit_cobro/'.$cobro->id).'" title="Edit")"><i class="glyphicon glyphicon-pencil"></i> Editar</a>'
+			$row[] = '<a class="btn btn-sm btn-primary" href="javascript:void(0)" title="Edit" onclick="edit_cobro('."'".$cobro->id."'".')"><i class="glyphicon glyphicon-pencil"></i> Editar</a>'
 				  /*.'<a class="btn btn-sm btn-danger" href="javascript:void(0)" title="Delete" onclick="delete_cobro('."'".$cobro->id."'".')"><i class="glyphicon glyphicon-trash"></i> Borrar</a>';*/;
 		
 			$data[] = $row;

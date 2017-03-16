@@ -306,7 +306,7 @@ class Venta extends MY_Controller {
 		$this->db->trans_begin(); 
 		$transaccion_result = $this->transaccion->add_transaccion($data['metodo'],1,$data);
 		$cobro_result = $this->cobro->save(array('clienteid'=> $data['clienteid'], 'monto'=> $data['monto'],'fecha'=> date('Y-m-d H:i:s'), 'metodoid' => $transaccion_result, 'metododepagoid' => $data['metodo']));
-		$aplicacion_result = $this->aplicacionCobroVenta->save(array('cobroid'=> $cobro_result, 'ventaid'=> $data['ventaid'], 'monto'=> null));
+		$aplicacion_result = $this->aplicacionCobroVenta->save(array('cobroid'=> $cobro_result, 'ventaid'=> $data['ventaid'], 'monto'=> $data['monto']));
 
 		$output = array(
 						"transaccion" => $transaccion_result,

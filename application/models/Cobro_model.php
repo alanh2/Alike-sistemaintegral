@@ -4,6 +4,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 class Cobro_model extends CI_Model {
 
 	var $table = 'cobros';
+	var $metodos_pago = array('0','mov_efectivos','mov_cheques','mov_mercadopagos','mov_transferencias','mov_cuentacorrientes','mov_panamas', 'mov_tarjetas');
 
 	var $column_order = array('monto','fecha', 'medtodo_pago',null); //set column field database for datatable orderable
 	var $column_search = array('cobros.monto','cobros.fecha', 'metodos_pago.nombre'); //set column field database for datatable searchable just firstname , lastname , address are searchable
@@ -84,7 +85,7 @@ class Cobro_model extends CI_Model {
 
 		return $query->row();
 	}
-
+	
 	public function save($data)
 	{
 		$this->db->insert($this->table, $data);

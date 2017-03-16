@@ -19,6 +19,14 @@ class Transaccion_model extends CI_Model {
 		return $this->db->insert_id();
 	}
 
+	function get_transaccion($metododepago, $mov_tabla_id){
+		$this->db->from($this->tabla[$metododepago]);
+		$this->db->where($this->tabla[$metododepago].'.id',$mov_tabla_id);
+		$query = $this->db->get();
+
+		return $query->row();
+	}
+
 	function _preparar_transaccion($metododepago, $operacion, $data){
 		$efectivos = 1;
 		$cheques = 2;

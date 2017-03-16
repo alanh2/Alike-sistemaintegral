@@ -70,6 +70,42 @@ $(document).ready(function() {
 		$('#nombre').attr('disabled',true); 
 		event.preventDefault();
 	});
+    $select_metodos = $('#metodos');
+    $.ajax({
+        url: "<?php echo site_url('metodopago/ajax_dropdown')?>"
+        , "type": "GET"
+        , data:{}
+        , dataType: 'JSON'
+        , success: function (data) {
+            $select_metodos.html('');
+            $.each(data.metodos, function (key, val) {
+                $select_metodos.append('<option value="' + val.id + '">' + val.nombre + '</option>');
+            })
+        }
+        , error: function () {
+            $select_metodos.html('<option id="-1">ninguna disponible</option>');
+
+        }
+
+    });
+
+
+    $select_clientes = $('#clientes');
+    $.ajax({
+        url: "<?php echo site_url('cliente/ajax_dropdown')?>"
+        , "type": "POST"
+        , data:{length:'',start:0}
+        , dataType: 'JSON'
+        , success: function (data) {
+            $select_clientes.html('');
+            $.each(data.clientes, function (key, val) {
+                $select_clientes.append('<option value="' + val.id + '">' + val.nombre + '</option>');
+            })
+        }
+        , error: function () {
+            $select_clientes.html('<option id="-1">ninguna disponible</option>');
+        }
+    });
 
     //datatables
     table = $('#table').DataTable({ 
@@ -116,9 +152,126 @@ $(document).ready(function() {
 });
 
 
+function add_cobro()
+{
+    save_method = 'add';
+    $('#form')[0].reset(); // reset form on modals
+    $('.form-group').removeClass('has-error'); // clear error class
+    $('.help-block').empty(); // clear error string
+    $('#modal_form').modal('show'); // show bootstrap modal
+    $('.modal-title').text('Agregar Cobro'); // Set Title to Bootstrap modal title
+    $('#nombre').focus();
+}
+    function mostrar_campos(metodo){
+        $(".metodo").hide();
+        switch ($("#metodos").val()){
+            case "1":
+                break;
+            case "2":
+                $(".metodo.cheque").show();
+                break;
+            case "3":
+                $(".metodo.mercadopago").show();
+                break;
+            case "4":
+                $(".metodo.transferencia").show();
+                break;
+            case "7":
+                $(".metodo.tarjeta").show();
+                break;
+        }
+    }
+    $("#metodos").change(function(){
+        mostrar_campos($("#metodos").val());
+    });
+function edit_cobro(id)
+{
+    save_method = 'update';
+    $('#form')[0].reset(); // reset form on modals
+    $('.form-group').removeClass('has-error'); // clear error class
+    $('.help-block').empty(); // clear error string
+
+    //Ajax Load data from ajax
+    $.ajax({
+        url : "<?php echo site_url('cobro/ajax_edit/')?>/" + id,
+        type: "GET",
+        dataType: "JSON",
+        success: function(data)
+        {
+            
+            $('[name="id"]').val(data.id);
+            $('[name="monto"]').val(data.monto);
+            $("#metodos").val(data.metododepagoid);
+            mostrar_campos(data.metododepagoid);
+            $("#clientes").val(data.clienteid);
+
+            $('#modal_form').modal('show'); // show bootstrap modal when complete loaded
+            $('.modal-title').text('Editar Cobro'); // Set title to Bootstrap modal title
+            $('[name="clientes"]').focus();
+
+        },
+        error: function (jqXHR, textStatus, errorThrown)
+        {
+            alert('Error get data from ajax');
+        }
+    });
+}
+
+
 function reload_table()
 {
     table.ajax.reload(null,false); //reload datatable ajax 
+}
+
+function save()
+{
+    $('#btnSave').text('saving...'); //change button text
+    $('#btnSave').attr('disabled',true); //set button disable 
+    var url;
+
+    if(save_method == 'add') {
+        url = "<?php echo site_url('cobro/ajax_add')?>";
+    } else {
+        url = "<?php echo site_url('cobro/ajax_update')?>";
+    }
+
+    // ajax adding data to database
+    $.ajax({
+        url : url,
+        type: "POST",
+        data: $('#form').serialize(),
+        dataType: "JSON",
+        success: function(data)
+        {
+
+            if(data.status) //if success close modal and reload ajax table
+            {
+                $('#modal_form').modal('hide');
+                reload_table();
+            }
+            else
+            {
+                for (var i = 0; i < data.inputerror.length; i++) 
+                {
+                    $('[name="'+data.inputerror[i]+'"]').parent().parent().addClass('has-error'); //select parent twice to select div form-group class and add has-error class
+                    $('[name="'+data.inputerror[i]+'"]').next().text(data.error_string[i]); //select span help-block class set text error string
+                }
+            }
+            $('#btnSave').text('guardar'); //change button text
+            $('#btnSave').attr('disabled',false); //set button enable 
+            $('#nombre').attr('disabled',false); 
+
+
+        },
+        error: function (jqXHR, textStatus, errorThrown)
+        {
+            alert('Error adding / update data');
+            $('#btnSave').text('guardar'); //change button text
+            $('#btnSave').attr('disabled',false); //set button enable 
+            $('#nombre').attr('disabled',false); 
+
+        }
+    });
 }
 
 function delete_cobro(id)
@@ -145,6 +298,45 @@ function delete_cobro(id)
     }
 }
 
+$('.datepicker').datepicker({
+
+    autoclose: true,
+
+    format: "yyyy-mm-dd",
+
+    todayHighlight: true,
+
+    orientation: "top auto",
+
+    todayBtn: true,
+
+    todayHighlight: true,  
+
+});
+
+$("input").change(function(){
+
+    $(this).parent().parent().removeClass('has-error');
+
+    $(this).next().empty();
+
+});
+
+$("textarea").change(function(){
+
+    $(this).parent().parent().removeClass('has-error');
+
+    $(this).next().empty();
+
+});
+
+$("select").change(function(){
+
+    $(this).parent().parent().removeClass('has-error');
+
+    $(this).next().empty();
+
+});
 </script>
 
 <!-- Bootstrap modal -->
@@ -157,15 +349,84 @@ function delete_cobro(id)
             </div>
             <div class="modal-body form">
                 <form action="#" id="form" class="form-horizontal">
-                    <input type="hidden" value="" name="id"/> 
-                    <div class="form-body">
-                        <div class="form-group">
-                            <label class="control-label col-md-3">Nombre</label>
-                            <div class="col-md-9">
-                                <input id="nombre" name="nombre" placeholder="Nombre" class="form-control" type="text" autofocus>
-                                <span class="help-block"></span>
-                            </div>
+                    <input type="hidden" name="id"/>
+                    <div class="form-group">
+                        <label class="control-label col-md-5">Cliente</label>
+                        <div class="col-md-6">
+                            <select id="clientes" name="cliente" class="form-control" data-bind="value:metodo">
+                            </select>                            <span class="help-block"></span>
                         </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-5">Elija el método de pago</label>
+                        <div class="col-md-6">
+                            <select id="metodos" name="metodo" class="form-control" data-bind="value:metodo">
+                            </select>
+                            <span class="help-block"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-5">Monto ($)</label>
+                        <div class="col-md-6">
+                            <input id="monto" name="monto" class="form-control" value=""/>
+                            <span class="help-block"></span>
+                        </div>
+                    </div>
+                    <div class="form-group tarjeta transferencia metodo">
+                        <label class="control-label col-md-5">Titular</label>
+                        <div class="col-md-6">
+                            <input id="tarjetas_titular" name="titular" class="form-control"/>
+                            <span class="help-block"></span>
+                        </div>                          
+                    </div>
+                    <div class="form-group tarjeta cheque metodo">
+                        <label class="control-label col-md-5">Vencimiento</label>
+                        <div class="col-md-6">
+                            <input id="vencimiento" name="vencimiento" class="form-control datepicker"/>
+                            <span class="help-block"></span>
+                        </div>                          
+                    </div>
+                    <div class="form-group tarjeta metodo">
+                        <label class="control-label col-md-5">Últimos 4 dígitos</label>
+                        <div class="col-md-6">
+                            <input type="number" pattern="{0,9}[4]" id="digitos" name="digitos" class="form-control" maxlength="4"/>
+                            <span class="help-block"></span>
+                        </div>                          
+                    </div>
+                    <div class="form-group transferencia metodo">
+                       <label class="control-label col-md-5">Fecha</label>
+                        <div class="col-md-6">
+                            <input id="fecha" name="fecha" class="form-control datepicker"/>
+                            <span class="help-block"></span>
+                        </div>                         
+                    </div>
+                    <div class="form-group cheque transferencia metodo">
+                        <label class="control-label col-md-5">Banco</label>
+                        <div class="col-md-6">
+                            <input id="banco" name="banco" class="form-control"/>
+                            <span class="help-block"></span>
+                        </div>                          
+                    </div>
+                    <div class="form-group cheque metodo">
+                        <label class="control-label col-md-5">Numeración</label>
+                        <div class="col-md-6">
+                            <input id="numeracion" name="numeracion" class="form-control"/>
+                            <span class="help-block"></span>
+                        </div>                          
+                    </div>
+                    <div class="form-group mercadopago metodo">
+                       <label class="control-label col-md-5">Codigo MercadoPago</label>
+                        <div class="col-md-6">
+                            <input id="codigomp" name="codigomp" class="form-control"/>
+                            <span class="help-block"></span>
+                        </div>                         
+                    </div>
+                    <div class="form-group transferencia metodo">
+                       <label class="control-label col-md-5">Codigo Operación</label>
+                        <div class="col-md-6">
+                            <input id="codigo_operacion" name="codigo_operacion" class="form-control"/>
+                            <span class="help-block"></span>
+                        </div>                         
                     </div>
                 </form>
             </div>
@@ -177,3 +438,8 @@ function delete_cobro(id)
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 <!-- End Bootstrap modal -->
+<style>
+.metodo{
+    display: none;
+}
+</style>

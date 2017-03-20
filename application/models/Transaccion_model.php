@@ -6,11 +6,24 @@ class Transaccion_model extends CI_Model {
 
 	var $tabla = array('0','mov_efectivos','mov_cheques','mov_mercadopagos','mov_transferencias','mov_cuentacorrientes','mov_panamas', 'mov_tarjetas');
 
-
 	public function __construct()
 	{
 		parent::__construct();
 		$this->load->database();
+	}
+
+	public function actualizar($data)
+	{
+		if($data['metodo'] != $data['metodo_anterior']){
+			$this->db->where('id', $data['mov_tabla_id_anterior']);
+			$this->db->delete($this->tabla[$data['metodo_anterior']]);
+
+			return $this->add_transaccion($data['metodo'],$data['operacion'],$data);
+		}else{
+			$datosCobro = $this->_preparar_transaccion($data['metodo'], $data['operacion'], $data);
+			$this->update($this->tabla[$data['metodo']], array('id' => $data['mov_tabla_id_anterior']), $datosCobro);
+			return $data['mov_tabla_id_anterior'];
+		}
 	}
 
 	function add_transaccion($metododepago, $operacion, $data){
@@ -69,36 +82,14 @@ class Transaccion_model extends CI_Model {
 		}
 		return $datos_preparados;
 	}
-/*	
-	private function _add_efectivo($data)
+	public function update($table, $where, $data)
 	{
-		$this->db->insert($this->tabla_efectivos, $data);
-		return $this->db->insert_id();
+		$this->db->update($table, $data, $where);
+		return $this->db->affected_rows();
 	}
-	private function _add_cheque($data)
+	public function eliminar($metodo, $id)
 	{
-		$this->db->insert($this->tabla_cheques, $data);
-		return $this->db->insert_id();
+		$this->db->where('id', $id);
+		$this->db->delete($this->tabla[$metodo]);
 	}
-	private function _add_mp($data)
-	{
-		$this->db->insert($this->tabla_mps, $data);
-		return $this->db->insert_id();
-	}
-	private function _add_cuentacorriente($data)
-	{
-		$this->db->insert($this->tabla_cuentacorrientes, $data);
-		return $this->db->insert_id();
-	}
-	private function _add_panama($data)
-	{
-		$this->db->insert($this->tabla_panamas, $data);
-		return $this->db->insert_id();
-	}
-	private function _add_tarjeta($data)
-	{
-		$this->db->insert($this->tabla_tarjetas, $data);
-		return $this->db->insert_id();
-	}
-*/
 }

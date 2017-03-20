@@ -13,7 +13,7 @@
                         <th>Monto</th>
                         <th>Fecha</th>
                         <th>Método de pago</th>
-                        <th>Acción</th>
+                        <th style="width:150px;">Acción</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -148,7 +148,28 @@ $(document).ready(function() {
 			}
 		}
 	});
-
+function mostrar_campos(metodo){
+    $(".metodo").hide();
+    switch ($("#metodos").val()){
+        case "1":
+            break;
+        case "2":
+            $(".metodo.cheque").show();
+            break;
+        case "3":
+            $(".metodo.mercadopago").show();
+            break;
+        case "4":
+            $(".metodo.transferencia").show();
+            break;
+        case "7":
+            $(".metodo.tarjeta").show();
+            break;
+    }
+}
+$("#metodos").change(function(){
+    mostrar_campos($("#metodos").val());
+});
 });
 
 
@@ -162,28 +183,30 @@ function add_cobro()
     $('.modal-title').text('Agregar Cobro'); // Set Title to Bootstrap modal title
     $('#nombre').focus();
 }
-    function mostrar_campos(metodo){
-        $(".metodo").hide();
-        switch ($("#metodos").val()){
-            case "1":
-                break;
-            case "2":
-                $(".metodo.cheque").show();
-                break;
-            case "3":
-                $(".metodo.mercadopago").show();
-                break;
-            case "4":
-                $(".metodo.transferencia").show();
-                break;
-            case "7":
-                $(".metodo.tarjeta").show();
-                break;
-        }
+
+function mostrar_campos(metodo){
+    $(".metodo").hide();
+    switch ($("#metodos").val()){
+        case "1":
+            break;
+        case "2":
+            $(".metodo.cheque").show();
+            break;
+        case "3":
+            $(".metodo.mercadopago").show();
+            break;
+        case "4":
+            $(".metodo.transferencia").show();
+            break;
+        case "7":
+            $(".metodo.tarjeta").show();
+            break;
     }
-    $("#metodos").change(function(){
-        mostrar_campos($("#metodos").val());
-    });
+}
+$("#metodos").change(function(){
+    mostrar_campos($("#metodos").val());
+});
+
 function edit_cobro(id)
 {
     save_method = 'update';
@@ -199,11 +222,22 @@ function edit_cobro(id)
         success: function(data)
         {
             
-            $('[name="id"]').val(data.id);
-            $('[name="monto"]').val(data.monto);
-            $("#metodos").val(data.metododepagoid);
-            mostrar_campos(data.metododepagoid);
+            $('[name="id"]').val(id);
             $("#clientes").val(data.clienteid);
+            $("#metodos").val(data.metododepagoid);
+            $('[name="metodo_anterior"]').val(data.metododepagoid);
+            $('[name="mov_tabla_id_anterior"]').val(data.metodoid);
+            $('[name="monto"]').val(data.monto);
+
+            mostrar_campos(data.metododepagoid);
+            $('[name="vencimiento"]').val(data.vencimiento);
+            $('[name="banco"]').val(data.banco);
+            $('[name="numeracion"]').val(data.numeracion);
+            $('[name="titular"]').val(data.titular);
+            $('[name="digitos"]').val(data.digitos);
+            $('[name="fecha"]').val(data.fecha);
+            $('[name="codigomp"]').val(data.codigomp);
+            $('[name="codigo_operacion"]').val(data.codigo_operacion);
 
             $('#modal_form').modal('show'); // show bootstrap modal when complete loaded
             $('.modal-title').text('Editar Cobro'); // Set title to Bootstrap modal title
@@ -244,7 +278,7 @@ function save()
         success: function(data)
         {
 
-            if(data.status) //if success close modal and reload ajax table
+            if(data.resultado == "Ok") //if success close modal and reload ajax table
             {
                 $('#modal_form').modal('hide');
                 reload_table();
@@ -276,7 +310,7 @@ function save()
 
 function delete_cobro(id)
 {
-    if(confirm('Esta seguro que desea borrar esta cobro?'))
+    if(confirm('Esta seguro que desea borrar este cobro?'))
     {
         // ajax delete data to database
         $.ajax({
@@ -298,21 +332,7 @@ function delete_cobro(id)
     }
 }
 
-$('.datepicker').datepicker({
 
-    autoclose: true,
-
-    format: "yyyy-mm-dd",
-
-    todayHighlight: true,
-
-    orientation: "top auto",
-
-    todayBtn: true,
-
-    todayHighlight: true,  
-
-});
 
 $("input").change(function(){
 
@@ -350,6 +370,8 @@ $("select").change(function(){
             <div class="modal-body form">
                 <form action="#" id="form" class="form-horizontal">
                     <input type="hidden" name="id"/>
+                    <input type="hidden" name="mov_tabla_id_anterior"/>
+                    <input type="hidden" name="metodo_anterior"/>
                     <div class="form-group">
                         <label class="control-label col-md-5">Cliente</label>
                         <div class="col-md-6">
@@ -438,6 +460,23 @@ $("select").change(function(){
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 <!-- End Bootstrap modal -->
+<script type="text/javascript">
+    $('.datepicker').datepicker({
+
+    autoclose: true,
+
+    format: "yyyy-mm-dd",
+
+    todayHighlight: true,
+
+    orientation: "top auto",
+
+    todayBtn: true,
+
+    todayHighlight: true,  
+
+});
+</script>
 <style>
 .metodo{
     display: none;

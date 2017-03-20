@@ -274,7 +274,7 @@ class Venta extends MY_Controller {
 
 	public function completar_envio(){
 		$data = $this->input->post();
-//		$this->db->trans_begin(); 
+		$this->db->trans_begin(); 
 		if ($data['metodo_envio_anterior'] != ''){
 			$envtablaid = $this->enviometodo->actualizar($data);
 

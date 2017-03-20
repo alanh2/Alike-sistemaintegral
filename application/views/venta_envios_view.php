@@ -314,7 +314,7 @@ function save()
 
             if(data.resultado == 'Ok') //if success close modal and reload ajax table
             {
-                alert("Envio completado");
+                //alert("Envio completado");
                 window.location.href = '<?php echo site_url("venta/metodo_pago_venta/").'/'.$venta->id ?>';
             }else{
                 alert("Complete todos los campos")

@@ -302,7 +302,7 @@ function save()
 
             if(data.resultado == 'Ok') //if success close modal and reload ajax table
             {
-				alert("Venta completada");
+				//alert("Venta completada");
 				window.location.href = '<?php echo site_url("venta/ver_detalles/").'/'.$venta->id ?>';
             }else{
 				alert("Ocurrio un error al intentar hacer la grabación")

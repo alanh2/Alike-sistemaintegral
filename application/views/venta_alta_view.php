@@ -776,11 +776,11 @@ function save()
 
             {
         if(save_method=='add'){
-                alert("Alta exitosa");
+                //alert("Alta exitosa");
 
 
         }else{
-				alert("Modificacion exitosa");
+				//alert("Modificacion exitosa");
         }
 				//parent.location.reload(true); 
                 window.location.href = '<?php echo site_url("venta/renglones_venta/"); ?>'+'/'+data.id;

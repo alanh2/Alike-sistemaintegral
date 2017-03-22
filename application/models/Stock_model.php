@@ -33,7 +33,7 @@ class Stock_model extends CI_Model {
 		$this->db->from($this->table);
 		
 		$this->db->join('productos_colores', 'productos_colores.id = stock.producto_colorid');
-		
+				
 		$this->db->where('productos_colores.productoid',$id);
 
 		$query = $this->db->get();
@@ -56,9 +56,19 @@ class Stock_model extends CI_Model {
 
 		$this->db->join('productos_colores', 'productos_colores.id = stock.producto_colorid');
 
+		$this->db->join('colores', 'colores.id = productos_colores.colorid');
+
+		$this->db->join('productos', 'productos.id = productos_colores.productoid');
+
+		$this->db->join('locales', 'locales.id = stock.localid');
+
+		$this->db->join('modelos', 'modelos.id = productos.modeloid');
+
+		$this->db->join('marcas', 'marcas.id = modelos.marcaid');
+
 //		$this->db->join('categorias', 'categorias.id = productos.categoriaid');
 
-//		$this->db->select('productos.*, marcas.nombre as marca, categorias.nombre as categoria');
+		$this->db->select('stock.cantidad, stock.id as stock_id, colores.name as color, productos.*, modelos.nombre as modelo, marcas.nombre as marca');
 
 		$i = 0;
 
@@ -139,7 +149,6 @@ class Stock_model extends CI_Model {
 		$this->db->limit($_POST['length'], $_POST['start']);
 
 		$query = $this->db->get();
-
 		return $query->result();
 
 	}

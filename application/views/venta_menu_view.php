@@ -1,4 +1,4 @@
-<a href="http://systemix.com.ar/sistemaIntegral/index.php/venta/ver_detalles/<?php echo $venta->id;?>">Ver detalles</a>
+<a href="http://systemix.com.ar/orshicell/index.php/venta/ver_detalles/<?php echo $venta->id;?>">Ver detalles</a>
 <div class="row menuVentas">
     <div class="col-lg-3 col-md-3 col-md-3 col-xs-3">
         <div class="panel panel-<?=$menuClienteColor;?>">
@@ -15,7 +15,7 @@
                     </div>
                 </div>
             </div>
-            <a href="http://systemix.com.ar/sistemaIntegral/index.php/venta/alta_venta/<?php echo $venta->id;?>">
+            <a href="http://systemix.com.ar/orshicell/index.php/venta/alta_venta/<?php echo $venta->id;?>">
                 <div class="panel-footer">
                     <span class="pull-left hidden-xs">Modificar</span>
                     <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
@@ -39,7 +39,7 @@
                     </div>
                 </div>
             </div>
-            <a href="http://systemix.com.ar/sistemaIntegral/index.php/venta/renglones_venta/<?php echo $venta->id;?>">
+            <a href="http://systemix.com.ar/orshicell/index.php/venta/renglones_venta/<?php echo $venta->id;?>">
                 <div class="panel-footer">
                     <span class="pull-left hidden-xs">Modificar</span>
                     <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
@@ -62,7 +62,7 @@
                     </div>
                 </div>
             </div>
-            <a href="http://systemix.com.ar/sistemaIntegral/index.php/venta/metodo_pago_venta/<?php echo $venta->id;?>">
+            <a href="http://systemix.com.ar/orshicell/index.php/venta/metodo_pago_venta/<?php echo $venta->id;?>">
                 <div class="panel-footer">
                     <span class="pull-left hidden-xs">Completar método de pago!</span>
                     <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
@@ -86,7 +86,7 @@
                     </div>
                 </div>
             </div>
-            <a href="http://systemix.com.ar/sistemaIntegral/index.php/venta/envios_venta/<?php echo $venta->id;?>">
+            <a href="http://systemix.com.ar/orshicell/index.php/venta/envios_venta/<?php echo $venta->id;?>">
                 <div class="panel-footer">
                     <span class="pull-left hidden-xs">Completar método de envío!</span>
                     <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>

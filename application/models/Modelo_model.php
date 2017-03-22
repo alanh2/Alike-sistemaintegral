@@ -68,6 +68,7 @@ class Modelo_model extends CI_Model {
 		$this->db->from($this->table);
 		$this->db->where('marcaid', $marca);
 		$query = $this->db->get();
+		//echo $this->db->last_query();
 		return $query->result();
 	}
 	function count_filtered()

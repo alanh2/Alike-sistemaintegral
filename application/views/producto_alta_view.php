@@ -564,6 +564,32 @@ $('.porcentaje').change(function () {
 				$select_categorias.append('<option value="' + val.id + '">' + val.nombre + '</option>');
 
 			})
+            $.ajax({
+
+                url: "<?php echo site_url('subcategoria/get_by_id/')?>/"+producto.subcategoriaid
+
+                , "type": "POST"
+
+                , data:{length:'',start:0}
+
+                , dataType: 'JSON'
+
+                , success: function (data) {
+
+                    //clear the current content of the select
+                        $('[name="categoria"]').val(data.categoriaid).trigger('change');
+
+                }
+
+                , error: function () {
+
+                    //if there is an error append a 'none available' option
+
+                    //$select_categorias.html('<option id="-1">ninguna disponible</option>');
+
+                }
+
+            });
 
 		}
 
@@ -607,6 +633,10 @@ $('.porcentaje').change(function () {
 
 				})
 
+                <?php if (isset($data['producto'])){?>
+                    $('[name="subcategoria"]').val(producto.subcategoriaid);
+                <?php }?>
+                
 			}
 
 			, error: function () {
@@ -689,6 +719,32 @@ $('.porcentaje').change(function () {
 
 			})
 
+            $.ajax({
+
+                url: "<?php echo site_url('modelo/get_by_id/')?>/"+producto.modeloid
+
+                , "type": "POST"
+
+                , data:{length:'',start:0}
+
+                , dataType: 'JSON'
+
+                , success: function (data) {
+
+                    //clear the current content of the select
+                        $('[name="marca"]').val(data.marcaid).trigger('change');
+                        
+                }
+
+                , error: function () {
+
+                    //if there is an error append a 'none available' option
+
+                    //$select_categorias.html('<option id="-1">ninguna disponible</option>');
+
+                }
+
+            });
 		}
 
 		, error: function () {
@@ -730,7 +786,10 @@ $('.porcentaje').change(function () {
 					$select_modelos.append('<option value="' + val.id + '">' + val.nombre + '</option>');
 
 				})
-
+                <?php if (isset($data['producto'])){?>
+            
+                $('[name="modelo"]').val(producto.modeloid);
+                <?php }?>
 			}
 
 			, error: function () {
@@ -860,63 +919,7 @@ $('.porcentaje').change(function () {
         $('[name="id"]').val(producto.id);
         $('[name="nombre"]').val(producto.nombre);
         $('[name="proveedor"]').val(producto.proveedorid);
-    $.ajax({
-
-        url: "<?php echo site_url('modelo/get_by_id/')?>/"+producto.modeloid
-
-        , "type": "POST"
-
-        , data:{length:'',start:0}
-
-        , dataType: 'JSON'
-
-        , success: function (data) {
-
-            //clear the current content of the select
-
-                $('[name="marca"]').val(data.marcaid).trigger('change');
-                $('[name="modelo"]').val(producto.modeloid);
-
-        }
-
-        , error: function () {
-
-            //if there is an error append a 'none available' option
-
-            //$select_categorias.html('<option id="-1">ninguna disponible</option>');
-
-        }
-
-    });
-    $.ajax({
-
-        url: "<?php echo site_url('subcategoria/get_by_id/')?>/"+producto.subcategoriaid
-
-        , "type": "POST"
-
-        , data:{length:'',start:0}
-
-        , dataType: 'JSON'
-
-        , success: function (data) {
-
-            //clear the current content of the select
-
-                $('[name="categoria"]').val(data.categoriaid).trigger('change');
-                $('[name="subcategoria"]').val(producto.subcategoriaid);
-
-        }
-
-        , error: function () {
-
-            //if there is an error append a 'none available' option
-
-            //$select_categorias.html('<option id="-1">ninguna disponible</option>');
-
-        }
-
-    });
-
+    
     <?php } ?>
 
 });

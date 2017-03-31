@@ -49,7 +49,12 @@ class Localidad extends MY_Controller {
 	}
 	public function ajax_dropdown()
 	{
-		$list = $this->localidad->get_datatables();
+		if(isset($_POST['provincia'])){
+
+			$list = $this->localidad->get_por_provincia($_POST['provincia']);
+
+		}
+		//$list = $this->localidad->get_datatables();
 		
 		$data = array();
 	

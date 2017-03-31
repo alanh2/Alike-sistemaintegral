@@ -40,7 +40,7 @@ $(document).ready(function() {
 	
     //datatables
     table = $('#table').DataTable({ 
-
+        "oSearch": {"sSearch": $search},
 		"responsive": true,
         "processing": true, //Feature control the processing indicator.
         "serverSide": true, //Feature control DataTables' server-side processing mode.

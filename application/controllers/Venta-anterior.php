@@ -31,10 +31,6 @@ class Venta extends MY_Controller {
 		$this->load->model('Comentariocliente_model','Comentariocliente');
 
 		$this->load->model('envioventa_model','envioventa');
-
-		$this->load->model('enviometodo_model','enviometodo');
-
-		$this->load->model('envio_model','envio');
 	}
 
 	public function index()
@@ -125,10 +121,7 @@ class Venta extends MY_Controller {
 			$this->alta_venta();
 		}else{
 			$this->load->helper('url');
-			$auxiliar = $this->cargar_venta($id);
-			if (isset($auxiliar['envio'])){
-				$data['metodo_envio'] = $this->enviometodo->get_datos_metodo_by_id($auxiliar['envio']->idregistrometodoenvio, $auxiliar['envio']->metodoenvio);
-			}
+			$this->cargar_venta($id);
 			$data['view']='venta_envios_view';
 			$this->load->view('master_view',$data);
 		}
@@ -146,98 +139,70 @@ class Venta extends MY_Controller {
 		}
 	}
 
-	public function cargar_venta($id=NULL){
-		if($id==null){
-			$data['menuClienteColor']='red';
+	public function cargar_venta($id){
+		$data['venta']=$this->venta->get_by_id($id);
+		$data['promedio'] = $this->Comentariocliente->get_promedio_by_cliente($data['venta']->clienteid);
+		if($data['promedio']->puntaje<3){
+			$data['menuClienteColor']='yellow';
 			$data['menuClienteEstado']='
-                    <div class="huge"><i class="fa fa-times"></i></div>
-                    <div class="leyenda">Completar</div>';
-            $data['stars']='';
+                    <div class="huge"><i class="fa fa-thumbs-down"></i></div>
+                    <div class="leyenda">No confiable</div>';
 
+		}else{
+			$data['menuClienteColor']='green';
+			$data['menuClienteEstado']='
+                    <div class="huge"><i class="fa fa-thumbs-up"></i></div>
+                    <div class="leyenda">Confiable</div>';
+		}
+		$stars='';
+		for($i=1;$i<=round($data['promedio']->puntaje);$i++){
+			$stars.='<i class="fa fa-star"></i>';
+		}
+		$data['stars']=$stars;
+		//------------------------------------------------------------------------------------------------------------------------------//
+		$data['aplicacionesCobroVenta']=$this->aplicacionCobroVenta->get_by_venta_id($id);
+		if(count($data['aplicacionesCobroVenta'])>0){
+			$data['menuVentaColor']='green';
+			$data['menuVentaEstado']='
+                    <div class="huge"><i class="fa fa-check"></i></div>
+                    <div class="leyenda">Listo!</div>';	
+		}else{
 			$data['menuVentaColor']='red';
 			$data['menuVentaEstado']='
                     <div class="huge"><i class="fa fa-times"></i></div>
-                    <div class="leyenda">Completar</div>';	
+                    <div class="leyenda">Completar</div>';				
+		}
 
+		//------------------------------------------------------------------------------------------------------------------------------//
+		$data['cantidadproductos'] = $this->venta_renglones->count_all($id);//cantidad de renglones
+		$total = 0;
+		if ($data['cantidadproductos'] > 0) {
+			$total = $this->venta->get_total($id)->total;
+			$data['menuRenglonesColor']='green';
+			$data['menuRenglonesEstado']='
+                    <div class="huge"><i class="fa fa-check"></i></div>
+                    <div class="leyenda">Listo!</div>';
+		}else{
 			$data['menuRenglonesColor']='red';
 			$data['menuRenglonesEstado']='
                     <div class="huge"><i class="fa fa-times"></i></div>
-                    <div class="leyenda">Completar</div>';
-			$data['cantidadproductos']='0';
-			$data['total']='0';
+                    <div class="leyenda">Completar</div>';				
+		}
+		$data['total'] = $total;
 
+		//------------------------------------------------------------------------------------------------------------------------------//
+		$data['envio']=$this->envioventa->get_by_venta($id);
+		if(isset($data['envio']->nombre_envio) && count($data['envio']->nombre_envio)>0){
+			$data['menuEnviosColor']='green';
+			$data['menuEnviosEstado']='
+                    <div class="huge"><i class="fa fa-check"></i></div>
+                    <div class="leyenda">Listo!</div>';
+		}else{
 			$data['menuEnviosColor']='red';
 			$data['menuEnviosEstado']='
-                    <div class="huge"><i class="fa fa-times"></i></div>
-                    <div class="leyenda">Completar</div>';
-				
-		}else{
-
-			$data['venta']=$this->venta->get_by_id($id);
-			$data['promedio'] = $this->Comentariocliente->get_promedio_by_cliente($data['venta']->clienteid);
-			if($data['promedio']->puntaje<3){
-				$data['menuClienteColor']='yellow';
-				$data['menuClienteEstado']='
-	                    <div class="huge"><i class="fa fa-thumbs-down"></i></div>
-	                    <div class="leyenda">No confiable</div>';
-
-			}else{
-				$data['menuClienteColor']='green';
-				$data['menuClienteEstado']='
-	                    <div class="huge"><i class="fa fa-thumbs-up"></i></div>
-	                    <div class="leyenda">Confiable</div>';
-			}
-			$stars='';
-			for($i=1;$i<=round($data['promedio']->puntaje);$i++){
-				$stars.='<i class="fa fa-star"></i>';
-			}
-			$data['stars']=$stars;
-			//------------------------------------------------------------------------------------------------------------------------------//
-			$data['aplicacionesCobroVenta']=$this->aplicacionCobroVenta->get_by_venta_id($id);
-			if(count($data['aplicacionesCobroVenta'])>0){
-				$data['menuVentaColor']='green';
-				$data['menuVentaEstado']='
-	                    <div class="huge"><i class="fa fa-check"></i></div>
-	                    <div class="leyenda">Listo!</div>';	
-			}else{
-				$data['menuVentaColor']='red';
-				$data['menuVentaEstado']='
-	                    <div class="huge"><i class="fa fa-times"></i></div>
-	                    <div class="leyenda">Completar</div>';				
-			}
-
-			//------------------------------------------------------------------------------------------------------------------------------//
-			$data['cantidadproductos'] = $this->venta_renglones->count_all($id);//cantidad de renglones
-			$total = 0;
-			if ($data['cantidadproductos'] > 0) {
-				$total = $this->venta->get_total($id)->total;
-				$data['menuRenglonesColor']='green';
-				$data['menuRenglonesEstado']='
-	                    <div class="huge"><i class="fa fa-check"></i></div>
-	                    <div class="leyenda">Listo!</div>';
-			}else{
-				$data['menuRenglonesColor']='red';
-				$data['menuRenglonesEstado']='
-	                    <div class="huge"><i class="fa fa-times"></i></div>
-	                    <div class="leyenda">Completar</div>';				
-			}
-			$data['total'] = $total;
-
-			//------------------------------------------------------------------------------------------------------------------------------//
-			$data['envio']=$this->envioventa->get_by_venta($id);
-			if(isset($data['envio']->nombre_envio) && count($data['envio']->nombre_envio)>0){
-				$data['menuEnviosColor']='green';
-				$data['menuEnviosEstado']='
-	                    <div class="huge"><i class="fa fa-check"></i></div>
-	                    <div class="leyenda">Listo!</div>';
-			}else{
-				$data['menuEnviosColor']='red';
-				$data['menuEnviosEstado']='
-	                    <div class="huge"><i class="fa fa-times"></i></div>
-	                    <div class="leyenda">Completar</div>';
-			}
+                    <div class="huge"><i class="fa fa-check"></i></div>
+                    <div class="leyenda">Listo!</div>';
 		}
-			
 		//------------------------------------------------------------------------------------------------------------------------------//
 		$data['menu']=$this->load->view("venta_menu_view",$data,TRUE);
 		return $data;
@@ -245,7 +210,6 @@ class Venta extends MY_Controller {
 
 	public function alta_venta($id=NULL){
 
-		$this->cargar_venta($id);
 		$this->load->helper('url');
 		if($id!=NULL){
 			
@@ -303,31 +267,12 @@ class Venta extends MY_Controller {
 
 	public function completar_envio(){
 		$data = $this->input->post();
-		$this->db->trans_begin(); 
-		if ($data['metodo_envio_anterior'] != ''){
-			$envtablaid = $this->enviometodo->actualizar($data);
-
-			$this->envio->update(array('id' => $data['id']),array('metodoenvio'=> $data['metodo'], 'operacion'=> 1, 'fechaestimada'=> $data['fecha_estimada'], 'recibe'=> $data['recibe'], 'dni'=> $data['dni'], 'envtablaid'=> $envtablaid));
-
+		if ($data['ventasenviosid'] != ''){
+			$this->envioventa->update(array('id' => $data['ventasenviosid']),array('metodoenvioid'=> $data['metodo']));
 		}else{
-			$envtablaid = $this->enviometodo->add_envio($data);
-
-			$envioid = $this->envio->save(array('metodoenvio'=> $data['metodo'], 'operacion'=> 1, 'fechaestimada'=> $data['fecha_estimada'], 'recibe'=> $data['recibe'], 'dni'=> $data['dni'], 'envtablaid'=> $envtablaid));
-			$this->envioventa->save(array('ventaid'=> $data['ventaid'], 'envioid'=> $envioid));
+			$this->envioventa->save(array('metodoenvioid'=> $data['metodo'], 'ventaid'=> $data['ventaid']));
 		}
-
-		if ($this->db->trans_status() === FALSE)
-		{
-	        $this->db->trans_rollback();
-	    	$output['resultado'] = 'Error';
-		}
-		else
-		{
-	        $this->db->trans_commit();
-	    	$output['resultado'] = 'Ok';
-		}
-
-		echo json_encode($output);
+		echo json_encode(array("resultado" => 'Ok'));
 	}
 
 	public function completar_venta(){
@@ -335,7 +280,7 @@ class Venta extends MY_Controller {
 		$this->db->trans_begin(); 
 		$transaccion_result = $this->transaccion->add_transaccion($data['metodo'],1,$data);
 		$cobro_result = $this->cobro->save(array('clienteid'=> $data['clienteid'], 'monto'=> $data['monto'],'fecha'=> date('Y-m-d H:i:s'), 'metodoid' => $transaccion_result, 'metododepagoid' => $data['metodo']));
-		$aplicacion_result = $this->aplicacionCobroVenta->save(array('cobroid'=> $cobro_result, 'ventaid'=> $data['ventaid'], 'monto'=> $data['monto']));
+		$aplicacion_result = $this->aplicacionCobroVenta->save(array('cobroid'=> $cobro_result, 'ventaid'=> $data['ventaid'], 'monto'=> null));
 
 		$output = array(
 						"transaccion" => $transaccion_result,

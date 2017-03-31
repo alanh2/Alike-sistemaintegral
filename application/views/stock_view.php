@@ -2,11 +2,9 @@
 
             <br>
 
-            <h3>Productos</h3>
+            <h3>Stock</h3>
 
             <br />
-
-            <button id="agregar" class="btn btn-success" onclick="window.open('http://systemix.com.ar/sistemaIntegral/index.php/producto/alta_producto/')"><i class="glyphicon glyphicon-plus"></i> Agregar Producto</button>
 
             <button class="btn btn-default" onclick="reload_table()"><i class="glyphicon glyphicon-refresh"></i> Recargar</button>
 
@@ -36,7 +34,7 @@
 
                         <th><strong>Nombre</strong></th>
 
-                        <th>Proveedor</th>
+                        <th>Cantidad</th>
 
                         <th style="width:225px;">Accion</th>
 
@@ -66,7 +64,7 @@
 
                         <th><strong>Nombre</strong></th>
 
-                        <th>Proveedor</th>
+                        <th>Cantidad</th>
 
                         <th>Action</th>
 
@@ -308,7 +306,7 @@ $(document).ready(function() {
 
 
 
-function edit_producto(id)
+function edit_stock(id)
 
 {
 
@@ -326,7 +324,7 @@ function edit_producto(id)
 
     $.ajax({
 
-        url : "<?php echo site_url('producto/ajax_edit/')?>/" + id,
+        url : "<?php echo site_url('stock/ajax_edit/')?>/" + id,
 
         type: "GET",
 
@@ -338,15 +336,15 @@ function edit_producto(id)
 
 			
 
-			$('[name="id"]').val(data.id);
+			$('[name="id"]').val(data.stock_id);
 
-            $('[name="nombre"]').val(data.nombre);
+            $('[name="nombre"]').val(data.nombre+" - "+data.color);
 
-            $('[name="categoria"]').val(data.categoriaid);
+            $('[name="cantidad"]').val(data.cantidad);
 
             $('#modal_form').modal('show'); // show bootstrap modal when complete loaded
 
-            $('.modal-title').text('Editar Producto'); // Set title to Bootstrap modal title
+            $('.modal-title').text('Ajustar Stock'); // Set title to Bootstrap modal title
 
 
 
@@ -374,8 +372,6 @@ function reload_table()
 
 }
 
-
-
 function save()
 
 {
@@ -390,11 +386,11 @@ function save()
 
     if(save_method == 'add') {
 
-        url = "<?php echo site_url('producto/ajax_add')?>";
+        url = "<?php echo site_url('stock/ajax_add')?>";
 
     } else {
 
-        url = "<?php echo site_url('producto/ajax_update')?>";
+        url = "<?php echo site_url('stock/ajax_update')?>";
 
     }
 
@@ -474,52 +470,6 @@ function save()
 
 
 
-function delete_producto(id)
-
-{
-
-    if(confirm('Esta seguro que desea borrar este producto?'))
-
-    {
-
-        // ajax delete data to database
-
-        $.ajax({
-
-            url : "<?php echo site_url('producto/ajax_delete')?>/"+id,
-
-            type: "POST",
-
-            dataType: "JSON",
-
-            success: function(data)
-
-            {
-
-                //if success reload ajax table
-
-                $('#modal_form').modal('hide');
-
-                reload_table();
-
-            },
-
-            error: function (jqXHR, textStatus, errorThrown)
-
-            {
-
-                alert('Error deleting data');
-
-            }
-
-        });
-
-
-
-    }
-
-}
-
 
 
 </script>
@@ -556,7 +506,7 @@ function delete_producto(id)
 
                             <div class="col-md-9">
 
-                                <input name="nombre" placeholder="Nombre" class="form-control" type="text">
+                                <input name="nombre" placeholder="Nombre" class="form-control" type="text" disabled="disabled">
 
                                 <span class="help-block"></span>
 
@@ -566,13 +516,11 @@ function delete_producto(id)
 
                         <div class="form-group">
 
-                            <label class="control-label col-md-3">	</label>
+                            <label class="control-label col-md-3">Cantidad</label>
 
                             <div class="col-md-9">
 
-                                <select id="categoria" name="categoria" class="form-control">
-
-                                </select>
+                                <input name="cantidad" placeholder="Cantidad" class="form-control" type="text">
 
                                 <span class="help-block"></span>
 

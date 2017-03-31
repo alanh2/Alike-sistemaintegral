@@ -6,7 +6,7 @@
 
             <br />
 
-            <button id="agregar" class="btn btn-success" onclick="window.open('http://systemix.com.ar/sistemaIntegral/index.php/producto/alta_producto/')"><i class="glyphicon glyphicon-plus"></i> Agregar Producto</button>
+            <button id="agregar" class="btn btn-success" onclick="window.open('<?php echo site_url("/producto/alta_producto/");?>')"><i class="glyphicon glyphicon-plus"></i> Agregar Producto</button>
 
             <button class="btn btn-default" onclick="reload_table()"><i class="glyphicon glyphicon-refresh"></i> Recargar</button>
 
@@ -32,9 +32,9 @@
 
                         <th>Modelo</th>
 
-                        <th>Categoria</th>
-
                         <th><strong>Nombre</strong></th>
+
+                        <th>Categoria</th>
 
                         <th>Proveedor</th>
 
@@ -62,9 +62,9 @@
 
                         <th>Modelo</th>
 
-                        <th>Categoria</th>
-
                         <th><strong>Nombre</strong></th>
+
+                        <th>Categoria</th>
 
                         <th>Proveedor</th>
 

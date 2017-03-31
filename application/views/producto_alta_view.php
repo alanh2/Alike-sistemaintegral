@@ -42,7 +42,7 @@
 
                         <div class="col-md-4">
 
-                            <input name="nombre" placeholder="Nombre" class="form-control" type="text" data-bind="value:nombre">
+                            <input id="nombre" autofocus name="nombre" placeholder="Nombre" class="form-control" type="text" data-bind="value:nombre">
 
                             <span class="help-block"></span>
 
@@ -397,7 +397,7 @@
 
     var producto=<?php echo json_encode( $data['producto']);?>;
     console.log(producto);
-
+    $('#nombre').focus();
     var editColores=[];
     editColores=<?php echo json_encode( $data['colores']);?>;
     console.log(editColores);
@@ -564,6 +564,8 @@ $('.porcentaje').change(function () {
 				$select_categorias.append('<option value="' + val.id + '">' + val.nombre + '</option>');
 
 			})
+            <?php if (isset($data['producto'])){?>
+            
             $.ajax({
 
                 url: "<?php echo site_url('subcategoria/get_by_id/')?>/"+producto.subcategoriaid
@@ -590,7 +592,7 @@ $('.porcentaje').change(function () {
                 }
 
             });
-
+            <?php }?>
 		}
 
 		, error: function () {
@@ -718,7 +720,8 @@ $('.porcentaje').change(function () {
 				$select_marcas.append('<option value="' + val.id + '">' + val.nombre + '</option>');
 
 			})
-
+            <?php if (isset($data['producto'])){?>
+            
             $.ajax({
 
                 url: "<?php echo site_url('modelo/get_by_id/')?>/"+producto.modeloid
@@ -745,6 +748,9 @@ $('.porcentaje').change(function () {
                 }
 
             });
+            <?php }else{?>
+                $('[name="marca"]').trigger('change');
+            <?} ?>
 		}
 
 		, error: function () {

@@ -56,7 +56,7 @@ class Stock extends MY_Controller {
 		$no = $start;
 
 		foreach ($list as $producto) {
-
+			$producto->id=$producto->stock_id;//Aca se pone distinto para poder traer todos los campos de productos y no haya conflicto con el campo ID
 			$no++;
 
 			$row = array();
@@ -71,29 +71,15 @@ class Stock extends MY_Controller {
 
 			$row[] = $producto->subcategoria;
 
-			$row[] = $producto->nombre;
+			$row[] = $producto->nombre." - ".$producto->color;
 
-			$row[] = $producto->proveedor;
+			$row[] = $producto->cantidad;
 
-			//add html for action
-			if($this->able_to_delete($producto->id)){
+			$row[] = '
 
-				$row[] = '
-
-				      
-					  <a class="btn btn-sm btn-primary" href="javascript:void(0)" title="Edit"
-					   onclick="window.open(\'http://systemix.com.ar/sistemaIntegral/index.php/producto/alta_producto/'.$producto->id.'\')"><i class="glyphicon glyphicon-pencil"></i> Editar</a>
-
-					  <a class="btn btn-sm btn-danger" href="javascript:void(0)" title="Hapus" onclick="delete_producto('."'".$producto->id."'".')"><i class="glyphicon glyphicon-trash"></i> Borrar</a>';
-			}else{
-
-				$row[] = '
-
-			      
-				  <a class="btn btn-sm btn-primary" href="javascript:void(0)" title="Edit"
-				   onclick="window.open(\'http://systemix.com.ar/sistemaIntegral/index.php/producto/alta_producto/'.$producto->id.'\')"><i class="glyphicon glyphicon-pencil"></i> Editar</a>';	
-			}
-		
+		      
+			  <a class="btn btn-sm btn-primary" href="javascript:void(0)" title="Edit" onclick="edit_stock('."'".$producto->id."'".')"><i class="glyphicon glyphicon-pencil"></i> Ajustar stock</a>';
+	
 
 			$data[] = $row;
 
@@ -356,64 +342,13 @@ class Stock extends MY_Controller {
 	{
 
 		$this->_validate();
-		$productoid=$this->input->post('id');
+		$stockid=$this->input->post('id');
 		$data = array(
 
-				'codigo' => $this->input->post('codigo'),
-
-				'nombre' => $this->input->post('nombre'),
-
-				'subcategoriaid' => $this->input->post('subcategoria'),
-
-				'proveedorid' => $this->input->post('proveedor'),
-
-				'modeloid' => $this->input->post('modelo'),
-
+				'cantidad' => $this->input->post('cantidad'),
 		);
 
-		$this->producto->update(array('id' => $productoid), $data);
-		if(($this->input->post('colores'))){
-			$colores=$this->input->post('colores');
-			$colores_no_eliminados=array();
-			if(is_array($colores)){
-
-				foreach ($colores as $key=>$value){
-					array_push($colores_no_eliminados,$key);
-					$data = array(
-
-							'colorid' => $key,
-
-							'productoid' => $productoid,
-
-							'costo' => $value['costo'],
-
-							'porcentaje1' => $value['porcentaje1'],
-
-							'porcentaje2' => $value['porcentaje2'],
-
-							'porcentaje3' => $value['porcentaje3'],
-
-							'porcentaje4' => $value['porcentaje4'],
-
-							
-
-					);
-
-					$this->producto->save_color($data);
-
-					//echo $this->db->last_query();
-
-				
-
-				}
-
-			}
-
-			//$colores_no_eliminados=implode(",", $colores_no_eliminados);
-			//echo $colores_no_eliminados;
-			$this->producto->delete_colores($productoid,$colores_no_eliminados);
-			//echo $this->db->last_query();
-		}
+		$this->producto->update(array('id' => $stockid), $data);
 		//print_r($this->input->post());
 		echo json_encode(array("status" => TRUE));
 
@@ -480,32 +415,19 @@ class Stock extends MY_Controller {
 
 		}*/
 
-		if($this->input->post('nombre') == '')
+		if($this->input->post('cantidad') == '')
 
 		{
 
-			$data['inputerror'][] = 'nombre';
+			$data['inputerror'][] = 'cantidad';
 
-			$data['error_string'][] = 'Nombre es un campo requerido';
+			$data['error_string'][] = 'Cantidad es un campo requerido';
 
 			$data['status'] = FALSE;
 
 		}
 
 		
-
-		if($this->input->post('modelo') == '')
-
-		{
-
-			$data['inputerror'][] = 'modelo';
-
-			$data['error_string'][] = 'Modelo es un campo requerido';
-
-			$data['status'] = FALSE;
-
-		}
-
 		/*if($this->input->post('categoria') == '')
 
 		{
@@ -517,20 +439,6 @@ class Stock extends MY_Controller {
 			$data['status'] = FALSE;
 
 		}*/
-
-		if($this->input->post('subcategoria') == '')
-
-		{
-
-			$data['inputerror'][] = 'subcategoria';
-
-			$data['error_string'][] = 'Debe seleccionar una sub categoria';
-
-			$data['status'] = FALSE;
-
-		}
-
-
 
 		if($data['status'] === FALSE)
 

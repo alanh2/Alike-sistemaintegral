@@ -237,12 +237,18 @@ class Producto_model extends CI_Model {
 		}
 		else{
 			$this->db->insert($table, $data);
+			$colorid=$this->db->insert_id();
+			$stockData['producto_colorid']=$colorid;
+			$stockData['cantidad']=0;
+			$stockData['localid']=1;
+			$this->db->insert('stock',$stockData);
 		}
 		//echo $this->db->last_query();
 
 		return $this->db->insert_id();
 
 	}
+
 
 
 

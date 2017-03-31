@@ -5,7 +5,7 @@ class Cliente_model extends CI_Model {
 
 	var $table = 'clientes';
 	var $column_order = array('id', 'razon_social', 'tel_codigo_area', 'tel_numero', 'cel_numero', 'direccion', 'localidad', 'cp', 'email', 'dni', null); //set column field database for datatable orderable
-	var $column_search = array('clientes.razon_social', 'clientes.tel_codigo_area', 'clientes.tel_numero', 'clientes.cel_numero', 'clientes.direccion', 'clientes.localidad', 'clientes.cp', 'clientes.email', 'clientes.dni'); //set column field database for datatable searchable just firstname , lastname , address are searchable
+	var $column_search = array('clientes.razon_social', 'clientes.tel_codigo_area', 'clientes.tel_numero', 'clientes.cel_numero', 'clientes.direccion', 'localidades.nombre', 'clientes.cp', 'clientes.email', 'clientes.dni'); //set column field database for datatable searchable just firstname , lastname , address are searchable
 	var $order = array('id' => 'desc'); // default order 
 
 	public function __construct()
@@ -17,8 +17,8 @@ class Cliente_model extends CI_Model {
 	{
 		
 		$this->db->from($this->table);
-		//$this->db->join('categorias', 'categorias.id = subcategorias.categoriaid');
-		//$this->db->select('subcategorias.*, categorias.nombre as categoria');
+		$this->db->join('localidades', 'localidades.id = clientes.localidadid');
+		$this->db->select('clientes.*, localidades.nombre as localidad');
 
 		$i = 0;
 		
@@ -86,7 +86,9 @@ class Cliente_model extends CI_Model {
 	public function get_by_id($id)
 	{
 		$this->db->from($this->table);
-		$this->db->where('id',$id);
+		$this->db->join('localidades', 'localidades.id = clientes.localidadid');
+		$this->db->select('clientes.*, localidades.nombre as localidad,localidades.provinciaid');
+		$this->db->where('clientes.id',$id);
 		$query = $this->db->get();
 
 		return $query->row();

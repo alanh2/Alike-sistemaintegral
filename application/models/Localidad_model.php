@@ -62,7 +62,13 @@ class Localidad_model extends CI_Model {
 		$query = $this->db->get();
 		return $query->result();
 	}
-
+	function get_por_provincia($provincia)
+	{
+		$this->db->from($this->table);
+		$this->db->where('provinciaid', $provincia);
+		$query = $this->db->get();
+		return $query->result();
+	}
 	function count_filtered()
 	{
 		$this->_get_datatables_query();

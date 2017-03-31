@@ -6,7 +6,7 @@
 
             <br />
 
-            <button id="agregar" class="btn btn-success" onclick="window.open('http://systemix.com.ar/sistemaIntegral/index.php/venta/alta_venta/')"><i class="glyphicon glyphicon-plus"></i> Agregar Venta</button>
+            <button id="agregar" class="btn btn-success" onclick="window.open('<?php echo site_url("/venta/alta_venta/");?>')"><i class="glyphicon glyphicon-plus"></i> Agregar Venta</button>
 
             <button class="btn btn-default" onclick="reload_table()"><i class="glyphicon glyphicon-refresh"></i> Recargar</button>
 

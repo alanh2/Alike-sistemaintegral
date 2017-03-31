@@ -1,0 +1,30 @@
+documentar charla de mike wp
+
+venta metodos de pago
+
+paga el sum de los renglones menos el descuento, paga como minimo lo que dice la venta.
+Si paga mas tiene una nota de crédito
+Fijarse las notas de credito para, sumarlas y minimo pagar lo restante de la venta
+
+
+listado de notas de credito y poder chequearlas para usarla
+Si me paso, lo restante queda como nota de credito nueva
+Si pago todo con notas de credito, poner efectivo en monto 0
+
+efectivo
+tarjeta
+mp
+transferencia
+cheque
+
+estructura cc ("buscar plata a favor del cliente")
+
+registrar en mov_efectivo, cobros y aplicacion cobro venta, venta pagada
+
+
+
+Pantalla de visualizar venta (ver detalle) con boton para modificar (alta con id)
+Agregar metodos de pago
+RMA
+Devolucion
+

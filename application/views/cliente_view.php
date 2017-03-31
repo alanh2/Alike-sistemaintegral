@@ -41,14 +41,13 @@
                     <tr>
                         <th style="width:25px;">ID</th>
                         <th>Razon social</th>
-                        <th>Cod</th>
                         <th>Tel</th>
-                        <th>Cel</th>
+                        <th>Whatsapp</th>
                         <th>Direccion</th>
                         <th>Localidad</th>
-                        <th>CP</th>
                         <th>Email</th>
-                        <th>DNI</th>
+                        <th>Web</th>
+
                         <th style="width:225px;">Accion</th>
                     </tr>
                 </thead>
@@ -59,14 +58,13 @@
                     <tr>
                         <th>ID</th>
                         <th>Razon social</th>
-                        <th>Cod</th>
                         <th>Tel</th>
-                        <th>Cel</th>
+                        <th>Whatsapp</th>
                         <th>Direccion</th>
                         <th>Localidad</th>
-                        <th>CP</th>
                         <th>Email</th>
-                        <th>DNI</th>
+                        <th>Web</th>
+                        <th style="width:225px;">Accion</th>
                     </tr>
                 </tfoot>
             </table> 
@@ -91,7 +89,7 @@ $(document).ready(function() {
         $(this).data('bs.modal', null);
     });
     $('#modal_comentario').on('shown.bs.modal', function () {
-        $('#comentario').focus();
+    $('#comentario').focus();
         //$(this).find('[autofocus]').focus();
     });
 	$('#form').submit(function(event) {
@@ -141,28 +139,58 @@ $(document).ready(function() {
 			}
 		}
 	});
-	//get a reference to the select element
-	$select_localidades = $('#localidad');
-	//request the JSON data and parse into the select element
-	$.ajax({
-		url: "<?php echo site_url('localidad/ajax_dropdown')?>"
-		, "type": "POST"
-		, data:{length:'',start:0}
-		, dataType: 'JSON'
-		, success: function (data) {
-			//clear the current content of the select
-			$select_localidades.html('');
-			//iterate over the data and append a select option
-			$.each(data.localidades, function (key, val) {
-				$select_localidades.append('<option value="' + val.id + '">' + val.nombre + '</option>');
-			})
-		}
-		, error: function () {
-			//if there is an error append a 'none available' option
-			$select_localidades.html('<option id="-1">ninguna disponible</option>');
-		}
-	});
+	
+    //get a reference to the select element
+    $select_provincias = $('#provincia');
+    //request the JSON data and parse into the select element
+    $.ajax({
+        url: "<?php echo site_url('provincia/ajax_dropdown')?>"
+        , "type": "POST"
+        , data:{length:'',start:0}
+        , dataType: 'JSON'
+        , success: function (data) {
+            //clear the current content of the select
+            $select_provincias.html('');
+            //iterate over the data and append a select option
+            $.each(data.provincias, function (key, val) {
+                $select_provincias.append('<option value="' + val.id + '">' + val.nombre + '</option>');
+            });
 
+        }
+        , error: function () {
+            //if there is an error append a 'none available' option
+            $select_provincias.html('<option id="-1">ninguna disponible</option>');
+        }
+
+    });
+
+    $('#provincia').change(function(event,localidadid) {
+        //get a reference to the select element
+    	$select_localidades = $('#localidad');
+    	//request the JSON data and parse into the select element
+    	$.ajax({
+    		url: "<?php echo site_url('localidad/ajax_dropdown')?>"
+    		, "type": "POST"
+    		, data:{length:'',start:0,provincia:$('#provincia').val()}
+    		, dataType: 'JSON'
+    		, success: function (data) {
+    			//clear the current content of the select
+    			$select_localidades.html('');
+    			//iterate over the data and append a select option
+    			$.each(data.localidades, function (key, val) {
+    				$select_localidades.append('<option value="' + val.id + '">' + val.nombre + '</option>');
+    			})
+                if(!isNaN(localidadid)){
+                    $('[name="localidad"]').val(localidadid).trigger('change');
+                }
+    		}
+    		, error: function () {
+    			//if there is an error append a 'none available' option
+    			$select_localidades.html('<option id="-1">ninguna disponible</option>');
+    		}
+
+    	});
+    });
     //datepicker
     $('.datepicker').datepicker({
         autoclose: true,
@@ -195,6 +223,7 @@ function add_cliente()
 {
     save_method = 'add';
     $('#form')[0].reset(); // reset form on modals
+    $('[name="provincia"]').val('3').trigger('change')
     $('.form-group').removeClass('has-error'); // clear error class
     $('.help-block').empty(); // clear error string
     $('#modal_form').modal('show'); // show bootstrap modal
@@ -274,14 +303,16 @@ function edit_cliente(id)
 			
 			$('[name="id"]').val(data.id);
             $('[name="razon_social"]').val(data.razon_social);
-            $('[name="tel_codigo_area"]').val(data.tel_codigo_area);
+            //$('[name="tel_codigo_area"]').val(data.tel_codigo_area);
             $('[name="tel_numero"]').val(data.tel_numero);
             $('[name="cel_numero"]').val(data.cel_numero);
             $('[name="direccion"]').val(data.direccion);
-            $('[name="localidad"]').val(data.localidadid);
+            $('[name="provincia"]').val(data.provinciaid).trigger('change',data.localidadid);
+            //$('[name="localidad"]').val(data.localidadid);
             $('[name="cp"]').val(data.cp);
             $('[name="email"]').val(data.email);
             $('[name="dni"]').val(data.dni);
+            $('[name="web"]').val(data.web);
             //$('[name="cuil"]').val(data.cuil);
             //$('[name="cuit"]').val(data.cuit);
             $('#modal_form').modal('show'); // show bootstrap modal when complete loaded
@@ -463,16 +494,16 @@ function delete_mensaje(id)
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="control-label col-md-3">Codigo de area</label>
+                            <label class="control-label col-md-3">Telefono</label>
                             <div class="col-md-9">
-                                <input id="tel_codigo_area" name="tel_codigo_area" placeholder="Codigo de area" class="form-control" type="text" autofocus>
+                                <input id="tel_numero" name="tel_numero" placeholder="Telefono" class="form-control" type="text" autofocus>
                                 <span class="help-block"></span>
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="control-label col-md-3">Telefono</label>
+                            <label class="control-label col-md-3">Whatsapp</label>
                             <div class="col-md-9">
-                                <input id="tel_numero" name="tel_numero" placeholder="Telefono" class="form-control" type="text" autofocus>
+                                <input id="tel_celular" name="tel_celular" placeholder="Whatsapp" class="form-control" type="text" autofocus>
                                 <span class="help-block"></span>
                             </div>
                         </div>
@@ -481,6 +512,14 @@ function delete_mensaje(id)
                             <label class="control-label col-md-3">Direccion</label>
                             <div class="col-md-9">
                                 <input id="direccion" name="direccion" placeholder="Direccion" class="form-control" type="text" autofocus>
+                                <span class="help-block"></span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-3">Provincia</label>
+                            <div class="col-md-9">
+                                <select id="provincia" name="provincia" class="form-control">
+                                </select>
                                 <span class="help-block"></span>
                             </div>
                         </div>
@@ -507,16 +546,16 @@ function delete_mensaje(id)
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="control-label col-md-3">Cuil</label>
+                            <label class="control-label col-md-3">Cuil / Cuit</label>
                             <div class="col-md-9">
-                                <input id="cuil" name="cuil" placeholder="Cuil" class="form-control" type="text" autofocus>
+                                <input id="cuitcuil" name="cuitcuil" placeholder="Cuil / Cuit" class="form-control" type="text" autofocus>
                                 <span class="help-block"></span>
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="control-label col-md-3">Cuit</label>
+                            <label class="control-label col-md-3">Sitio Web</label>
                             <div class="col-md-9">
-                                <input id="cuit" name="cuit" placeholder="Cuit" class="form-control" type="text" autofocus>
+                                <input id="web" name="web" placeholder="Sitio Web" class="form-control" type="text" autofocus>
                                 <span class="help-block"></span>
                             </div>
                         </div>

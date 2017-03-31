@@ -2,7 +2,7 @@
 
             <div class="navbar-header">
 
-                <a class="navbar-brand" href="index.html">Sistema Integral</a>
+                <a class="navbar-brand" href="#">Sistema Integral</a>
 
             </div>
 
@@ -11,6 +11,26 @@
 
 
             <ul class="nav navbar-top-links navbar-right">
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+
+                        <i class="fa fa-edit fa-shopping-cart"></i>  <i class="fa fa-caret-down"></i>
+
+                    </a>
+                    <ul class="dropdown-menu dropdown-messages">
+                                <li>
+
+                                    <a href="<?php echo site_url('venta')?>">Ventas</a>
+
+                                </li>
+                                <li>
+
+                                    <a href="<?php echo site_url('venta/alta_venta/')?>">Nueva Venta</a>
+
+                                </li>
+                    </ul>
+
+                </li>
                 <li class="dropdown">
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">
 
@@ -23,31 +43,26 @@
                                     <a href="<?php echo site_url('producto')?>">Productos</a>
 
                                 </li>
-
-                                <li>
-
-                                    <a href="<?php echo site_url('rubro')?>">Rubros</a>
-
-                                </li>
-
                                 <li>
 
                                     <a href="<?php echo site_url('categoria')?>">Categorias</a>
 
                                 </li>
-
                                 <li>
 
                                     <a href="<?php echo site_url('subcategoria')?>">Sub Categorias</a>
 
                                 </li>
+                                <li>
 
+                                    <a href="<?php echo site_url('color')?>">Colores</a>
+
+                                </li>
                                 <li>
 
                                     <a href="<?php echo site_url('marca')?>">Marcas</a>
 
                                 </li>
-
                                 <li>
 
                                     <a href="<?php echo site_url('modelo')?>">Modelos</a>
@@ -56,7 +71,7 @@
 
                                 <li>
 
-                                    <a href="<?php echo site_url('color')?>">Colores</a>
+                                    <a href="<?php echo site_url('moto')?>">Motos</a>
 
                                 </li>
 
@@ -65,13 +80,6 @@
                                     <a href="<?php echo site_url('proveedor')?>">Proveedores</a>
 
                                 </li>
-
-                                <li>
-
-                                    <a href="<?php echo site_url('vendedor')?>">Vendedores</a>
-
-                                </li>
-
                                 <li>
 
                                     <a href="<?php echo site_url('cliente')?>">Clientes</a>

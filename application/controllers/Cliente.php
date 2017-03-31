@@ -29,16 +29,16 @@ class Cliente extends MY_Controller {
 			$row = array();
 			$row[] = $cliente->id;
 			$row[] = $cliente->razon_social;
-			$row[] = $cliente->tel_codigo_area;
+			//$row[] = $cliente->tel_codigo_area;
 			$row[] = $cliente->tel_numero;
 			$row[] = $cliente->cel_numero;
 			$row[] = $cliente->direccion;
 			$row[] = $cliente->localidad;
-			$row[] = $cliente->cp;
+			//$row[] = $cliente->cp;
 			$row[] = $cliente->email;
-			$row[] = $cliente->dni;
-			//$row[] = $cliente->cuil;
-			//$row[] = $cliente->cuit;
+			//$row[] = $cliente->dni;
+			//$row[] = $cliente->cuitcuil;
+			$row[] = $cliente->web;
 			//add html for action
 			$row[] = '
 			      <a class="btn btn-sm btn-primary" href="javascript:void(0)" title="Edit" onclick="edit_cliente('."'".$cliente->id."'".')"><i class="glyphicon glyphicon-pencil"></i> Editar</a>
@@ -95,16 +95,16 @@ class Cliente extends MY_Controller {
 		$this->_validate();
 		$data = array(
 				'razon_social' => $this->input->post('razon_social'),
-				'tel_codigo_area' => $this->input->post('tel_codigo_area'),
+				//'tel_codigo_area' => $this->input->post('tel_codigo_area'),
 				'tel_numero' => $this->input->post('tel_numero'),
 				'cel_numero' => $this->input->post('cel_numero'),
 				'direccion' => $this->input->post('direccion'),
-				'localidad' => $this->input->post('localidad'),
+				'localidadid' => $this->input->post('localidad'),
 				'cp' => $this->input->post('cp'),
 				'email' => $this->input->post('email'),
 				'dni' => $this->input->post('dni'),
-				'cuil' => $this->input->post('cuil'),
-				'cuit' => $this->input->post('cuit'),
+				'cuitcuil' => $this->input->post('cuitcuil'),
+				'web' => $this->input->post('web'),
 		);
 		$insert = $this->cliente->save($data);
 		
@@ -128,18 +128,19 @@ class Cliente extends MY_Controller {
 		$this->_validate();
 		$data = array(
 				'razon_social' => $this->input->post('razon_social'),
-				'tel_codigo_area' => $this->input->post('tel_codigo_area'),
+				//'tel_codigo_area' => $this->input->post('tel_codigo_area'),
 				'tel_numero' => $this->input->post('tel_numero'),
 				'cel_numero' => $this->input->post('cel_numero'),
 				'direccion' => $this->input->post('direccion'),
-				'localidad' => $this->input->post('localidad'),
+				'localidadid' => $this->input->post('localidad'),
 				'cp' => $this->input->post('cp'),
 				'email' => $this->input->post('email'),
 				'dni' => $this->input->post('dni'),
-				'cuil' => $this->input->post('cuil'),
-				'cuit' => $this->input->post('cuit'),
+				'cuitcuil' => $this->input->post('cuitcuil'),
+				'web' => $this->input->post('web'),
 			);
 		$this->cliente->update(array('id' => $this->input->post('id')), $data);
+		echo $this->db->last_query();
 		echo json_encode(array("status" => TRUE));
 	}
 
@@ -165,7 +166,7 @@ class Cliente extends MY_Controller {
 		}
 		if($this->input->post('tel_numero') == '')
 		{
-			$data['inputerror'][] = 'telefono';
+			$data['inputerror'][] = 'tel_numero';
 			$data['error_string'][] = 'El telefono no puede estar vacio';
 			$data['status'] = FALSE;
 		}

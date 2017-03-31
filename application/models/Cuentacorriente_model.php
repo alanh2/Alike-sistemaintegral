@@ -1,14 +1,15 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Cobro_model extends CI_Model {
+class Cuentacorriente_model extends CI_Model {
 
-	var $table = 'cobros';
+	var $table = 'mov_cuentacorrientes';
 	var $metodos_pago = array('0','mov_efectivos','mov_cheques','mov_mercadopagos','mov_transferencias','mov_cuentacorrientes','mov_panamas', 'mov_tarjetas');
 
 	var $column_order = array('id','monto','fecha', 'metodos_pago.nombre',null); //set column field database for datatable orderable
 	var $column_search = array('cobros.monto','cobros.fecha', 'metodos_pago.nombre'); //set column field database for datatable searchable just firstname , lastname , address are searchable
 	var $order = array('id' => 'desc'); // default order 
+	var $numero_metodo_pago = 5;
 
 	public function __construct()
 	{
@@ -104,5 +105,36 @@ class Cobro_model extends CI_Model {
 		$this->db->delete($this->table);
 	}
 
+	private function calcular_saldo_by_cliente($operacion, $clienteid)
+	{
+		$this->db->from($this->table);
+		$this->db->join('cobros', 'cobros.metodoid = mov_cuentacorrientes.id');
+		$this->db->where('metododepagoid',$this->numero_metodo_pago);
+		$this->db->where('clienteid',$clienteid);
+		$this->db->where('mov_cuentacorrientes.operacion',$operacion);
+		$this->db->select_sum('cobros.monto', 'saldo');
 
+		$query = $this->db->get();
+		return $query->row();
+	}
+
+	public function get_a_favor_by_cliente($clienteid)
+	{
+		return $this->calcular_saldo_by_cliente(2,$clienteid);
+	}
+
+	public function get_deuda_by_cliente($clienteid)
+	{
+		return $this->calcular_saldo_by_cliente(1,$clienteid);
+	}
+
+	public function cliente_es_deudor($clienteid)
+	{
+		$deuda = $this->get_deuda_by_cliente($clienteid);
+		if ( $deuda->saldo > 0){
+			return true;
+		}else{
+			return false;
+		}
+	}
 }

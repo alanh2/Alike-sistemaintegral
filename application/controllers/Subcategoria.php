@@ -63,13 +63,18 @@ class Subcategoria extends MY_Controller {
 			$row[] = $subcategoria->categoria;
 
 			//add html for action
+			if($this->able_to_delete($subcategoria->id)){
 
 			$row[] = '
 
 			      <a class="btn btn-sm btn-primary" href="javascript:void(0)" title="Edit" onclick="edit_subcategoria('."'".$subcategoria->id."'".')"><i class="glyphicon glyphicon-pencil"></i> Editar</a>
 
 				  <a class="btn btn-sm btn-danger" href="javascript:void(0)" title="Delete" onclick="delete_subcategoria('."'".$subcategoria->id."'".')"><i class="glyphicon glyphicon-trash"></i> Borrar</a>';
+			}else{
+				$row[] = '
 
+			      <a class="btn btn-sm btn-primary" href="javascript:void(0)" title="Edit" onclick="edit_subcategoria('."'".$subcategoria->id."'".')"><i class="glyphicon glyphicon-pencil"></i> Editar</a>';
+			}
 		
 
 			$data[] = $row;
@@ -279,7 +284,13 @@ class Subcategoria extends MY_Controller {
 		}
 
 	}
+	private function able_to_delete($id){
 
+		$this->load->model('producto_model','producto');
+
+		return $this->producto->cuantos_por('productos','subcategoriaid',$id)<1;
+
+	}
 
 
 }

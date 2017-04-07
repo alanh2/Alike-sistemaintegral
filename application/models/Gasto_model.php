@@ -1,11 +1,11 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Modelo_model extends CI_Model {
+class Gasto_model extends CI_Model {
 
-	var $table = 'modelos';
-	var $column_order = array('id','nombre','marca',null); //set column field database for datatable orderable
-	var $column_search = array('modelos.id','modelos.nombre','marcas.nombre'); //set column field database for datatable searchable just firstname , lastname , address are searchable
+	var $table = 'gastos';
+	var $column_order = array('id','nombre','tipogasto',null); //set column field database for datatable orderable
+	var $column_search = array('gastos.id','gastos.nombre','tipos_gasto.nombre'); //set column field database for datatable searchable just firstname , lastname , address are searchable
 	var $order = array('id' => 'desc'); // default order 
 
 	public function __construct()
@@ -18,8 +18,9 @@ class Modelo_model extends CI_Model {
 	{
 		
 		$this->db->from($this->table);
-		$this->db->join('marcas', 'marcas.id = modelos.marcaid');
-		$this->db->select('modelos.*, marcas.nombre as marca');
+		$this->db->join('tipos_gasto', 'tipos_gasto.id = gastos.tipos_gastoid');
+		$this->db->join('vendedores', 'vendedores.id = gastos.vendedorid');
+		$this->db->select('gastos.*, tipos_gasto.nombre as tipogasto, vendedores.nombre as vendedor');
 
 		$i = 0;
 		
@@ -83,7 +84,7 @@ class Modelo_model extends CI_Model {
 	public function count_all()
 	{
 		$this->db->from($this->table);
-		$this->db->join('marcas', 'marcas.id = modelos.marcaid');
+		$this->db->join('tipos_gasto', 'tipos_gasto.id = gastos.tipos_gastoid');
 		return $this->db->count_all_results();
 	}
 
@@ -115,7 +116,7 @@ class Modelo_model extends CI_Model {
 	}
 	public function cuantos_por($id){
 		$this->db->from($this->table);
-		$this->db->where('marcaid',$id);
+		$this->db->where('tipos_gastoid',$id);
 		$query = $this->db->get();
 		$rowcount = $query->num_rows();
 		//echo $this->db->last_query();

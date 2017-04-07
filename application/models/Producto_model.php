@@ -10,9 +10,9 @@ class Producto_model extends CI_Model {
 
 	var $table = 'productos';
 
-	var $column_order = array('marca','categoria','modelo',null); //set column field database for datatable orderable
+	var $column_order = array('id','marca','modelo','nombre','subcategoria',null); //set column field database for datatable orderable
 
-	var $column_search = array('marcas.nombre','subcategorias.nombre','modelos.nombre','proveedores.nombre'); //set column field database for datatable searchable just firstname , lastname , address are searchable
+	var $column_search = array('marcas.nombre','subcategorias.nombre','modelos.nombre','proveedores.nombre','productos.nombre'); //set column field database for datatable searchable just firstname , lastname , address are searchable
 
 	var $order = array('id' => 'desc'); // default order 
 
@@ -147,7 +147,7 @@ class Producto_model extends CI_Model {
 
 
 		$query = $this->db->get();
-
+		//echo $this->db->last_query();
 		return $query->result();
 
 	}
@@ -194,18 +194,19 @@ class Producto_model extends CI_Model {
 
 	}
 	
-	public function get_producto_colores($id)
+	public function get_producto_colores_para_producto($id)
 
 	{
 
 		$this->db->from($this->table."_colores");
 
 		$this->db->join('colores', 'colores.id = productos_colores.colorid');
+		$this->db->join('stock', 'productos_colores.id = stock.producto_colorid');
 
 		$this->db->where('productoid',$id);
 		
-		$this->db->select('productos_colores.*, colores.nombre as nombre, colores.name as name ');
-
+		$this->db->select('productos_colores.*, colores.nombre as nombre, colores.name as name, stock.cantidad,count(stock.id) as tienestock');
+	 	$this->db->group_by('productos_colores.id'); 
 		$query = $this->db->get();
 
 		return $query->result();
@@ -234,21 +235,29 @@ class Producto_model extends CI_Model {
 
 		if($this->db->affected_rows()==1){
 			$this->db->update($table, $data, $where);
+			$result = $query->result_array();
+			$producto_colorid= $result[0]['id'];
 		}
 		else{
 			$this->db->insert($table, $data);
-			$colorid=$this->db->insert_id();
-			$stockData['producto_colorid']=$colorid;
-			$stockData['cantidad']=0;
-			$stockData['localid']=1;
-			$this->db->insert('stock',$stockData);
+		$producto_colorid=$this->db->insert_id();
+		}
+
+		$table="stock";
+		$where= array('producto_colorid'=>$producto_colorid);
+		$query = $this->db->get_where($table,$where);
+		$data=array('cantidad'=>0,'localid'=>1,'producto_colorid'=>$producto_colorid);
+		if($this->db->affected_rows()==1){
+			$this->db->update($table, $data, $where);
+		}
+		else{
+			$this->db->insert($table, $data);
 		}
 		//echo $this->db->last_query();
 
 		return $this->db->insert_id();
 
 	}
-
 
 
 
@@ -310,6 +319,13 @@ class Producto_model extends CI_Model {
 
 	}
 
+	private function able_to_delete($id){
+
+		$this->load->model('modelo_model','modelo');
+
+		return $this->modelo->cuantos_por($id)<1;
+
+	}
 
 
 }

@@ -553,14 +553,14 @@ class Producto extends MY_Controller {
 		}else{
 			$data['data']['save_method']='edit';
 			$data['data']['producto']=$this->producto->get_by_id($id);
-			$data['data']['colores']=$this->producto->get_producto_colores($id);
+			$data['data']['colores']=$this->producto->get_producto_colores_para_producto($id);
 		}
 		$this->load->helper('url');
 
 		$data['view']='producto_alta_view';
 
 		//aqui va la data que se le quiera pasar a la vista a travez de la master
-
+		//print_r($data['data']['colores']);
 		$this->load->view('master_view',$data);
 
 	}

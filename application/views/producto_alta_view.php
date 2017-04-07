@@ -207,9 +207,9 @@
 
                                         
 
-                    	<h2><span data-bind="text: name"></span>
+                    	<h2><span data-bind="text: name"></span>(Stock  <span data-bind="text: cantidad"></span>)
 
-                <button type="button" class="close" data-bind="click:$root.deleteProductoColor" aria-label="Close"><span aria-hidden="true">&times;</span></button></h2>
+                <button type="button" class="close" data-bind="enable:(tieneStock==0),click:$root.deleteProductoColor" aria-label="Close"><span aria-hidden="true">&times;</span></button></h2>
 
                         <div class="modal-body form">
 
@@ -1214,7 +1214,7 @@ window.reset = function (e) {
 
 
 
-		function Color(id,nombre,name,costo=0,porcentaje1=0,porcentaje2=0,porcentaje3=0,porcentaje4=0){
+		function Color(id,nombre,name,costo=0,porcentaje1=0,porcentaje2=0,porcentaje3=0,porcentaje4=0,cantidad=0,tieneStock=0){
 
 			var self=this;
 
@@ -1234,6 +1234,9 @@ window.reset = function (e) {
 
 			self.porcentaje4=ko.observable(porcentaje4);
 
+            self.tieneStock=ko.observable(tieneStock);
+
+            self.cantidad=ko.observable(cantidad);
 			
 
 			self.calcularPorcentaje=function(lista){

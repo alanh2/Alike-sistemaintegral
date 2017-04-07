@@ -167,15 +167,21 @@ class Cuentacorriente extends MY_Controller {
 	}
 	*/
 
-	public function ajax_deuda_by_cliente($clienteid)
+	public function ajax_saldo_by_cliente($clienteid)
 	{
-		$deuda =$this->cuentacorriente->get_deuda_by_cliente($clienteid);
+		$deuda =$this->cuentacorriente->calcular_saldo_by_cliente($clienteid);
 		echo json_encode($deuda);
 	}
 
-	public function ajax_a_favor_by_cliente($clienteid)
+	public function ajax_cliente_es_deudor($clienteid)
 	{
-		$afavor =$this->cuentacorriente->get_a_favor_by_cliente($clienteid);
+		$afavor =$this->cuentacorriente->cliente_es_deudor($clienteid);
+		echo json_encode($afavor);
+	}
+
+	public function cliente_supero_limite_deuda($clienteid)
+	{
+		$afavor =$this->cuentacorriente->cliente_es_deudor($clienteid);
 		echo json_encode($afavor);
 	}
 

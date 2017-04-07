@@ -259,7 +259,7 @@ $(document).ready(function() {
 
         $.ajax({
 
-            url: "<?php echo site_url('stock/ajax_dropdown')?>/"+$('#productoValue').val()+"/<?php echo $venta->id; ?>"
+            url: "<?php echo site_url('stock/ajax_color_por_producto_para_venta')?>/"+$('#productoValue').val()+"/<?php echo $venta->id; ?>"
 
             , "type": "POST"
 

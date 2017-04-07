@@ -4,7 +4,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 
 
-class Modelo extends MY_Controller {
+class Gasto extends MY_Controller {
 
 
 
@@ -16,7 +16,7 @@ class Modelo extends MY_Controller {
 
 		$this->is_logged_in();
 
-		$this->load->model('modelo_model','modelo');
+		$this->load->model('gasto_model','gasto');
 
 	}
 
@@ -28,7 +28,7 @@ class Modelo extends MY_Controller {
 
 		$this->load->helper('url');
 
-		$data['view']='modelo_view';
+		$data['view']='gasto_view';
 
 		$data['data']='';//aqui va la data que se le quiera pasar a la vista a travez de la master
 
@@ -46,38 +46,45 @@ class Modelo extends MY_Controller {
 
 		$this->load->helper('url');
 
-		$list = $this->modelo->get_datatables();
+		$list = $this->gasto->get_datatables();
 
 		$data = array();
 
 		$no = $_POST['start'];
 
-		foreach ($list as $modelo) {
+		foreach ($list as $gasto) {
 
 			$no++;
 
 			$row = array();
 
-			$row[] = $modelo->id;
+			$row[] = $gasto->id;
 
-			$row[] = $modelo->marca;
+			$row[] = $gasto->tipogasto;
 
-			$row[] = $modelo->nombre;
+			$row[] = $gasto->nombre;
+	
+			$row[] = $gasto->monto;
+	
+			$row[] = $gasto->fecha;
+
+			$row[] = $gasto->vendedor;
 
 			//add html for action
-			if($this->able_to_delete($modelo->id)){
+			/*if($this->able_to_delete($gasto->id)){
 
 			$row[] = '
 
-			      <a class="btn btn-sm btn-primary" href="javascript:void(0)" title="Edit" onclick="edit_modelo('."'".$modelo->id."'".')"><i class="glyphicon glyphicon-pencil"></i> Editar</a>
+			      <a class="btn btn-sm btn-primary" href="javascript:void(0)" title="Edit" onclick="edit_gasto('."'".$gasto->id."'".')"><i class="glyphicon glyphicon-pencil"></i> Editar</a>
 
-				  <a class="btn btn-sm btn-danger" href="javascript:void(0)" title="Hapus" onclick="delete_modelo('."'".$modelo->id."'".')"><i class="glyphicon glyphicon-trash"></i> Borrar</a>';
+				  <a class="btn btn-sm btn-danger" href="javascript:void(0)" title="Hapus" onclick="delete_gasto('."'".$gasto->id."'".')"><i class="glyphicon glyphicon-trash"></i> Borrar</a>';
 			}else{
+			
 				$row[] = '
-
-			      <a class="btn btn-sm btn-primary" href="javascript:void(0)" title="Edit" onclick="edit_modelo('."'".$modelo->id."'".')"><i class="glyphicon glyphicon-pencil"></i> Editar</a>';
+			
+			      <a class="btn btn-sm btn-primary" href="javascript:void(0)" title="Edit" onclick="edit_gasto('."'".$gasto->id."'".')"><i class="glyphicon glyphicon-pencil"></i> Editar</a>';
 			}
-		
+			*/
 
 			$data[] = $row;
 
@@ -89,9 +96,9 @@ class Modelo extends MY_Controller {
 
 						"draw" => $_POST['draw'],
 
-						"recordsTotal" => $this->modelo->count_all(),
+						"recordsTotal" => $this->gasto->count_all(),
 
-						"recordsFiltered" => $this->modelo->count_filtered(),
+						"recordsFiltered" => $this->gasto->count_filtered(),
 
 						"data" => $data,
 
@@ -107,13 +114,13 @@ class Modelo extends MY_Controller {
 
 	{
 
-		if(isset($_POST['marca'])){
+		/*if(isset($_POST['marca'])){
 
-			$list = $this->modelo->get_por_marca($_POST['marca']);
+			$list = $this->gasto->get_por_marca($_POST['marca']);
 
-		}//else{
+		}*///else{
 
-		//	$list = $this->modelo->get_datatables();
+		//	$list = $this->gasto->get_datatables();
 
 		//}
 
@@ -121,7 +128,7 @@ class Modelo extends MY_Controller {
 
 	
 
-		foreach ($list as $modelo) {
+		foreach ($list as $gasto) {
 
 	
 
@@ -129,9 +136,9 @@ class Modelo extends MY_Controller {
 
 	//		print_r ($categoria);
 
-			$row['id'] = $modelo->id;
+			$row['id'] = $gasto->id;
 
-			$row['nombre'] = $modelo->nombre;
+			$row['nombre'] = $gasto->nombre;
 
 			
 
@@ -145,7 +152,7 @@ class Modelo extends MY_Controller {
 
 	
 
-			"modelos" => $data,
+			"gastos" => $data,
 
 				);
 
@@ -165,7 +172,7 @@ class Modelo extends MY_Controller {
 
 	{
 
-		$data = $this->modelo->get_by_id($id);
+		$data = $this->gasto->get_by_id($id);
 
 		echo json_encode($data);
 
@@ -175,7 +182,7 @@ class Modelo extends MY_Controller {
 
 	{
 
-		$data = $this->modelo->get_by_id($id);
+		$data = $this->gasto->get_by_id($id);
 
 		echo json_encode($data);
 
@@ -193,11 +200,17 @@ class Modelo extends MY_Controller {
 
 				'nombre' => $this->input->post('nombre'),
 
-				'marcaid' => $this->input->post('marca'),
+				'tipos_gastoid' => $this->input->post('tipogasto'),
+
+				'monto' => $this->input->post('monto'),
+
+				'fecha' => date("Y-m-d H:i:s"),
+
+				'vendedorid' => '1',
 
 				);
 
-		$insert = $this->modelo->save($data);
+		$insert = $this->gasto->save($data);
 
 		echo json_encode(array("status" => TRUE));
 
@@ -215,11 +228,12 @@ class Modelo extends MY_Controller {
 
 				'nombre' => $this->input->post('nombre'),
 				
-				'marcaid' => $this->input->post('marca'),
+				'tipos_gastoid' => $this->input->post('tipogasto'),
 
+				'monto' => $this->input->post('monto'),
 			);
 
-		$this->modelo->update(array('id' => $this->input->post('id')), $data);
+		$this->gasto->update(array('id' => $this->input->post('id')), $data);
 
 		echo json_encode(array("status" => TRUE));
 
@@ -231,7 +245,7 @@ class Modelo extends MY_Controller {
 
 	{
 
-		$this->modelo->delete_by_id($id);
+		$this->gasto->delete_by_id($id);
 
 		echo json_encode(array("status" => TRUE));
 
@@ -280,13 +294,13 @@ class Modelo extends MY_Controller {
 		}
 
 	}
-	private function able_to_delete($id){
+	/*private function able_to_delete($id){
 
 		$this->load->model('producto_model','producto');
 
-		return $this->producto->cuantos_por('productos','modeloid',$id)<1;
+		return $this->producto->cuantos_por('productos','gastoid',$id)<1;
 
-	}
+	}*/
 
 
 }

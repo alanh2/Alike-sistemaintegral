@@ -16,7 +16,7 @@ class Stock extends MY_Controller {
 
 		$this->is_logged_in();
 
-		$this->load->model('stock_model','producto');
+		$this->load->model('stock_model','stock');
 
 	}
 
@@ -44,7 +44,7 @@ class Stock extends MY_Controller {
 
 		$this->load->helper('url');
 
-		$list = $this->producto->get_datatables();
+		$list = $this->stock->get_datatables();
 
 		$data = array();
 
@@ -91,9 +91,9 @@ class Stock extends MY_Controller {
 
 						"draw" => $_POST['draw'],
 
-						"recordsTotal" => $this->producto->count_all(),
+						"recordsTotal" => $this->stock->count_all(),
 
-						"recordsFiltered" => $this->producto->count_filtered(),
+						"recordsFiltered" => $this->stock->count_filtered(),
 
 						"data" => $data,
 
@@ -106,12 +106,61 @@ class Stock extends MY_Controller {
 	}
 
 	
+public function ajax_color_por_producto_para_venta($producto=NULL, $venta=NULL)
 
+	{	
+		if($producto!=NULL){
+			if($venta!=NULL){
+				$list = $this->stock->get_por_producto_para_venta($producto,$venta);
+			}else{
+				$list = $this->stock->get_por_producto($producto);
+			}
+		}else{
+
+			$list = $this->stock->get_datatables();
+		}
+		
+		$data = array();
+
+
+		foreach ($list as $stock) {
+	
+			$row = array();
+
+			$row['id'] = $stock->stockid;
+
+			$row['nombre'] = $stock->nombre;
+
+			$row['l1'] = $stock->costo*$stock->porcentaje1;
+			
+			$row['l2'] = $stock->costo*$stock->porcentaje2;
+
+			$row['l3'] = $stock->costo*$stock->porcentaje3;
+
+			$row['l4'] = $stock->costo*$stock->porcentaje4;
+			
+			$row['cantidad'] = $stock->cantidad;
+
+			$data[] = $row;
+
+		}
+
+	
+		$output = array(
+
+	
+			"colores" => $data,
+
+				);
+
+	   echo json_encode($output);
+
+	}
 	public function ajax_dropdown()
 
 	{
 
-		$list = $this->producto->get_datatables();
+		$list = $this->stock->get_datatables();
 
 		
 
@@ -160,7 +209,7 @@ class Stock extends MY_Controller {
 	}
 	public function ajax_autocomplete(){
 		
-		$list = $this->producto->get_datatables();
+		$list = $this->stock->get_datatables();
 
 		$data = array();
 
@@ -215,7 +264,7 @@ class Stock extends MY_Controller {
 
 	{
 
-		$data = $this->producto->get_by_id($id);
+		$data = $this->stock->get_by_id($id);
 
 		echo json_encode($data);
 
@@ -249,7 +298,7 @@ class Stock extends MY_Controller {
 
 		);
 
-		$productoid = $this->producto->save($data);
+		$productoid = $this->stock->save($data);
 
 		if(($this->input->post('colores'))){
 			$colores=$this->input->post('colores');
@@ -277,7 +326,7 @@ class Stock extends MY_Controller {
 
 					);
 
-					$this->producto->save_color($data);
+					$this->stock->save_color($data);
 
 					//echo $this->db->last_query();
 
@@ -348,7 +397,7 @@ class Stock extends MY_Controller {
 				'cantidad' => $this->input->post('cantidad'),
 		);
 
-		$this->producto->update(array('id' => $stockid), $data);
+		$this->stock->update(array('id' => $stockid), $data);
 		//print_r($this->input->post());
 		echo json_encode(array("status" => TRUE));
 
@@ -360,8 +409,8 @@ class Stock extends MY_Controller {
 
 	{
 
-		$this->producto->delete_colores($id);
-		$this->producto->delete_by_id($id);
+		$this->stock->delete_colores($id);
+		$this->stock->delete_by_id($id);
 
 		echo json_encode(array("status" => TRUE));
 
@@ -460,8 +509,8 @@ class Stock extends MY_Controller {
 			$data['data']['save_method']='add';
 		}else{
 			$data['data']['save_method']='edit';
-			$data['data']['producto']=$this->producto->get_by_id($id);
-			$data['data']['colores']=$this->producto->get_producto_colores($id);
+			$data['data']['producto']=$this->stock->get_by_id($id);
+			$data['data']['colores']=$this->stock->get_producto_colores($id);
 		}
 		$this->load->helper('url');
 
@@ -501,7 +550,7 @@ class Stock extends MY_Controller {
 
 				);
 
-		$insert = $this->producto->save($producto);
+		$insert = $this->stock->save($producto);
 
 		$producto_id=$this->db->insert_id();
 
@@ -523,9 +572,9 @@ class Stock extends MY_Controller {
 
 					);		
 
-			$insert = $this->producto->save_color($color);
+			$insert = $this->stock->save_color($color);
 
-			//$this->producto->salida_stock($value->ID, $value->cantidad);
+			//$this->stock->salida_stock($value->ID, $value->cantidad);
 
 		//echo $this->db->last_query();
 

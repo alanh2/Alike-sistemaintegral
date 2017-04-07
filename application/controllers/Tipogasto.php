@@ -1,19 +1,19 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Marca extends MY_Controller {
+class Tipogasto extends MY_Controller {
 
 	public function __construct()
 	{
 		parent::__construct();
 		$this->is_logged_in();
-		$this->load->model('marca_model','marca');
+		$this->load->model('tipogasto_model','tipogasto');
 	}
 
 	public function index()
 	{
 		$this->load->helper('url');
-		$data['view']='marca_view';
+		$data['view']='tipogasto_view';
 		$data['data']='';//aqui va la data que se le quiera pasar a la vista a travez de la master
 		$this->load->view('master_view',$data);
 	}
@@ -21,31 +21,31 @@ class Marca extends MY_Controller {
 	public function ajax_list()
 	{
 		$this->load->helper('url');
-		$list = $this->marca->get_datatables();
+		$list = $this->tipogasto->get_datatables();
 		$data = array();
 		$no = $_POST['start'];
-		foreach ($list as $marca) {
+		foreach ($list as $tipogasto) {
 			$no++;
 			$row = array();
-			$row[] = $marca->id;
-			$row[] = $marca->nombre;
+			$row[] = $tipogasto->id;
+			$row[] = $tipogasto->nombre;
 			//add html for action
-			if($this->able_to_delete($marca->id)){
+			if($this->able_to_delete($tipogasto->id)){
 
 				$row[] = '
-				      <a class="btn btn-sm btn-primary" href="javascript:void(0)" title="Edit" onclick="edit_marca('."'".$marca->id."'".')"><i class="glyphicon glyphicon-pencil"></i> Editar</a>
-					  <a class="btn btn-sm btn-danger" href="javascript:void(0)" title="Hapus" onclick="delete_marca('."'".$marca->id."'".')"><i class="glyphicon glyphicon-trash"></i> Borrar</a>';
+				      <a class="btn btn-sm btn-primary" href="javascript:void(0)" title="Edit" onclick="edit_tipogasto('."'".$tipogasto->id."'".')"><i class="glyphicon glyphicon-pencil"></i> Editar</a>
+					  <a class="btn btn-sm btn-danger" href="javascript:void(0)" title="Hapus" onclick="delete_tipogasto('."'".$tipogasto->id."'".')"><i class="glyphicon glyphicon-trash"></i> Borrar</a>';
 			}else{
 				$row[] = '
-				      <a class="btn btn-sm btn-primary" href="javascript:void(0)" title="Edit" onclick="edit_marca('."'".$marca->id."'".')"><i class="glyphicon glyphicon-pencil"></i> Editar</a>';
+				      <a class="btn btn-sm btn-primary" href="javascript:void(0)" title="Edit" onclick="edit_tipogasto('."'".$tipogasto->id."'".')"><i class="glyphicon glyphicon-pencil"></i> Editar</a>';
 			}
 			$data[] = $row;
 		}
 
 		$output = array(
 						"draw" => $_POST['draw'],
-						"recordsTotal" => $this->marca->count_all(),
-						"recordsFiltered" => $this->marca->count_filtered(),
+						"recordsTotal" => $this->tipogasto->count_all(),
+						"recordsFiltered" => $this->tipogasto->count_filtered(),
 						"data" => $data,
 				);
 		//output to json format
@@ -53,22 +53,22 @@ class Marca extends MY_Controller {
 	}
 	public function ajax_dropdown()
 	{
-		$list = $this->marca->get_datatables();
+		$list = $this->tipogasto->get_datatables();
 		
 		$data = array();
 	
-		foreach ($list as $marca) {
+		foreach ($list as $tipogasto) {
 	
 			$row = array();
-			$row['id'] = $marca->id;
-			$row['nombre'] = $marca->nombre;
+			$row['id'] = $tipogasto->id;
+			$row['nombre'] = $tipogasto->nombre;
 			
 			$data[] = $row;
 		}
 	
 		$output = array(
 	
-			"marcas" => $data,
+			"tiposgastos" => $data,
 				);
 		//output to json format
 	
@@ -78,7 +78,7 @@ class Marca extends MY_Controller {
 	}
 	public function ajax_edit($id)
 	{
-		$data = $this->marca->get_by_id($id);
+		$data = $this->tipogasto->get_by_id($id);
 		echo json_encode($data);
 	}
 
@@ -88,7 +88,7 @@ class Marca extends MY_Controller {
 		$data = array(
 				'nombre' => $this->input->post('nombre'),
 				);
-		$insert = $this->marca->save($data);
+		$insert = $this->tipogasto->save($data);
 		echo json_encode(array("status" => TRUE));
 	}
 
@@ -98,13 +98,13 @@ class Marca extends MY_Controller {
 		$data = array(
 				'nombre' => $this->input->post('nombre'),
 			);
-		$this->marca->update(array('id' => $this->input->post('id')), $data);
+		$this->tipogasto->update(array('id' => $this->input->post('id')), $data);
 		echo json_encode(array("status" => TRUE));
 	}
 
 	public function ajax_delete($id)
 	{
-		$this->marca->delete_by_id($id);
+		$this->tipogasto->delete_by_id($id);
 		echo json_encode(array("status" => TRUE));
 	}
 
@@ -132,8 +132,8 @@ class Marca extends MY_Controller {
 
 	private function able_to_delete($id){
 
-		$this->load->model('modelo_model','modelo');
-		return $this->modelo->cuantos_por($id)<1;
+		$this->load->model('gasto_model','gasto');
+		return $this->gasto->cuantos_por($id)<1;
 
 	}
 }

@@ -105,33 +105,48 @@ class Cuentacorriente_model extends CI_Model {
 		$this->db->delete($this->table);
 	}
 
-	private function calcular_saldo_by_cliente($operacion, $clienteid)
+	private function ventas_pagadas_cuentacorriente($clienteid){
+		$this->db->from($this->table);
+
+	}
+
+	public function ventas_adeudadas($clienteid){
+		$this->db->from('aplicaciones_cobro_venta');
+		$this->db->join('ventas', 'ventas.id = aplicaciones_cobro_venta.ventaid');
+		$this->db->where('ventas.clienteid',$clienteid);
+		$this->db->where('ventas.saldado',0);
+		$this->db->select('ventas.id', 'saldo');
+
+		$query = $this->db->get();
+		return $query->row();
+	}
+
+	public function calcular_saldo_by_cliente($operacion, $clienteid)
 	{
 		$this->db->from($this->table);
 		$this->db->join('cobros', 'cobros.metodoid = mov_cuentacorrientes.id');
 		$this->db->where('metododepagoid',$this->numero_metodo_pago);
 		$this->db->where('clienteid',$clienteid);
-		$this->db->where('mov_cuentacorrientes.operacion',$operacion);
 		$this->db->select_sum('cobros.monto', 'saldo');
 
 		$query = $this->db->get();
 		return $query->row();
 	}
 
-	public function get_a_favor_by_cliente($clienteid)
-	{
-		return $this->calcular_saldo_by_cliente(2,$clienteid);
-	}
-
-	public function get_deuda_by_cliente($clienteid)
-	{
-		return $this->calcular_saldo_by_cliente(1,$clienteid);
-	}
-
 	public function cliente_es_deudor($clienteid)
 	{
 		$deuda = $this->get_deuda_by_cliente($clienteid);
 		if ( $deuda->saldo > 0){
+			return true;
+		}else{
+			return false;
+		}
+	}
+
+	public function cliente_supero_limite_deuda($clienteid)
+	{
+		$deuda = $this->get_deuda_by_cliente($clienteid);
+		if ( $deuda->saldo => 5000){
 			return true;
 		}else{
 			return false;

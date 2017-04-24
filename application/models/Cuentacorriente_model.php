@@ -105,23 +105,7 @@ class Cuentacorriente_model extends CI_Model {
 		$this->db->delete($this->table);
 	}
 
-	private function ventas_pagadas_cuentacorriente($clienteid){
-		$this->db->from($this->table);
-
-	}
-
-	public function ventas_adeudadas($clienteid){
-		$this->db->from('aplicaciones_cobro_venta');
-		$this->db->join('ventas', 'ventas.id = aplicaciones_cobro_venta.ventaid');
-		$this->db->where('ventas.clienteid',$clienteid);
-		$this->db->where('ventas.saldado',0);
-		$this->db->select('ventas.id', 'saldo');
-
-		$query = $this->db->get();
-		return $query->row();
-	}
-
-	public function calcular_saldo_by_cliente($operacion, $clienteid)
+	public function get_deuda_by_cliente($clienteid)
 	{
 		$this->db->from($this->table);
 		$this->db->join('cobros', 'cobros.metodoid = mov_cuentacorrientes.id');
@@ -146,10 +130,40 @@ class Cuentacorriente_model extends CI_Model {
 	public function cliente_supero_limite_deuda($clienteid)
 	{
 		$deuda = $this->get_deuda_by_cliente($clienteid);
-		if ( $deuda->saldo => 5000){
+		if ( $deuda->saldo >= 5000){
 			return true;
 		}else{
 			return false;
 		}
 	}
+
+
+	/*-----------*/
+
+	public function ventas_adeudadas($clienteid){
+		$this->db->from('aplicaciones_cobro_venta');
+		$this->db->join('ventas', 'ventas.id = aplicaciones_cobro_venta.ventaid');
+		$this->db->join('cobros', 'cobros.id = aplicaciones_cobro_venta.cobroid');
+		$this->db->where('ventas.clienteid',$clienteid);
+		$this->db->where('cobros.metododepagoid',5);// pagadas con cuenta corrienre
+		$this->db->where('ventas.saldada',0); //Pagada con cuenta corriente sin terminar de pagar segun los cobros del cliente
+		$this->db->select('ventas.id');
+
+		$query = $this->db->get();
+		return $query->result();
+	}
+
+	public function cobros_parciales_venta($ventaid){
+		$this->db->from('aplicaciones_cobro_venta');
+		$this->db->join('cobros', 'cobros.id = aplicaciones_cobro_venta.cobroid');
+		$this->db->join('ventas', 'ventas.id = aplicaciones_cobro_venta.ventaid');
+		$this->db->where('cobros.metododepagoid !=',5);// pagadas con cuenta corrienre
+		$this->db->where('ventas.id',$ventaid);
+		$this->db->select_sum('aplicaciones_cobro_venta.monto','cobrado');
+		$query = $this->db->get();
+		//echo $this->db->last_query();
+		return $query->row();
+	}
+
+
 }

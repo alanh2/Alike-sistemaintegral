@@ -165,5 +165,25 @@ class Cuentacorriente_model extends CI_Model {
 		return $query->row();
 	}
 
+	public function get_deudas($clienteid){
+		$this->db->from('cobros');
+		$this->db->join('aplicaciones_cobro_venta', 'aplicaciones_cobro_venta.cobroid = cobros.id', 'left');
+		$this->db->where('cobros.clienteid',$clienteid);
+		$this->db->where('aplicaciones_cobro_venta.id',null); // trae los que no tienen ventas asociadas
+		$this->db->where('cobros.metododepagoid',5); // pagadas con cuenta corrienre
+		$this->db->select('cobros.metodoid as id'); // traigo los id que tienen saldos adeudados de cuenta corriente pero que no son cobros de una venta
+
+		$query = $this->db->get();
+		return $query->result();
+	}
+
+	public function get_saldo_deuda($cuentacorrienteid){
+		$this->db->from($this->table);
+		$this->db->where('id',$cuentacorrienteid);
+		$this->db->select('saldo'); // lo que resta pagar de la deuda
+
+		$query = $this->db->get();
+		return $query->row()->saldo;
+	}
 
 }

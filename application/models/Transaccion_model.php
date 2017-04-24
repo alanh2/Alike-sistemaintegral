@@ -49,32 +49,38 @@ class Transaccion_model extends CI_Model {
 		$panamas = 6;
 		$tarjetas = 7;
 		$datos_preparados = array();
-		$datos_preparados['operacion'] = $operacion;			
 		switch ($metododepago) {
 			case $efectivos:
+			$datos_preparados['operacion'] = $operacion;			
 				break;
 			case $cheques:
 				$datos_preparados['vencimiento'] = $data['vencimiento'];
 				$datos_preparados['banco'] = $data['banco'];
 				$datos_preparados['numeracion'] = $data['numeracion'];
+				$datos_preparados['operacion'] = $operacion;			
 				break;
 			case $mps:
 				$datos_preparados['codigomp'] = $data['codigomp'];
+				$datos_preparados['operacion'] = $operacion;			
 				break;
 			case $transferencias:
 				$datos_preparados['banco'] = $data['banco'];
 				$datos_preparados['titular'] = $data['titular'];
 				$datos_preparados['codigo_operacion'] = $data['codigo_operacion'];
 				$datos_preparados['fecha'] = $data['fecha'];
+				$datos_preparados['operacion'] = $operacion;			
 				break;
 			case $cuentacorrientes:
+				$datos_preparados['saldo'] = $data['monto'];
 				break;
 			case $panamas:
+				$datos_preparados['operacion'] = $operacion;			
 				break;
 			case $tarjetas:
 				$datos_preparados['titular'] = $data['titular'];
 				$datos_preparados['vencimiento'] = $data['vencimiento'];
 				$datos_preparados['digitos'] = $data['digitos'];
+				$datos_preparados['operacion'] = $operacion;			
 				break;
 			default:
 				//rechazar pago

@@ -83,6 +83,7 @@ class Cobro extends MY_Controller {
         		"codigomp" => $this->input->post('codigomp'),
         		"codigo_operacion" => $this->input->post('codigo_operacion'),
         		"operacion" => 1,
+        		"monto" => $this->input->post('monto'),
         	);
 
 		$metodoid = $this->transaccion->add_transaccion($datametodo['metodo'],1,$datametodo);
@@ -96,7 +97,8 @@ class Cobro extends MY_Controller {
 		$cobroid = $this->cobro->save($datacobro);
 
 		if ($datametodo['metodo'] != 5){ // si no es un cobro del metodo cuenta corriente, intenta saldar ventas adeudadas
-			$this->pagar_ventas_pendientes($this->input->post('cliente'), $cobroid, $this->input->post('monto'));
+			$monto = $this->pagar_deudas($this->input->post('cliente'), $this->input->post('monto'));
+			$this->pagar_ventas_pendientes($this->input->post('cliente'), $cobroid, $monto);
 		}
 		if ($this->db->trans_status() === FALSE)
 		{
@@ -128,6 +130,7 @@ class Cobro extends MY_Controller {
         		"codigomp" => $this->input->post('codigomp'),
         		"codigo_operacion" => $this->input->post('codigo_operacion'),
         		"operacion" => 1,
+        		"monto" => $this->input->post('monto'),
         	);
 
 		$metodoid = $this->transaccion->actualizar($datametodo);
@@ -174,35 +177,58 @@ class Cobro extends MY_Controller {
 	}
 
 	private function pagar_ventas_pendientes($clienteid, $cobroid, $monto){
-		$ventas = $this->cuentaCorriente->ventas_adeudadas($clienteid);
-		$cantidadVentas = count($ventas);
-		$i = 0;
-		while( $monto >  0 && $i < $cantidadVentas){
-			$total = $this->venta->get_total($ventas[$i]->id)->total;
-			$montoSaldado = $this->cuentaCorriente->cobros_parciales_venta($ventas[$i]->id)->cobrado;
-			//echo 'total = '. $total. '<br>' . 'montoSaldado = '. $montoSaldado. '<br>' . 'monto = '. $monto. '<br>';
-			//echo $total;
-			if(($monto - $total + $montoSaldado) >= 0){ //Saldo la venta si el monto alcanza
-				$this->venta->update(array('id' => $ventas[$i]->id),array('saldada' => 1));
-			}
-			if ($monto - $total + $montoSaldado > 0){ // Queda plata para saldar otra venta
-				//Aplico cobro a la ventaid con el monto que falta saldar
-				$this->aplicacionCobroVenta->save(array('cobroid'=> $cobroid, 'ventaid'=> $ventas[$i]->id, 'monto'=> ($total - $montoSaldado)));
-				$this->venta->update(array('id' => $ventas[$i]->id),array('saldada' => 1));
-				$monto = $monto - $total + $montoSaldado;
-			}else if($monto - $total + $montoSaldado <= 0){ // Me quedo sin monto restante
-				//Aplico cobro a la ventaid con monto (Si queda saldada, lo modifico en la venta)
-				$this->aplicacionCobroVenta->save(array('cobroid'=> $cobro_result, 'ventaid'=> $ventas[$i]->id, 'monto'>= $monto));
-				$monto = 0;
-			}
-			++$i;
-			//echo 'total = '. $total. '<br>' . 'montoSaldado = '. $montoSaldado. '<br>' . 'monto = '. $monto. '<br>';
-		}
 		if ($monto > 0){
-			//echo 'total = '. $total. '<br>' . 'montoSaldado = '. $montoSaldado. '<br>' . 'monto = '. $monto. '<br>';
-			$this->notaCredito->save(array('cobroid'=> $cobroid, 'monto'=> $monto, 'saldo'=> $monto));
-			// Genero la nota de credito con el monto del cobro restante
+			$ventas = $this->cuentaCorriente->ventas_adeudadas($clienteid);
+			$cantidadVentas = count($ventas);
+			$i = 0;
+			while( $monto >  0 && $i < $cantidadVentas){
+				$total = $this->venta->get_total($ventas[$i]->id)->total;
+				$montoSaldado = $this->cuentaCorriente->cobros_parciales_venta($ventas[$i]->id)->cobrado;
+				//echo 'total = '. $total. '<br>' . 'montoSaldado = '. $montoSaldado. '<br>' . 'monto = '. $monto. '<br>';
+				//echo $total;
+				if(($monto - $total + $montoSaldado) >= 0){ //Saldo la venta si el monto alcanza
+					$this->venta->update(array('id' => $ventas[$i]->id),array('saldada' => 1));
+				}
+				if ($monto - $total + $montoSaldado > 0){ // Queda plata para saldar otra venta
+					//Aplico cobro a la ventaid con el monto que falta saldar
+					$this->aplicacionCobroVenta->save(array('cobroid'=> $cobroid, 'ventaid'=> $ventas[$i]->id, 'monto'=> ($total - $montoSaldado)));
+					$this->venta->update(array('id' => $ventas[$i]->id),array('saldada' => 1));
+					$monto = $monto - $total + $montoSaldado;
+				}else if($monto - $total + $montoSaldado <= 0){ // Me quedo sin monto restante
+					//Aplico cobro a la ventaid con monto (Si queda saldada, lo modifico en la venta)
+					$this->aplicacionCobroVenta->save(array('cobroid'=> $cobroid, 'ventaid'=> $ventas[$i]->id, 'monto'>= $monto));
+					$monto = 0;
+				}
+				++$i;
+				//echo 'total = '. $total. '<br>' . 'montoSaldado = '. $montoSaldado. '<br>' . 'monto = '. $monto. '<br>';
+			}
+			if ($monto > 0){
+				//echo 'total = '. $total. '<br>' . 'montoSaldado = '. $montoSaldado. '<br>' . 'monto = '. $monto. '<br>';
+				$this->notaCredito->save(array('cobroid'=> $cobroid, 'monto'=> $monto, 'saldo'=> $monto));
+				// Genero la nota de credito con el monto del cobro restante
+			}
 		}
+	}
+
+	private function pagar_deudas($clienteid, $monto){
+		if ($monto > 0){
+			$deudas = $this->cuentaCorriente->get_deudas($clienteid);
+			$cantidadDeudas = count($deudas);
+			$i = 0;
+			while( $monto >  0 && $i < $cantidadDeudas){
+				$saldoRestante = $this->cuentaCorriente->get_saldo_deuda($deudas[$i]->id);
+
+				if(($monto - $saldoRestante) >= 0){ //Saldo de la deuda
+					$this->transaccion->update('mov_cuentacorrientes', array('id' => $deudas[$i]->id),array('saldo' => 0));
+					$monto = $monto - $saldoRestante;
+				}else{
+					$this->transaccion->update('mov_cuentacorrientes',array('id' => $deudas[$i]->id),array('saldo' => $saldoRestante - $monto));
+					$monto = 0;
+				}
+				++$i;
+			}
+		}
+		return $monto;
 	}
 }
 

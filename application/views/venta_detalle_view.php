@@ -4,6 +4,8 @@
 
             <h3></h3>
             <br />
+            <div class="col-12">
+      <a href="<?php echo site_url('Pdfs/imprimir_venta/'.$venta->id)?>" target="_blank"><i class="fa fa-print"></i>Imprimir</div></a>
 <div class="col-md-5 alpha">
     <div class="panel panel-info">
       <div class="panel-heading">
@@ -99,6 +101,48 @@
 
                 </tfoot>
 
+            </table>
+
+            <hr/>
+            <div class="panel-heading col-md-12" style="background-color: #f9f9f9">
+            <h3 class="panel-title"><i class="fa fa-undo"></i>Devolucion <a href="<?php echo site_url('venta/renglones_venta/'.$venta->id); ?>" class="fa fa-edit pull-right"></a></h3>
+            </div>
+            <table id="devolucion" class="table table-striped table-bordered" cellspacing="0" width="100%">
+
+                <thead>
+
+                    <tr>
+
+                        <th style="width:25px;">ID</th>
+
+                        <th>Producto</th>
+
+                        <th>Cantidad</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                </tbody>
+
+    
+
+                <tfoot>
+
+                    <tr>
+
+                        <th>ID</th>
+
+                        <th>Producto</th>
+
+                        <th>Cantidad</th>
+
+                    </tr>
+
+                </tfoot>
+
             </table> 
 
         </div>
@@ -166,7 +210,9 @@ $.ajax({
         , dataType: 'JSON'
 
         , success: function (data) {
-            $('#envio').html(data.nombre_envio);
+            if (data!=null){
+                $('#envio').html(data.nombre_envio);
+            }
         }
 
         , error: function () {
@@ -282,7 +328,81 @@ $(document).ready(function() {
 
             }
         }
+    });//end datatable
+    devolucion = $('#devolucion').DataTable({ 
+        "sDom": 'rt<"top"i><"clear">', //Sacar el cuadro de busqueda
+        "paging": false,
+
+        "responsive": true,
+
+        "processing": true, //Feature control the processing indicator.
+
+        "serverSide": true, //Feature control DataTables' server-side processing mode.
+
+        "order": [], //Initial no order.
+
+         // Load data for the table's content from an Ajax source
+
+        "ajax": {
+
+            "url": "<?php echo site_url('devolucion/ajax_detalle/'.$venta->id)?>",
+
+            "type": "POST"
+
+        },
+
+        "columnDefs": [
+
+        { 
+
+            "targets": [ -1], //last column
+
+            "orderable": false, //set not orderable
+
+        },
+
+        ],
+
+        "language":{
+
+            "sProcessing":     "Procesando...",
+
+            "sLengthMenu":     "Mostrar _MENU_ registros",
+
+            "sZeroRecords":    "No se encontraron resultados",
+
+            "sEmptyTable":     "Ningún dato disponible en esta tabla",
+
+            "sInfo":           "En total son _TOTAL_ productos distintos",
+
+            "sInfoEmpty":      "Mostrando registros del 0 al 0 de un total de 0 registros",
+
+            "sInfoFiltered":   "(filtrado de un total de _MAX_ registros)",
+
+            "sInfoPostFix":    "",
+
+            "sSearch":         "Buscar:",
+
+            "sUrl":            "",
+
+            "sInfoThousands":  ",",
+
+            "sLoadingRecords": "Cargando...",
+
+            "oPaginate": {
+
+                "sFirst":    "Primero",
+
+                "sLast":     "Último",
+
+                "sNext":     "Siguiente",
+
+                "sPrevious": "Anterior"
+
+            }
+        }
     });
+
 });
 </script>
 <style>

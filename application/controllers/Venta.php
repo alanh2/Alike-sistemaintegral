@@ -20,6 +20,10 @@ class Venta extends MY_Controller {
 
 		$this->load->model('venta_renglones_model','venta_renglones');
 
+		$this->load->model('stock_model','stock');
+
+		$this->load->model('devolucion_renglones_model','devolucion_renglones');
+
 		$this->load->model('producto_model','producto');
 		
 		$this->load->model('cobro_model','cobro');
@@ -133,6 +137,34 @@ class Venta extends MY_Controller {
 			$this->load->view('master_view',$data);
 		}
 	}	
+
+	public function imprimir_remito($id=NULL){
+		if ($id != null){
+			$data['view']='venta_detalle_view';
+			$data['venta'] = $this->venta->get_by_id($id);
+			//$data['venta_renglones']=$this->ajax_detalle($id);
+			//$this->load->view('factura_view',$data);
+			$this->load->library('pdf');
+			$this->pdf->load_view('factura_view',$data);
+			$this->pdf->render();
+			$this->pdf->stream($id."f.pdf");
+			/*
+
+			require_once site_url('http://systemix.com.ar/sistemaIntegral/dompdf/autoload.inc.php');
+			use Dompdf\Dompdf;
+			// instantiate and use the dompdf class
+			$dompdf = new Dompdf();
+			$dompdf->loadHtml(file_get_contents( $this->load->view('factura_view',$data,TRUE)) );//site_url('venta/preparar_remito/'.$id
+			// (Optional) Setup the paper size and orientation
+			$dompdf->setPaper('A4');
+			// Render the HTML as PDF
+			$dompdf->render();
+			// Output the generated PDF to Browser
+			$dompdf->stream();
+			*/
+
+		}
+	}
 
 	public function ver_detalles($id=NULL){
 		if ($id != null){
@@ -266,6 +298,71 @@ class Venta extends MY_Controller {
 
 	}
 
+	public function reporte_simple($desde,$hasta){
+		$this->load->helper('url');
+		$data['view']='venta_reporte_view';
+		$data['data']['reporte'] = $this->venta->reporte_simple($desde,$hasta);
+		//print_r($data['data']['reporte']);
+		//echo $this->db->last_query();
+				
+		$this->load->view('master_view',$data);
+		
+	}
+	public function ajax_reporte_simple($desde,$hasta){
+
+	
+		$this->load->helper('url');
+
+		$list = $this->venta->reporte_simple($desde,$hasta);
+
+		$data = array();
+
+		$no = 0;
+
+		foreach ($list as $venta) {
+
+			$no++;
+
+			$row = array();
+
+			$row[] = $venta->id;
+
+			$row[] = $venta->fecha;
+
+			$row[] = $venta->total;
+
+			$row[] = $venta->cuentacorriente;
+
+			$row[] = $venta->vendedor;
+
+			$row[] = $venta->estado_nombre;
+
+			$row[] = $venta->cliente;
+
+			$data[] = $row;
+
+		}
+
+
+
+		$output = array(
+
+						"draw" => $_POST['draw'],
+
+						"recordsTotal" => $this->venta->count_all(),
+
+						"recordsFiltered" => $this->venta->count_filtered(),
+
+						"data" => $data,
+
+				);
+
+		//output to json format
+		//echo $this->db->last_query();
+		echo json_encode($output);
+
+	}
+
 	//En esta parte se agregan productos a la venta
 	public function renglones_venta($id=NULL){
 		if($id==NULL){
@@ -343,7 +440,9 @@ class Venta extends MY_Controller {
 						"aplicacion" => $aplicacion_result,
 						"data" => $data
 				);
-
+		$dataEstado=array('estadoid'=>1);
+		$this->venta->update(array('id' =>$data['ventaid']), $dataEstado);
+		
 		if ($this->db->trans_status() === FALSE || !isset($transaccion_result) || !isset($cobro_result) || !isset($aplicacion_result))
 		{
 	        $this->db->trans_rollback();
@@ -380,20 +479,34 @@ class Venta extends MY_Controller {
 
 			$row[] = $venta->cliente;
 
+			$row[] = $venta->vendedor;
+
 			$row[] = $venta->fecha;
 
 			$row[] = $venta->total;
 
-			$row[] = $venta->vendedor;
+			$row[] = $venta->estado_nombre;
 
 
 
 			//add html for action
-
-			$row[] = '<a class="btn btn-sm btn-info" href="'.site_url('venta/ver_detalles/'.$venta->id).'" title="Ver Detalles"><i class="glyphicon glyphicon-list"></i> Ver detalles</a>
-			<a class="btn btn-sm btn-success" href="'.site_url('venta/alta_venta/'.$venta->id).'" title="Ver Detalles"><i class="fa fa-edit"></i> Modificar</a>';
-		
-
+			$detalles='<a class="btn btn-sm btn-info" style="width: 32.5px;" href="'.site_url('venta/ver_detalles/'.$venta->id).'" title="Ver Detalles"><i class="glyphicon glyphicon-list"></i></a>';
+			$abrir='<a class="btn btn-sm btn-primary" style="width: 65px;" href="'.site_url('venta/abrir/'.$venta->id).'" title="Abrir venta"> Abrir </a>';
+			$cerrar='<a class="btn btn-sm btn-primary" style="width: 65px;" href="'.site_url('venta/cerrar/'.$venta->id).'" title="Cerrar venta">Cerrar</a>';
+			$modificar='<a class="btn btn-sm btn-success" style="width: 32.5px;" href="'.site_url('venta/alta_venta/'.$venta->id).'" title="Modificar"><i class="fa fa-edit"></i></a>';
+			$imprimir='<a class="btn btn-sm btn-warning" style="width: 32.5px;" href="'.site_url('Pdfs/imprimir_venta/'.$venta->id).'" title="Imprimir" target="_blank"><i class="fa fa-print"></i></a>';
+			$devolucion='<a class="btn btn-sm btn-danger" style="width: 32.5px;" href="'.site_url('devolucion/alta_devolucion/'.$venta->id).'" title="Devolución"><i class="fa fa-undo"></i></a>';
+			if($venta->estadoid=='0'){
+				$abrir_cerrar=$cerrar;
+			}else{
+				$abrir_cerrar=$abrir;
+			}
+			$action=$detalles.$modificar.$imprimir;
+			if(strtotime($venta->fecha) > strtotime('-30 days')){
+				$action.=$devolucion;	
+			}
+			$action.=$abrir_cerrar;
+			$row[] = $action;
 			$data[] = $row;
 
 		}
@@ -444,7 +557,9 @@ class Venta extends MY_Controller {
 
 				'fecha' => date("Y-m-d H:i:s"),
 
-				'estado' => 'iniciada',
+				'estadoid' => '0',
+
+				'cuentacorriente' => $this->input->post('cuentacorriente'),
 
 			);
 
@@ -462,17 +577,61 @@ class Venta extends MY_Controller {
 
 		$this->_validate();
 
+		if ($this->input->post('cuentacorriente')){
+			$cc=1;
+		}else{
+			$cc=0;
+		}
 		$data = array(
 
 				'clienteid' => $this->input->post('cliente'),
 
 				'vendedorid' => $this->input->post('vendedor'),
 
+				'cuentacorriente' => $cc,
+
 			);
 
 		$this->venta->update(array('id' => $this->input->post('id')), $data);
-		
+		//print_r($_POST);
+		//echo $this->db->last_query();
 		echo json_encode(array("status" => TRUE, 'id' => $this->input->post('id')));
+
+	}
+	public function cerrar($id=NULL)
+
+	{
+
+		if($id!=NULL){
+			$data = array(
+
+				'estadoid' => '1',
+
+			);
+
+		}
+
+		$this->venta->update(array('id' => $id), $data);
+		
+		echo json_encode(array("status" => TRUE));
+
+	}
+	public function abrir($id=NULL)
+
+	{
+
+		if($id!=NULL){
+			$data = array(
+
+				'estadoid' => '0',
+
+			);
+
+		}
+
+		$this->venta->update(array('id' => $id), $data);
+		
+		echo json_encode(array("status" => TRUE));
 
 	}
 
@@ -520,6 +679,7 @@ class Venta extends MY_Controller {
 	}
 
 //////////////////////////////////////////////////////////////////////////////////////Renglones/////////////////////////////////////////////////////////////////////////////
+
 public function ajax_renglones($id)
 
 	{
@@ -549,6 +709,80 @@ public function ajax_renglones($id)
 
 			$row[] = $renglon->cantidad;
 
+			$row[] = $renglon->devueltos;
+
+			$row[] = '$'.$renglon->precio_unitario*$renglon->cantidad;
+
+			//add html for action
+			$editar='<a class="btn btn-sm btn-primary" href="javascript:void(0)" title="Edit" onclick="edit_renglon('."'".$renglon->id."'".')"><i class="glyphicon glyphicon-pencil"></i> Editar</a>';
+			$borrar='<a class="btn btn-sm btn-danger" href="javascript:void(0)" title="Hapus" onclick="delete_renglon('."'".$renglon->id."'".')"><i class="glyphicon glyphicon-trash"></i> Borrar</a>';
+			if($renglon->devueltos>0){
+				$row[] = $editar;
+			}else{
+			$row[] = $editar.$borrar;			}
+		
+
+			$data[] = $row;
+
+		}
+
+
+
+		$output = array(
+
+						//"draw" => $_POST['draw'],
+
+						"recordsTotal" => $this->venta_renglones->count_all($id),
+
+						"recordsFiltered" => $this->venta_renglones->count_filtered($id),
+
+						"data" => $data,
+
+				);
+
+		//output to json format
+
+		echo json_encode($output);
+
+	}
+	public function ajax_renglones_para_devolucion($id)
+
+	{
+
+		$this->load->helper('url');
+
+		$list = $this->venta_renglones->get_datatables($id);
+
+		$data = array();
+		$start=0;
+		foreach ($list as $renglon) {
+			$devueltos= $this->devolucion_renglones->get_by_renglon_id($renglon->id);
+			//print_r($devueltos) ;
+			if($devueltos && $devueltos->cantidad>0){
+				$sin_devolver=$renglon->cantidad-$devueltos->cantidad;
+			}else{
+				$sin_devolver=$renglon->cantidad;
+			}
+			if($sin_devolver>0){
+				for($i=0; $i<$sin_devolver;$i++){
+					$row = array();
+					$row[] = $renglon->id;
+					$row[] = $renglon->producto." - ".$renglon->color;
+					$row[] = '$'.$renglon->precio_unitario;
+					$data[] = $row;
+				}
+	
+			}
+/*			$row = array();
+
+			$row[] = $renglon->id;
+
+			$row[] = $renglon->producto." - ".$renglon->color;
+
+			$row[] = '$'.$renglon->precio_unitario;
+
+			$row[] = $renglon->cantidad;
+
 			$row[] = '$'.$renglon->precio_unitario*$renglon->cantidad;
 
 			//add html for action
@@ -561,7 +795,7 @@ public function ajax_renglones($id)
 		
 
 			$data[] = $row;
-
+*/
 		}
 
 
@@ -601,14 +835,16 @@ public function ajax_renglones($id)
 	{
 
 		//$this->_validate();
-
+		$ventaid=$this->input->post('venta');
+		$stockid=$this->input->post('stock');
+		$cantidad=$this->input->post('cantidad');
 		$data = array(
 
-				'ventaid' => $this->input->post('venta'),
+				'ventaid' => $ventaid,
 
-				'stockid' => $this->input->post('stock'),
+				'stockid' => $stockid,
 
-				'cantidad' => $this->input->post('cantidad'),
+				'cantidad' => $cantidad,
 
 				'precio_unitario' => $this->input->post('precio'),
 
@@ -616,39 +852,137 @@ public function ajax_renglones($id)
 
 
 			);
-
+		$this->db->trans_begin(); 
+		
 		$insert = $this->venta_renglones->save($data);
-
-		echo json_encode(array("status" => TRUE));
-
+		$this->venta->actualizar_total($ventaid);
+		$stock=$this->stock->get_by_id($venta_renglon->stockid);//stock original
+		$stock_cantidad_final=$stock->cantidad-$cantidad;
+		$stock_reservado_final=$stock->reservado+$cantidad;
+		$dataStock= array('cantidad'=>$stock_cantidad_final, 'reservado'=>$stock_reservado_final);
+		$this->stock->update(array('id' => $stockid), $dataStock);
+		if ($this->db->trans_status() === FALSE)
+		{
+	        $this->db->trans_rollback();
+	    	$output['resultado'] = 'Error';
+	    	echo json_encode(array("status" => FALSE));
+		}
+		else
+		{
+	        $this->db->trans_commit();
+	    	$output['resultado'] = 'Ok';
+	    	echo json_encode(array("status" => TRUE));
+		}
 	}
 
 	public function ajax_update_renglon()
 	{
 
-		$data = array(
+		$stockid=$this->input->post('stock');
+		$venta_renglonid=$this->input->post('id');
+		$cantidad=$this->input->post('cantidad');
+		$dataRenglon = array(
 
-				'cantidad' => $this->input->post('cantidad'),
+				'stockid' => $stockid,
+
+				'cantidad' => $cantidad,
 
 				'precio_unitario' => $this->input->post('precio'),
 
 				'total_renglon' => $this->input->post('precio')*$this->input->post('cantidad'),
 
 			);
+		$this->db->trans_begin(); 
+		$venta_renglon=$this->venta_renglones->get_by_id($venta_renglonid);//renglon original
+		$stock=$this->stock->get_by_id($venta_renglon->stockid);//stock original
+		$this->venta_renglones->update(array('id' => $venta_renglonid), $dataRenglon);
+		$this->venta->actualizar_total($venta_renglon->ventaid);
+		
+		$renglon_cantidad_inicial=$venta_renglon->cantidad;
+		$stock_cantidad_inicial=$stock->cantidad;
+		$stock_reservado_inicial=$stock->reservado;
+		//validar: si tengo devoluciones no me puede cambiar de stock, es decir tiene q apuntar al mismo local color producto.
+		//validar: si tengo devoluciones la cantidad del renglon tiene que ser mayor o igual a la cantidad de devoluciones que tenga
+		//mantener: si mantiene el stock cambio la diferencia de stock y reservado
+		//mantener: si cambia el stock ajusto y anulo el renglon anterior y creo el nuevo
+		if($stockid==$venta_renglon->stockid){
+			//$stock_cantidad_inicial=$this->stock->get_by_id($this->input->post('stock'))->cantidad;
+			$diferencia=$renglon_cantidad_inicial-$cantidad;//15-10=-5 compre 5 mas
+			//echo "dif:".$diferencia."<br>";
+			$stock_cantidad_final=$stock_cantidad_inicial+$diferencia;//100+(-5)=95 hay 5 menos de stock
+			$stock_reservado_final=$stock_reservado_inicial-$diferencia;
+			$dataStock= array('cantidad'=>$stock_cantidad_final, 'reservado'=>$stock_reservado_final);
+			if($stock_cantidad_final>=$venta_renglon->devueltos){
+				$this->stock->update(array('id' => $stockid), $dataStock);
+				$this->venta_renglones->update(array('id' => $venta_renglonid), $dataRenglon);
+				$status=TRUE;
+			}else{
+				$status=FALSE;
+			}
+			
+		}else{
+			//Primero se anula el stock anterior
+			if($venta_renglon->devueltos<1){
+				$stock_cantidad_final=$stock_cantidad_inicial+$venta_renglon->cantidad;//El stock se devuelve
+				$dataStock= array('cantidad'=>$stock_cantidad_final);
+				$this->stock->update(array('id' =>$venta_renglon->stockid), $dataStock);
+				//echo $this->db->last_query();
+				
+				//ahora se realiza el alta del otro stock
+				$stock=$this->stock->get_by_id($this->input->post('stock'));
+				$stock_cantidad_inicial=$stock->cantidad;
+				$stock_cantidad_final=$stock_cantidad_inicial-$cantidad;
+				$stock_reservado_final=$stock_reservado_inicial+$cantidad;
+				$dataStock= array('cantidad'=>$stock_cantidad_final, 'reservado'=>$stock_reservado_final);	
+				$this->stock->update(array('id' => $this->input->post('stock')), $dataStock);
+				//echo $this->db->last_query();
+				
+				$this->venta_renglones->update(array('id' => $venta_renglonid), $dataRenglon);
+				$status=TRUE;
+			}else{
+				$status=FALSE;
+			}
+		}
+		if ($this->db->trans_status() === FALSE)
+		{
+	        $this->db->trans_rollback();
+	    	$output['resultado'] = 'Error';
+	    	$status=FALSE;
+		}
+		else
+		{
+	        $this->db->trans_commit();
+	    	$output['resultado'] = 'Ok';
+		}
 
-		$this->venta_renglones->update(array('id' => $this->input->post('id')), $data);
-
-		echo json_encode(array("status" => TRUE));
+		echo json_encode(array("status" => $status));
+		
 
 	}
 
 	public function ajax_delete_renglon($id)
 	{
 
+		$this->db->trans_begin(); 
+		$venta_renglon=$this->venta_renglones->get_by_id($id);//renglon original
+		$stock=$this->stock->get_by_id($venta_renglon->stockid);//stock original
+		$dataStock= array('cantidad'=>$stock->cantidad+$venta_renglon->cantidad, 'reservado'=>$stock->reservado-$venta_renglon->cantidad);	
+		$this->stock->update(array('id' =>$venta_renglon->stockid), $dataStock);
 		$this->venta_renglones->delete_by_id($id);
-
-		echo json_encode(array("status" => TRUE));
-
+		$this->venta->actualizar_total($venta_renglon->ventaid);
+		if ($this->db->trans_status() === FALSE)
+		{
+	        $this->db->trans_rollback();
+	    	$output['resultado'] = 'Error';
+	    	echo json_encode(array("status" => FALSE));
+		}
+		else
+		{
+	        $this->db->trans_commit();
+	    	$output['resultado'] = 'Ok';
+	    	echo json_encode(array("status" => TRUE));
+		}
+		
 	}
 
 	private function _validate()

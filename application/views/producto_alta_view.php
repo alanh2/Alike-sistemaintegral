@@ -207,9 +207,19 @@
 
                                         
 
-                    	<h2><span data-bind="text: name"></span>(Stock  <span data-bind="text: cantidad"></span>)
+                    	<h2><span data-bind="text: name"></span><br>  
+                    <table>
+                    <thead><tr><th>Cantidad</th></tr></thead>
+                    <tbody>
+                    <tr>
+                        <td>
+                            <input id="cantidad" class="form-control" type="text" data-bind="value:cantidad, attr:{name:'colores['+id+'][cantidad]'}">
+                        </td>
+                    </tr>
+                    </tbody>
+                    </table>
 
-                <button type="button" class="close" data-bind="enable:(tieneStock==0),click:$root.deleteProductoColor" aria-label="Close"><span aria-hidden="true">&times;</span></button></h2>
+                <button type="button" class="close" data-bind="enable:(tieneStock()==0),click:$root.deleteProductoColor" aria-label="Close"><span aria-hidden="true">&times;</span></button></h2>
 
                         <div class="modal-body form">
 
@@ -508,7 +518,7 @@ $(document).ready(function() {
 	});	
 
 });*/
-
+/*
 $('.lista').change(function () {
 
 	//alert("agregar funcion cuando modificas costo que modifique todas las listas");
@@ -533,7 +543,7 @@ $('.porcentaje').change(function () {
 
 	$('#'+$(this).attr('name')+'precio').val((porcentaje+100)*costo/100);
 
-});
+});*/
 
 	//get a reference to the select element
 
@@ -592,7 +602,9 @@ $('.porcentaje').change(function () {
                 }
 
             });
-            <?php }?>
+            <?php }else{?>
+                $('[name="categoria"]').trigger('change');
+            <?php } ?>
 		}
 
 		, error: function () {
@@ -845,7 +857,7 @@ $('.porcentaje').change(function () {
             editColores.forEach(function(Color) {
                 //vm.eliminarColor(color.id);
                 vm.crearProductoColor(Color);
-
+            console.log("editColores:");
                 console.log(Color);
             });
             <?php }else{?>
@@ -855,6 +867,7 @@ $('.porcentaje').change(function () {
             if(color_por_defecto!=null){
                 vm.colores.remove(color_por_defecto);
                 vm.producto().colores.push(color_por_defecto);
+                //console.log(vm.producto().colores()[0].tieneStock());
             }
             color_por_defecto=vm.obtenerColor('2');
             if(color_por_defecto!=null){
@@ -1090,7 +1103,8 @@ window.reset = function (e) {
 
 	    };
         self.crearProductoColor = function(color){
-            koColor=new Color(color.colorid,color.nombre,color.name,color.costo,color.porcentaje1,color.porcentaje2,color.porcentaje3,color.porcentaje4);
+            //function Color(id,nombre,name,costo=0,porcentaje1=0,porcentaje2=0,porcentaje3=0,porcentaje4=0,cantidad=0,tieneStock=0){
+            koColor=new Color(color.colorid,color.nombre,color.name,color.costo,color.porcentaje1,color.porcentaje2,color.porcentaje3,color.porcentaje4,color.cantidad,color.tieneStock);
             self.producto().colores.push(koColor);
             self.colores.remove(self.obtenerColor(color.colorid));
             
@@ -1243,7 +1257,7 @@ window.reset = function (e) {
 
 				//console.log("Calcular porcentaje");
 
-				return parseFloat(lista)*100/parseFloat(self.costo());
+				return (parseFloat(lista)-parseFloat(self.costo()))*100/parseFloat(self.costo());
 
 			};
 
@@ -1251,9 +1265,9 @@ window.reset = function (e) {
 
 			self.calcularLista=function(porcentaje){
 
-				//console.log("Calcular lista");
+				//console.log(parseFloat(porcentaje())+parseFloat(100));
 
-				return parseFloat(porcentaje())*parseFloat(self.costo())/100;
+				return Math.round((parseFloat(porcentaje())+parseFloat(100))*parseFloat(self.costo())/100);
 
 			};
 

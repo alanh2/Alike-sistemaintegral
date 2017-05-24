@@ -6,8 +6,8 @@ class Cobro_model extends CI_Model {
 	var $table = 'cobros';
 	var $metodos_pago = array('0','mov_efectivos','mov_cheques','mov_mercadopagos','mov_transferencias','mov_cuentacorrientes','mov_panamas', 'mov_tarjetas');
 
-	var $column_order = array('id','monto','fecha', 'metodos_pago.nombre',null); //set column field database for datatable orderable
-	var $column_search = array('cobros.monto','cobros.fecha', 'metodos_pago.nombre'); //set column field database for datatable searchable just firstname , lastname , address are searchable
+	var $column_order = array('id', 'clientes.razon_social','monto','fecha', 'metodos_pago.nombre',null); //set column field database for datatable orderable
+	var $column_search = array('clientes.razon_social','cobros.monto','cobros.fecha', 'metodos_pago.nombre'); //set column field database for datatable searchable just firstname , lastname , address are searchable
 	var $order = array('id' => 'desc'); // default order 
 
 	public function __construct()
@@ -20,7 +20,8 @@ class Cobro_model extends CI_Model {
 		
 		$this->db->from($this->table);
 		$this->db->join('metodos_pago', 'metodos_pago.id = cobros.metododepagoid');
-		$this->db->select('cobros.*, metodos_pago.nombre as metodo_pago');
+		$this->db->join('clientes', 'clientes.id = cobros.clienteid');
+		$this->db->select('cobros.*, metodos_pago.nombre as metodo_pago, clientes.razon_social as razon_social');
 
 		$i = 0;
 		
@@ -86,6 +87,20 @@ class Cobro_model extends CI_Model {
 		return $query->row();
 	}
 	
+	public function get_resumen_by_clienteid($clienteid)
+	{
+		$this->db->from($this->table);
+		$this->db->join('metodos_pago', 'metodos_pago.id = cobros.metododepagoid');
+		$this->db->join('aplicaciones_cobro_venta', 'cobros.id = aplicaciones_cobro_venta.cobroid','left');
+		$this->db->where('clienteid',$clienteid);
+		$this->db->where('(aplicaciones_cobro_venta.id IS NULL AND metododepagoid="5" OR metododepagoid!="5")',null,false);
+		$this->db->select('cobros.id as id, cobros.monto, cobros.fecha, "Cobro" as tipo, metodos_pago.nombre as metodo_pago');
+		$query = $this->db->get();
+		//echo $this->db->last_query();
+
+		return $query->result();
+	}
+
 	public function save($data)
 	{
 		$this->db->insert($this->table, $data);

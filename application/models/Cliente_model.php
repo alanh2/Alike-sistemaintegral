@@ -62,6 +62,13 @@ class Cliente_model extends CI_Model {
 		$query = $this->db->get();
 		return $query->result();
 	}
+	function get_por_orden_alfabetico()
+	{
+		$this->db->from($this->table);
+		$this->db->order_by('razon_social','asc');
+		$query = $this->db->get();
+		return $query->result();
+	}
 	function get_por_categoria($categoria)
 	{
 		$this->db->from($this->table);

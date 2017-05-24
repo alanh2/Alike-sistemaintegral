@@ -1,3 +1,5 @@
+<style>
+.ui-autocomplete { height: 200px; overflow-y: scroll; overflow-x: hidden;}</style>
         <div id="page-wrapper">
 
             <br>
@@ -41,6 +43,8 @@
 
                         <th>Cantidad</th>
 
+                        <th>Devueltos</th>
+
                         <th>Subtotal</th>
 
                         <th style="width:225px;">Accion</th>
@@ -66,6 +70,8 @@
                         <th>Precio</th>
 
                         <th>Cantidad</th>
+
+                        <th>Devueltos</th>
 
                         <th>Subtotal</th>
 
@@ -137,8 +143,8 @@ $.ajax({
                                 {
                                     id:val.id,
                                     codigo: val.codigo,
-                                    label: val.marca+" "+val.modelo+" "+val.nombre,
-                                    nombre: val.nombre,
+                                    label: val.subcategoria+" "+val.nombre+" "+val.marca+" "+val.modelo,
+                                    nombre: val.subcategoria+" "+val.nombre+" "+val.marca+" "+val.modelo,
                                     modelo: val.modelo,
                                     marca:val.marca,
                                     subcategoria:val.subcategoria
@@ -240,61 +246,21 @@ $(document).ready(function() {
           minLength: 0,
           source: autocompleteProductos,
           focus: function( event, ui ) {
-            $('#producto').val( ui.item.nombre );
+            $('#producto').val( ui.item.subcategoria+" "+ui.item.nombre+" "+ui.item.marca+" "+ui.item.modelo );
             $('#productoValue').val( ui.item.id );
           },
           change: function( event, ui ) {
-            $('#producto').val( ui.item.nombre );
+            $('#producto').val( ui.item.subcategoria+" "+ui.item.nombre+" "+ui.item.marca+" "+ui.item.modelo );
             $('#productoValue').val( ui.item.id );
           },
           select: function( event, ui ) {
-            $('#producto').val( ui.item.nombre);
+            $('#producto').val( ui.item.subcategoria+" "+ui.item.nombre+" "+ui.item.marca+" "+ui.item.modelo);
             $('#productoValue').val( ui.item.id );
             return false;
           }
         });
     $('#producto').change(function() {
-
-        $select_colores = $('#stock');
-
-        $.ajax({
-
-            url: "<?php echo site_url('stock/ajax_color_por_producto_para_venta')?>/"+$('#productoValue').val()+"/<?php echo $venta->id; ?>"
-
-            , "type": "POST"
-
-            , data:{length:'',start:0,producto:$('#productoValue').val()}
-
-            , dataType: 'JSON'
-
-            , success: function (data) {
-
-                //clear the current content of the select
-
-                $select_colores.html('');
-
-                //iterate over the data and append a select option
-
-                //var options='';
-                $.each(data.colores, function (key, val) {
-                    $select_colores.append($("<option></option>").attr("value",val.id).text(val.nombre+"*"+val.cantidad+"("+val.l1+","+val.l2+","+val.l3+","+val.l4+")")); 
-                    //options += '<option value="' + val.id + '">' + val.nombre + '</option>'; 
-                    //console.log(val);
-
-                })
-
-                   // $('#color').html(options);
-            }
-
-            , error: function () {
-
-                //if there is an error append a 'none available' option
-
-                //$select_colores.html('<option id="-1">ninguno disponible</option>');
-
-            }
-
-        });
+        cargar_colores($('#productoValue').val());
 
     });
     table = $('#table').DataTable({ 
@@ -509,7 +475,7 @@ function edit_renglon(id)
 
         {
 
-            
+            console.log(data);
 
             $('[name="id"]').val(data.id);
 
@@ -521,7 +487,9 @@ function edit_renglon(id)
             $('.modal-title').text('Editar Renglon'); // Set title to Bootstrap modal title
 
             $('#producto').val(data.producto);
-
+            cargar_colores(data.productoid,data.stockid);
+            //$('#producto').autocomplete('option','select').call(data.producto,{event:null,ui:{item:data.producto}});
+            
             $('#cantidad').val(data.cantidad);
 
             $('#precio').val(data.precio_unitario);
@@ -529,7 +497,7 @@ function edit_renglon(id)
             $select_colores.html('');
             $select_colores.append($("<option></option>").attr("value",0).text(data.color)); 
                     
-            $('#producto,#stock').attr('disabled',true);
+            //$('#producto,#stock').attr('disabled',true);
             //$p.data('uiAutocomplete')._trigger('select', 'autocompleteselect', {item:{value:val.stockid}});
 
         },
@@ -547,7 +515,51 @@ function edit_renglon(id)
 }
 $( "#producto" ).on( "autocompleteselect", function( event, ui ) {console.log(event);} );
 
+function cargar_colores($productoid,$color_default=null){
 
+        $select_colores = $('#stock');
+
+        $.ajax({
+
+            url: "<?php echo site_url('stock/ajax_color_por_producto_para_venta')?>/"+$productoid+"/<?php echo $venta->id; ?>"
+
+            , "type": "POST"
+
+            , data:{length:'',start:0,producto:$('#productoValue').val()}
+
+            , dataType: 'JSON'
+
+            , success: function (data) {
+
+                //clear the current content of the select
+
+                $select_colores.html('');
+
+                //iterate over the data and append a select option
+
+                //var options='';
+                $.each(data.colores, function (key, val) {
+                    $select_colores.append($("<option></option>").attr("value",val.id).text(val.nombre+"*"+val.cantidad+"("+Math.round(val.l1)+","+Math.round(val.l2)+","+Math.round(val.l3)+","+Math.round(val.l4)+")")); 
+                    //options += '<option value="' + val.id + '">' + val.nombre + '</option>'; 
+                    //console.log(val);
+
+                })
+                if($color_default!=null){
+                    $('#stock').val($color_default).trigger('change');
+                }
+                   // $('#color').html(options);
+            }
+
+            , error: function () {
+
+                //if there is an error append a 'none available' option
+
+                //$select_colores.html('<option id="-1">ninguno disponible</option>');
+
+            }
+
+        });
+}
 function reload_table()
 
 {

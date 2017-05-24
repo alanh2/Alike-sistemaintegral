@@ -18,7 +18,7 @@ class Home extends CI_Controller {
    else
    {
      //If no session, redirect to login page
-     redirect('login', 'refresh');
+     //redirect('login', 'refresh');
    }
  }
 

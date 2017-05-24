@@ -44,12 +44,12 @@ class Cobro extends MY_Controller {
 	{
 		$this->load->helper('url');
 		$list = $this->cobro->get_datatables();
-		$data = array();
 		$no = $_POST['start'];
 		foreach ($list as $cobro) {
 			$no++;
 			$row = array();
 			$row[] = $cobro->id;
+			$row[] = $cobro->razon_social;
 			$row[] = $cobro->monto;
 			$row[] = $cobro->fecha;
 			$row[] = $cobro->metodo_pago;
@@ -96,7 +96,7 @@ class Cobro extends MY_Controller {
         	);
 		$cobroid = $this->cobro->save($datacobro);
 
-		if ($datametodo['metodo'] != 5){ // si no es un cobro del metodo cuenta corriente, intenta saldar ventas adeudadas
+		if ($datametodo['metodo'] != 5){ // si no es un cobro del metodo cuenta corriente/nota de credito, intenta saldar ventas adeudadas
 			$monto = $this->pagar_deudas($this->input->post('cliente'), $this->input->post('monto'));
 			$this->pagar_ventas_pendientes($this->input->post('cliente'), $cobroid, $monto);
 		}
@@ -109,6 +109,7 @@ class Cobro extends MY_Controller {
 		{
 	        $this->db->trans_commit();
 	    	$output['resultado'] = 'Ok';
+
 		}
 
 		echo json_encode($output);

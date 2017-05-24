@@ -10,9 +10,9 @@ class Producto_model extends CI_Model {
 
 	var $table = 'productos';
 
-	var $column_order = array('id','marca','modelo','nombre','subcategoria',null); //set column field database for datatable orderable
+	var $column_order = array('id','marca','modelo','nombre','categoria','subcategoria',null); //set column field database for datatable orderable
 
-	var $column_search = array('marcas.nombre','subcategorias.nombre','modelos.nombre','proveedores.nombre','productos.nombre'); //set column field database for datatable searchable just firstname , lastname , address are searchable
+	var $column_search = array('marcas.nombre','subcategorias.nombre','categorias.nombre','modelos.nombre','proveedores.nombre','productos.nombre'); //set column field database for datatable searchable just firstname , lastname , address are searchable
 
 	var $order = array('id' => 'desc'); // default order 
 
@@ -44,7 +44,25 @@ class Producto_model extends CI_Model {
 
 	}
 
-	
+	public function get_lista_precios(){
+		//mientras va la query de una
+		$query=$this->db->query("SELECT stock.id,marcas.nombre as marca, modelos.nombre as modelo, subcategorias.nombre as subcategoria, productos.nombre as producto, colores.nombre as color, stock.cantidad,
+ROUND(productos_colores.costo + productos_colores.costo*productos_colores.porcentaje1/'100') as 'l1',
+ROUND(productos_colores.costo + productos_colores.costo*productos_colores.porcentaje2/'100') as 'l2',
+ROUND(productos_colores.costo + productos_colores.costo*productos_colores.porcentaje3/'100') as 'l3',
+ROUND(productos_colores.costo + productos_colores.costo*productos_colores.porcentaje4/'100') as 'l4'
+FROM `stock` 
+INNER JOIN productos_colores on stock.producto_colorid = productos_colores.id 
+INNER JOIN productos on productos_colores.productoid= productos.id 
+INNER JOIN subcategorias on productos.subcategoriaid= subcategorias.id 
+INNER JOIN modelos on productos.modeloid= modelos.id 
+INNER JOIN marcas on marcas.id=modelos.marcaid 
+INNER JOIN colores on productos_colores.colorid= colores.id 
+INNER JOIN locales on stock.localid= locales.id
+ORDER BY marcas.nombre,modelos.nombre
+");
+		return $query->result();
+	}	
 
 
 
@@ -58,13 +76,15 @@ class Producto_model extends CI_Model {
 
 		$this->db->join('subcategorias', 'subcategorias.id = productos.subcategoriaid');
 
+		$this->db->join('categorias', 'categorias.id = subcategorias.categoriaid');
+
 		$this->db->join('proveedores', 'proveedores.id = productos.proveedorid');
 
 		$this->db->join('modelos', 'modelos.id = productos.modeloid');
 
 		$this->db->join('marcas', 'marcas.id = modelos.marcaid');
 
-		$this->db->select('productos.*, marcas.nombre as marca, subcategorias.nombre as subcategoria, proveedores.nombre as proveedor, modelos.nombre as modelo, modelos.marcaid');
+		$this->db->select('productos.*, marcas.nombre as marca, subcategorias.nombre as subcategoria, categorias.nombre as categoria, proveedores.nombre as proveedor, modelos.nombre as modelo, modelos.marcaid');
 
 		$i = 0;
 
@@ -205,9 +225,10 @@ class Producto_model extends CI_Model {
 
 		$this->db->where('productoid',$id);
 		
-		$this->db->select('productos_colores.*, colores.nombre as nombre, colores.name as name, stock.cantidad,count(stock.id) as tienestock');
+		$this->db->select('productos_colores.*, colores.nombre as nombre, colores.name as name, stock.cantidad,count(stock.id) as tieneStock');
 	 	$this->db->group_by('productos_colores.id'); 
 		$query = $this->db->get();
+		//echo $this->db->last_query();
 
 		return $query->result();
 
@@ -225,7 +246,7 @@ class Producto_model extends CI_Model {
 
 	}
 
-	public function save_color($data)
+	public function save_color($data,$stock=0)
 
 	{
 
@@ -246,7 +267,7 @@ class Producto_model extends CI_Model {
 		$table="stock";
 		$where= array('producto_colorid'=>$producto_colorid);
 		$query = $this->db->get_where($table,$where);
-		$data=array('cantidad'=>0,'localid'=>1,'producto_colorid'=>$producto_colorid);
+		$data=array('cantidad'=>$stock,'localid'=>1,'producto_colorid'=>$producto_colorid);
 		if($this->db->affected_rows()==1){
 			$this->db->update($table, $data, $where);
 		}
@@ -291,6 +312,7 @@ class Producto_model extends CI_Model {
 		$this->db->where_not_in('colorid', $colores_no_eliminados);
 
 		$this->db->delete($this->table."_colores");
+
 	}
 
 

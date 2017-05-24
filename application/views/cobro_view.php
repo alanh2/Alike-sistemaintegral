@@ -10,6 +10,7 @@
                 <thead>
                     <tr>
                         <th style="width:25px;">ID</th>
+                        <th>Cliente</th>
                         <th>Monto</th>
                         <th>Fecha</th>
                         <th>Método de pago</th>
@@ -22,6 +23,7 @@
                 <tfoot>
                     <tr>
                         <th>ID</th>
+                        <th>Cliente</th>
                         <th>Monto</th>
                         <th>Fecha</th>
                         <th>Método de pago</th>
@@ -148,35 +150,34 @@ $(document).ready(function() {
 			}
 		}
 	});
-function mostrar_campos(metodo){
-    $(".metodo").hide();
-    switch ($("#metodos").val()){
-        case "1":
-            break;
-        case "2":
-            $(".metodo.cheque").show();
-            break;
-        case "3":
-            $(".metodo.mercadopago").show();
-            break;
-        case "4":
-            $(".metodo.transferencia").show();
-            break;
-        case "7":
-            $(".metodo.tarjeta").show();
-            break;
-    }
-}
-$("#metodos").change(function(){
-    mostrar_campos($("#metodos").val());
-});
+	function mostrar_campos(metodo){
+	    $(".metodo").hide();
+	    switch ($("#metodos").val()){
+	        case "1":
+	            break;
+	        case "2":
+	            $(".metodo.cheque").show();
+	            break;
+	        case "3":
+	            $(".metodo.mercadopago").show();
+	            break;
+	        case "4":
+	            $(".metodo.transferencia").show();
+	            break;
+	        case "7":
+	            $(".metodo.tarjeta").show();
+	            break;
+	    }
+	}
+	$("#metodos").change(function(){
+	    mostrar_campos($("#metodos").val());
+	});
 });
 
 
 function add_cobro()
 {
     save_method = 'add';
-    $('#form')[0].reset(); // reset form on modals
     $('.form-group').removeClass('has-error'); // clear error class
     $('.help-block').empty(); // clear error string
     $('#modal_form').modal('show'); // show bootstrap modal
@@ -294,7 +295,7 @@ function save()
             $('#btnSave').text('guardar'); //change button text
             $('#btnSave').attr('disabled',false); //set button enable 
             $('#nombre').attr('disabled',false); 
-
+    		$('#form')[0].reset(); // reset form on modals
 
         },
         error: function (jqXHR, textStatus, errorThrown)

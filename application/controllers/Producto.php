@@ -20,7 +20,16 @@ class Producto extends MY_Controller {
 
 	}
 
+	public function ajustar_colores($id){
+		$this->load->helper('url');
 
+		$data['view']='producto_ajustar_colores_view';
+
+		$data['data']='';//aqui va la data que se le quiera pasar a la vista a travez de la master
+
+		$this->load->view('master_view',$data);
+
+	}
 
 	public function index()
 
@@ -71,29 +80,26 @@ class Producto extends MY_Controller {
 
 			$row[] = $producto->nombre;
 
+			$row[] = $producto->categoria;
+
 			$row[] = $producto->subcategoria;
 
-			$row[] = $producto->proveedor;
-
 			//add html for action
-			if($this->able_to_delete($producto->id)){
-
-				$row[] = '
-
-				      
-					  <a class="btn btn-sm btn-primary" href="javascript:void(0)" title="Edit"
-					   onclick="window.open(\''.site_url('/producto/alta_producto/'.$producto->id).'\')"><i class="glyphicon glyphicon-pencil"></i> Editar</a>
+			$editar='<a class="btn btn-sm btn-primary" href="javascript:void(0)" title="Edit"
+					   onclick="window.open(\''.site_url('/producto/alta_producto/'.$producto->id).'\')"><i class="glyphicon glyphicon-pencil"></i> Editar</a>';
+				$clonar='<a class="btn btn-sm btn-info" href="javascript:void(0)" title="Clonar"
+					   onclick="window.open(\''.site_url('/producto/clonar_producto/'.$producto->id).'\')"><i class="glyphicon glyphicon-copy"></i> Clonar</a>';
+			if($this->able_to_delete($producto->id)>0){
+				
+				$row[] = $editar." ".$clonar.'
 
 					  <a class="btn btn-sm btn-danger" href="javascript:void(0)" title="Hapus" onclick="delete_producto('."'".$producto->id."'".')"><i class="glyphicon glyphicon-trash"></i> Borrar</a>';
 			}else{
 
-				$row[] = '
-
-			      
-				  <a class="btn btn-sm btn-primary" href="javascript:void(0)" title="Edit"
-					   onclick="window.open(\''.site_url('/producto/alta_producto/'.$producto->id).'\')"><i class="glyphicon glyphicon-pencil"></i> Editar</a>';	
+				$row[] = $editar." ".$clonar;
+	
 			}
-		
+		$row[]="";
 
 			$data[] = $row;
 
@@ -115,11 +121,19 @@ class Producto extends MY_Controller {
 
 		//output to json format
 
-		echo json_encode($output);
-
+		//echo json_encode($output);
+		print_r($_POST); 
 	}
 
-	
+	public function lista_precios($lista=null){
+		$this->load->helper('url');
+		$data['view']='producto_lista_precios_view';
+		$data['data']['stock'] = $this->producto->get_lista_precios($lista);
+		$data['data']['lista'] = $lista;
+		$this->load->view('master_view',$data);
+		//echo $this->db->last_query();
+
+	}
 
 	public function ajax_dropdown()
 
@@ -290,8 +304,7 @@ class Producto extends MY_Controller {
 							
 
 					);
-
-					$this->producto->save_color($data);
+					$this->producto->save_color($data,$value['cantidad']);
 
 					//echo $this->db->last_query();
 
@@ -398,8 +411,7 @@ class Producto extends MY_Controller {
 							
 
 					);
-
-					$this->producto->save_color($data);
+					$this->producto->save_color($data,$value['cantidad']);
 
 					//echo $this->db->last_query();
 
@@ -424,12 +436,22 @@ class Producto extends MY_Controller {
 	public function ajax_delete($id)
 
 	{
-
+		$this->db->trans_begin(); 
 		$this->producto->delete_colores($id);
 		$this->producto->delete_by_id($id);
+		if ($this->db->trans_status() === FALSE)
+		{
+	        $this->db->trans_rollback();
+	        echo json_encode(array("status" => FALSE));
 
-		echo json_encode(array("status" => TRUE));
+		}
+		else
+		{
+	        $this->db->trans_commit();
+	        echo json_encode(array("status" => TRUE));
 
+		}
+		
 	}
 
 	private function able_to_delete($id){
@@ -550,10 +572,31 @@ class Producto extends MY_Controller {
 
 		if($id==NULL){
 			$data['data']['save_method']='add';
+			$data['titulo']='Alta Producto';
 		}else{
 			$data['data']['save_method']='edit';
 			$data['data']['producto']=$this->producto->get_by_id($id);
 			$data['data']['colores']=$this->producto->get_producto_colores_para_producto($id);
+			$data['titulo']='Editar Producto';
+		}
+		$this->load->helper('url');
+
+		$data['view']='producto_alta_view';
+
+		//aqui va la data que se le quiera pasar a la vista a travez de la master
+		//print_r($data['data']['colores']);
+		$this->load->view('master_view',$data);
+
+	}
+	public function clonar_producto($id=NULL){
+
+		if($id==NULL){
+			//$data['data']['save_method']='add';
+		}else{
+			$data['data']['save_method']='add';
+			$data['data']['producto']=$this->producto->get_by_id($id);
+			$data['data']['colores']=array();
+			$data['titulo']='Clonar Producto';
 		}
 		$this->load->helper('url');
 

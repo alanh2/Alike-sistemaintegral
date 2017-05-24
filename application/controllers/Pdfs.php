@@ -2,7 +2,7 @@
 if (!defined('BASEPATH'))
     exit('No direct script access allowed');
 
-class Pdfs extends CI_Controller {
+class Pdfs extends MY_Controller {
 
     function __construct() {
         parent::__construct();
@@ -13,40 +13,128 @@ class Pdfs extends CI_Controller {
     {
         //$data['provincias'] llena el select con las provincias españolas
         //$data['provincias'] = $this->pdfs_model->getProvincias();
-		//$data["provincias"]["provincia"] = "a";
-		//$data["provincias"]["id"] = "1";
-		$data["provincias"][]=(object)array('provincia' => 'a', 'id'=>1);
-		$data["provincias"][]=(object)array('provincia' => 'b', 'id'=>2);
-		$data["provincias"][]=(object)array('provincia' => 'c', 'id'=>3);
-		$data["provincias"][]=(object)array('provincia' => 'd', 'id'=>4);
-		//cargamos la vista y pasamos el array $data['provincias'] para su uso
+        //$data["provincias"]["provincia"] = "a";
+        //$data["provincias"]["id"] = "1";
+        $data["provincias"][]=(object)array('provincia' => 'a', 'id'=>1);
+        $data["provincias"][]=(object)array('provincia' => 'b', 'id'=>2);
+        $data["provincias"][]=(object)array('provincia' => 'c', 'id'=>3);
+        $data["provincias"][]=(object)array('provincia' => 'd', 'id'=>4);
+        //cargamos la vista y pasamos el array $data['provincias'] para su uso
         $this->load->view('pdfs_view', $data);
     }
+    public function imprimir_lista_precios(){
+        ini_set('max_execution_time', 1200);
+$this->load->library('Pdf');
+        $pdf = new Pdf('P', 'mm', 'A4', true, 'UTF-8', false);
+        $pdf->SetCreator(PDF_CREATOR);
+        $pdf->SetAuthor('Orshicell');
+        $pdf->SetTitle('Cuenta Corriente');
+        $pdf->SetSubject('Cuenta Corriente');
+        $pdf->SetKeywords('TCPDF, PDF, example, test, guide');
+        $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+        $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+        $pdf->setFontSubsetting(false);
+        $pdf->SetFont('freemono', '', 10, '', true);
+        $this->load->helper('url');
+        $this->load->model('producto_model','producto');
+        $lp = $this->producto->get_lista_precios();
+        $renglones=count($lp);
+        $max_cant=30;
+        $paginas=ceil($renglones/$max_cant);
+        $html="";
+        //for($pagina=0;$pagina<$paginas;$pagina++){
+            $pdf->AddPage();
+            $html.= "<table class='renglones' border='1'>";
+            for($i=0;$i<$renglones;$i++){
+                //$html=$lp[$i];
+                //print_r($lp[$i]);
+                $html.= "<tr><td>".$lp[$i]->id."</td>";
+                $html.= "<td>".$lp[$i]->marca."</td>";
+                $html.= "<td>".$lp[$i]->modelo."</td>";
+                $html.= "<td>".$lp[$i]->subcategoria."</td>";
+                $html.= "<td>".$lp[$i]->producto."</td>";
+                $html.= "<td>".$lp[$i]->color."</td>";
+                $html.= "<td>".$lp[$i]->cantidad."</td>";
+                $html.= "<td>".$lp[$i]->l1."</td>";
+                $html.= "<td>".$lp[$i]->l2."</td>";
+                $html.= "<td>".$lp[$i]->l3."</td>";
+                $html.= "<td>".$lp[$i]->l4."</td></tr>";
+            }
+            $html.= "</table>";
+            $pdf->writeHTMLCell($w = 0, $h = 0, $x = '', $y = '', $html, $border = 0, $ln = 0, $fill = 0, $reseth = true, $align = '', $autopadding = true);
+                echo $html;
+            $nombre_archivo = utf8_decode("test.pdf");
+                $pdf->Output($nombre_archivo, 'I');
+      
+        //}
 
-    public function generar() {
+    }
+    public function imprimir_cuenta_corriente($clienteid) {
         $this->load->library('Pdf');
         $pdf = new Pdf('P', 'mm', 'A4', true, 'UTF-8', false);
         $pdf->SetCreator(PDF_CREATOR);
-        $pdf->SetAuthor('Market Lider');
-        $pdf->SetTitle('Listado de ventas');
-        $pdf->SetSubject('Market Lider');
+        $pdf->SetAuthor('Orshicell');
+        $pdf->SetTitle('Cuenta Corriente');
+        $pdf->SetSubject('Cuenta Corriente');
+        $pdf->SetKeywords('TCPDF, PDF, example, test, guide');
+        $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+        $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+        $pdf->setFontSubsetting(false);
+        $pdf->AddPage();
+        $this->load->helper('url');
+        $this->load->model('cliente_model','cliente');
+        $this->load->model('venta_model','venta');
+        $this->load->model('cobro_model','cobro');
+        $this->load->model('notacredito_model','notacredito');
+        $notasCredito = $this->notacredito->get_resumen_by_clienteid($clienteid);
+        $ventas = $this->venta->get_resumen_by_clienteid($clienteid);
+        $cobros = $this->cobro->get_resumen_by_clienteid($clienteid);
+        $cliente = $this->cliente->get_by_id($clienteid);
+
+        $data['data']['movimientos'] = array_merge($ventas,$notasCredito, $cobros);
+        
+        function cmp($a, $b)
+        {
+            return strcmp($a->fecha, $b->fecha);
+        }
+
+        usort($data['data']['movimientos'],  "cmp");
+        $data['data']['cliente'] = $cliente;
+        $html=$this->load->view('cliente_cuenta_pdf_view',$data,TRUE);
+       
+        $pdf->writeHTMLCell($w = 0, $h = 0, $x = '', $y = '', $html, $border = 0, $ln = 0, $fill = 0, $reseth = true, $align = '', $autopadding = true);
+
+// ---------------------------------------------------------
+// Cerrar el documento PDF y preparamos la salida
+// Este método tiene varias opciones, consulte la documentación para más información.
+        $nombre_archivo = utf8_decode($clienteid."_cc.pdf");
+        $pdf->Output($nombre_archivo, 'I');
+    }
+
+    public function imprimir_venta($ventaid) {
+        $this->load->library('Pdf');
+        $pdf = new Pdf('P', 'mm', 'A4', true, 'UTF-8', false);
+        $pdf->SetCreator(PDF_CREATOR);
+        $pdf->SetAuthor('Orshicell');
+        $pdf->SetTitle('Remito');
+        $pdf->SetSubject('Remito');
         $pdf->SetKeywords('TCPDF, PDF, example, test, guide');
 
 // datos por defecto de cabecera, se pueden modificar en el archivo tcpdf_config_alt.php de libraries/config
-        $pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, "Reporte de ventas" . ' 001', "07/11/16", array(0, 64, 255), array(0, 64, 128));
-        $pdf->setFooterData($tc = array(0, 64, 0), $lc = array(0, 64, 128));
+        //$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, "Reporte de ventas" . ' 001', "07/11/16", array(0, 64, 255), array(0, 64, 128));
+        //$pdf->setFooterData($tc = array(0, 64, 0), $lc = array(0, 64, 128));
 
 // datos por defecto de cabecera, se pueden modificar en el archivo tcpdf_config.php de libraries/config
-        $pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
-        $pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+        //$pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
+        //$pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
 
 // se pueden modificar en el archivo tcpdf_config.php de libraries/config
-        $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+        //$pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
 
 // se pueden modificar en el archivo tcpdf_config.php de libraries/config
-        $pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
-        $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
-        $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
+        //$pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
+        //$pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
+        //$pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 
 // se pueden modificar en el archivo tcpdf_config.php de libraries/config
         $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
@@ -57,60 +145,40 @@ class Pdfs extends CI_Controller {
 
 // ---------------------------------------------------------
 // establecer el modo de fuente por defecto
-        $pdf->setFontSubsetting(true);
+        $pdf->setFontSubsetting(false);
 
 // Establecer el tipo de letra
  
 //Si tienes que imprimir carácteres ASCII estándar, puede utilizar las fuentes básicas como
 // Helvetica para reducir el tamaño del archivo.
-        $pdf->SetFont('freemono', '', 14, '', true);
+        //$pdf->SetFont('times', 'B', 10);
 
 // Añadir una página
 // Este método tiene varias opciones, consulta la documentación para más información.
         $pdf->AddPage();
 
 //fijar efecto de sombra en el texto
-        $pdf->setTextShadow(array('enabled' => true, 'depth_w' => 0.2, 'depth_h' => 0.2, 'color' => array(196, 196, 196), 'opacity' => 1, 'blend_mode' => 'Normal'));
+        //$pdf->setTextShadow(array('enabled' => true, 'depth_w' => 0.2, 'depth_h' => 0.2, 'color' => array(196, 196, 196), 'opacity' => 1, 'blend_mode' => 'Normal'));
 
 // Establecemos el contenido para imprimir
-        $provincia = $this->input->post('provincia');
-		$data["provincias"][]=array('p.provincia' => 'a', 'l.id'=>1, 'l.localidad'=>'aa1');
-		$data["provincias"][]=array('p.provincia' => 'b', 'l.id'=>2, 'l.localidad'=>'aa2');
-		$data["provincias"][]=array('p.provincia' => 'c', 'l.id'=>3, 'l.localidad'=>'aa3');
-		$data["provincias"][]=array('p.provincia' => 'd', 'l.id'=>4, 'l.localidad'=>'aa4');
-        $provincias = $data["provincias"];//$this->pdfs_model->getProvinciasSeleccionadas($provincia);
-        foreach($provincias as $fila)
-        {
-            $prov = $fila['p.provincia'];
-        }
-        //preparamos y maquetamos el contenido a crear
-        $html = '';
-        $html .= "<style type=text/css>";
-        $html .= "th{color: #fff; font-weight: bold; background-color: #222}";
-        $html .= "td{background-color: #AAC7E3; color: #fff}";
-        $html .= "</style>";
-        $html .= "<h2>Listado de ventas".$prov."</h2><h4>Actualmente: ".count($provincias)." ventas</h4>";
-        $html .= "<table width='100%'>";
-        $html .= "<tr><th>Codigo de venta</th><th>Total</th></tr>";
-        
-        //provincias es la respuesta de la función getProvinciasSeleccionadas($provincia) del modelo
-        foreach ($provincias as $fila) 
-        {
-            $id = $fila['l.id'];
-            $localidad = $fila['l.localidad'];
-
-            $html .= "<tr><td class='id'>" . $id . "</td><td class='localidad'>" . $localidad . "</td></tr>";
-        }
-        $html .= "</table>";
-
-// Imprimimos el texto con writeHTMLCell()
-        $pdf->writeHTMLCell($w = 0, $h = 0, $x = '', $y = '', $html, $border = 0, $ln = 1, $fill = 0, $reseth = true, $align = '', $autopadding = true);
+       
+        $this->load->model('venta_model','venta');
+        $this->load->model('venta_renglones_model','venta_renglones');
+        $this->load->model('aplicacioncobroventa_model','aplicacionCobroVenta');
+        $data['venta'] = $this->venta->get_by_id($ventaid);
+        $data['venta_renglones'] = $this->venta_renglones->get_by_venta($ventaid);
+        $data['venta_cobros'] = $this->aplicacionCobroVenta->get_by_venta_id($ventaid);
+        $html=$this->load->view('factura_view',$data,TRUE);
+       
+        $pdf->writeHTMLCell($w = 0, $h = 0, $x = '', $y = '', $html, $border = 0, $ln = 0, $fill = 0, $reseth = true, $align = '', $autopadding = true);
 
 // ---------------------------------------------------------
 // Cerrar el documento PDF y preparamos la salida
 // Este método tiene varias opciones, consulte la documentación para más información.
-        $nombre_archivo = utf8_decode("Localidades de ".$prov.".pdf");
+        $nombre_archivo = utf8_decode($ventaid.".pdf");
         $pdf->Output($nombre_archivo, 'I');
+
+        //$html=$this->load->view('factura_view',$data);
     }
 }
 ?>

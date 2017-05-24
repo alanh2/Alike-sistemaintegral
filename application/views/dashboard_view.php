@@ -1,0 +1,97 @@
+<script src="<?php echo base_url('assets/jquery/jquery-2.1.4.min.js')?>"></script>
+<script src="<?php echo base_url('assets/bootstrap/js/bootstrap.min.js')?>"></script>
+<script src="<?php echo base_url('assets/datatables/js/jquery.dataTables.min.js')?>"></script>
+<script src="<?php echo base_url('assets/datatables/js/dataTables.bootstrap.js')?>"></script>
+<script src="<?php echo base_url('assets/bootstrap-datepicker/js/bootstrap-datepicker.min.js')?>"></script>
+<script src="<?php echo base_url('assets/js/common.js')?>"></script>
+
+<script src="<?php echo base_url('assets/dashboard/js/metisMenu.js')?>"></script>
+<script src="<?php echo base_url('assets/dashboard/js/raphael-min.js')?>"></script>
+<!--<script src="<?php echo base_url('assets/dashboard/js/morris.min.js')?>"></script>
+<script src="<?php echo base_url('assets/dashboard/js/morris-data.js')?>"></script>-->
+<script src="<?php echo base_url('assets/dashboard/js/sb-admin-2.js')?>"></script>
+
+<div id="page-wrapper">
+    <br/><br/>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3 col-md-6">
+                <div class="menu">
+                    <span class=" titulo">Ventas</span><br><hr/>
+                    <a class="link" href="<?php echo site_url('venta/alta_venta/')?>" target="_blank" title="Nueva Venta">Nueva Venta</a><br><hr/>
+                    <a class="link " href="<?php echo site_url('venta/')?>" target="_blank" title="Nuevo Producto">Listar Ventas</a><br><hr/>
+                    <span class="link">Ver Venta</span>
+                    <input onkeyup="javascript: if(event.keyCode == 13) window.open('<?php echo site_url('venta/alta_venta/')?>/'+$('#ventaid').val());" class="form-control" type="text" value="" id="ventaid" placeholder="Venta" />
+
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="menu">
+                    <span class=" titulo">Cobros</span><br><hr/>
+                    <a class="link" href="<?php echo site_url('cobro/')?>" target="_blank" title="Listar Cobros">Listar Cobros</a><br><hr/>
+                    <!--<span class="link">Buscar Cobros</span>
+                    <input onkeyup="javascript: if(event.keyCode == 13) window.open('<?php echo site_url('cobro/?search=')?>'+$('#cobroid').val());" class="form-control" type="text" value="" id="cobroid" placeholder="Cobro" />-->
+
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="menu">
+                    <span class=" titulo">Clientes</span><br><hr/>
+                    <a class="link" href="<?php echo site_url('cliente/')?>" target="_blank" title="Listar Clientes">Listar Clientes</a><br><hr/>
+                    <span class="link">Buscar Cliente</span>
+                    <input onkeyup="javascript: if(event.keyCode == 13) window.open('<?php echo site_url('cliente/?search=')?>'+$('#clienteid').val());" class="form-control" type="text" value="" id="clienteid" placeholder="Cliente" />
+
+                </div>
+            </div>  
+            <div class="col-lg-3 col-md-6">
+                <div class="menu">
+                    <span class=" titulo">Listados</span><br><hr/>
+                    <a class="link" href="<?php echo site_url('cliente/')?>" target="_blank" title="clientes">CLIENTES</a><br>
+                    <a class="link" href="<?php echo site_url('producto/')?>" target="_blank" title="Productos">PRODUCTOS</a><br>
+                    <a class="link" href="<?php echo site_url('gasto/')?>" target="_blank" title="Gastos">GASTOS</a><br>
+                    <a class="link" href="<?php echo site_url('producto/lista_precios')?>" target="_blank" title="Gastos">PRECIOS</a><br>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<style type="text/css">
+ table.seccion{
+    border-radius: 25px;
+    padding: 20px;
+}
+hr{
+    padding: 0;
+    margin:0;
+}
+#page-wrapper{
+    background-image: url("<?php echo base_url('assets/images/fondo_claro.jpg');?>");
+}
+.titulo{
+    font-size: 35px;
+    color: #FFF;
+}
+a{
+    text-decoration: none;
+}
+a:hover{
+    text-decoration: none;
+}
+
+.panel-heading{
+    height: 75px;
+}
+.link{
+    font-size: 30px;    
+    color: #FFF;
+}
+.menu{
+    border-radius: 25px;
+    padding: 20px;
+    background: #00f;
+
+    border: solid 2px #fff;
+  /*background: #6f6; // without a background or border applied you won't be able to see if its rounded*/
+}
+
+</style>

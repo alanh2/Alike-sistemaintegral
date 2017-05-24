@@ -111,16 +111,16 @@ class Cuentacorriente_model extends CI_Model {
 		$this->db->join('cobros', 'cobros.metodoid = mov_cuentacorrientes.id');
 		$this->db->where('metododepagoid',$this->numero_metodo_pago);
 		$this->db->where('clienteid',$clienteid);
-		$this->db->select_sum('cobros.monto', 'saldo');
+		$this->db->select_sum('mov_cuentacorrientes.saldo', 'deuda');
 
 		$query = $this->db->get();
-		return $query->row();
+		return $query->row()->deuda;
 	}
 
 	public function cliente_es_deudor($clienteid)
 	{
 		$deuda = $this->get_deuda_by_cliente($clienteid);
-		if ( $deuda->saldo > 0){
+		if ( $deuda > 0){
 			return true;
 		}else{
 			return false;
@@ -130,7 +130,7 @@ class Cuentacorriente_model extends CI_Model {
 	public function cliente_supero_limite_deuda($clienteid)
 	{
 		$deuda = $this->get_deuda_by_cliente($clienteid);
-		if ( $deuda->saldo >= 5000){
+		if ( $deuda >= 5000){ // Definir limite
 			return true;
 		}else{
 			return false;

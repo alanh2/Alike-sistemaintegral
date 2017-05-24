@@ -24,11 +24,13 @@
 
                         <th>Cliente</th>
 
+                        <th>Vendedor</th>
+
                         <th>Fecha</th>
 
                         <th>Total</th>
 
-                        <th>Vendedor</th>
+                        <th>Estado</th>
 
                         <th style="width:225px;">Accion</th>
 
@@ -48,13 +50,16 @@
 
                         <th>ID</th>
 
+                        
                         <th>Cliente</th>
+
+                        <th>Vendedor</th>
 
                         <th>Fecha</th>
 
                         <th>Total</th>
 
-                        <th>Vendedor</th>
+                        <th>Estado</th>
 
                         <th>Accion</th>
 

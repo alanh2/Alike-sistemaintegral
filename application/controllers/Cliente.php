@@ -8,6 +8,10 @@ class Cliente extends MY_Controller {
 		parent::__construct();
 		$this->is_logged_in();
 		$this->load->model('cliente_model','cliente');
+		$this->load->model('venta_model','venta');
+		$this->load->model('cobro_model','cobro');
+		$this->load->model('notacredito_model','notacredito');
+		$this->load->model('cuentacorriente_model','cuentacorriente');
 	}
 
 	public function index()
@@ -15,6 +19,32 @@ class Cliente extends MY_Controller {
 		$this->load->helper('url');
 		$data['view']='cliente_view';
 		$data['data']='';//aqui va la data que se le quiera pasar a la vista a travez de la master
+		$this->load->view('master_view',$data);
+	}
+	private function build_sorter($clave) {
+	    return function ($a, $b) use ($clave) {
+	        return strnatcmp($a[$clave], $b[$clave]);
+	    };
+	}
+	public function cuenta($clienteid)
+	{
+		$this->load->helper('url');
+		$notasCredito = $this->notacredito->get_resumen_by_clienteid($clienteid);
+		$ventas = $this->venta->get_resumen_by_clienteid($clienteid);
+		$cobros = $this->cobro->get_resumen_by_clienteid($clienteid);
+		$cliente = $this->cliente->get_by_id($clienteid);
+
+		$data['view']='cliente_cuenta_view';
+		$data['data']['movimientos'] = array_merge($ventas,$notasCredito, $cobros);
+		function cmp($a, $b)
+		{
+		    return strcmp($a->fecha, $b->fecha);
+		}
+
+		usort($data['data']['movimientos'],  "cmp");
+		
+		//print_r($data['data']['movimient	os']);
+		$data['data']['cliente'] = $cliente;
 		$this->load->view('master_view',$data);
 	}
 
@@ -42,8 +72,9 @@ class Cliente extends MY_Controller {
 			//add html for action
 			$row[] = '
 			      <a class="btn btn-sm btn-primary" href="javascript:void(0)" title="Edit" onclick="edit_cliente('."'".$cliente->id."'".')"><i class="glyphicon glyphicon-pencil"></i> Editar</a>
-				  <a class="btn btn-sm btn-danger" href="javascript:void(0)" title="Delete" onclick="delete_cliente('."'".$cliente->id."'".')"><i class="glyphicon glyphicon-trash"></i> Borrar</a>
-				  <a class="btn btn-sm btn-success" href="javascript:void(0)" title="Mensajes" onclick="add_mensaje('."'".$cliente->id."'".')"><i class="fa fa-star"></i></a>';		
+				<a class="btn btn-sm btn-warning" href="'.site_url('Pdfs/imprimir_cuenta_corriente/'.$cliente->id).'" title="Imprimir" target="_blank"><i class="fa fa-print"></i></a>
+				  <a class="btn btn-sm btn-success" href="javascript:void(0)" title="Mensajes" onclick="add_mensaje('."'".$cliente->id."'".')"><i class="fa fa-star"></i></a>
+				  <a class="btn btn-sm btn-danger" href="javascript:void(0)" title="Delete" onclick="delete_cliente('."'".$cliente->id."'".')"><i class="glyphicon glyphicon-trash"></i> Borrar</a>';		
 			$data[] = $row;
 		}
 
@@ -59,7 +90,7 @@ class Cliente extends MY_Controller {
 	
 	public function ajax_dropdown()
 	{
-		$list = $this->cliente->get_datatables();
+		$list = $this->cliente->get_por_orden_alfabetico();
 		
 		$data = array();
 	
@@ -150,6 +181,15 @@ class Cliente extends MY_Controller {
 		echo json_encode(array("status" => TRUE));
 	}
 
+	public function ajax_estado_de_cuenta($clienteid)
+	{
+		$data = array(
+				'saldo' => $this->notacredito->get_saldo_by_cliente($clienteid),
+				'deuda' => $this->cuentacorriente->get_deuda_by_cliente($clienteid),
+		);
+		print_r($data);
+		echo json_encode(array("status" => TRUE));
+	}
 
 	private function _validate()
 	{

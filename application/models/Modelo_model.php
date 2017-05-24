@@ -69,6 +69,7 @@ class Modelo_model extends CI_Model {
 	{
 		$this->db->from($this->table);
 		$this->db->where('marcaid', $marca);
+		$this->db->order_by('nombre','asc');
 		$query = $this->db->get();
 		//echo $this->db->last_query();
 		return $query->result();

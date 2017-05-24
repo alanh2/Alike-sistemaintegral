@@ -212,45 +212,30 @@ $(document).ready(function() {
 
 	//get a reference to the select element
 
-	$select_categorias = $('#categoria');
-
-	//request the JSON data and parse into the select element
-
-	$.ajax({
-
-		url: "<?php echo site_url('categoria/ajax_dropdown')?>"
-
-		, "type": "POST"
-
-		, data:{length:'',start:0}
-
-		, dataType: 'JSON'
-
-		, success: function (data) {
-
-			//clear the current content of the select
-
-			$select_categorias.html('');
-
-			//iterate over the data and append a select option
-
-			$.each(data.categorias, function (key, val) {
-
-				$select_categorias.append('<option value="' + val.id + '">' + val.nombre + '</option>');
-
-			})
-
-		}
-
-		, error: function () {
-
-			//if there is an error append a 'none available' option
-
-			$select_categorias.html('<option id="-1">ninguna disponible</option>');
-
-		}
-
-	});
+    $select_origen = $('#origen');
+    $select_destino = $('#destino');
+    //request the JSON data and parse into the select element
+    $.ajax({
+        url: "<?php echo site_url('local/ajax_dropdown')?>"
+        , "type": "POST"
+        , data:{length:'',start:0}
+        , dataType: 'JSON'
+        , success: function (data) {
+            //clear the current content of the select
+            $select_origen.html('');
+            $select_destino.html('');
+            //iterate over the data and append a select option
+            $.each(data.locales, function (key, val) {
+                $select_origen.append('<option value="' + val.id + '">' + val.nombre + '</option>');
+                $select_destino.append('<option value="' + val.id + '">' + val.nombre + '</option>');
+            })
+        }
+        , error: function () {
+            //if there is an error append a 'none available' option
+            $select_origen.html('<option id="-1">ninguna disponible</option>');
+            $select_destino.html('<option id="-1">ninguna disponible</option>');
+        }   
+    });
 
 
 
@@ -334,9 +319,9 @@ function edit_stock(id)
 
         {
 
-			
+            
 
-			$('[name="id"]').val(data.stock_id);
+            $('[name="id"]').val(data.stock_id);
 
             $('[name="nombre"]').val(data.nombre+" - "+data.color);
 
@@ -361,6 +346,63 @@ function edit_stock(id)
     });
 
 }
+function transferir_stock(id)
+
+{
+
+    save_method = 'update';
+
+    $('#formTransferencia')[0].reset(); // reset form on modals
+
+    $('.form-group').removeClass('has-error'); // clear error class
+
+    $('.help-block').empty(); // clear error string
+
+
+
+    //Ajax Load data from ajax
+
+    $.ajax({
+
+        url : "<?php echo site_url('stock/ajax_edit/')?>/" + id,
+
+        type: "GET",
+
+        dataType: "JSON",
+
+        success: function(data)
+
+        {
+
+            
+
+            $('[name="id"]').val(data.stock_id);
+
+            $('[name="nombre"]').val(data.nombre+" - "+data.color);
+
+            $('[name="cantidad"]').val(data.cantidad);
+
+            $('[name="origen"]').val(data.localid);
+
+            $('#modal_transferencia_form').modal('show'); // show bootstrap modal when complete loaded
+
+            $('.modal-title').text('Transferencia Stock'); // Set title to Bootstrap modal title
+
+
+
+        },
+
+        error: function (jqXHR, textStatus, errorThrown)
+
+        {
+
+            alert('Error get data from ajax');
+
+        }
+
+    });
+
+}
 
 
 
@@ -369,6 +411,80 @@ function reload_table()
 {
 
     table.ajax.reload(null,false); //reload datatable ajax 
+
+}
+function save_transferencia(){
+    $('#btnSaveTrasnferencia').text('saving...'); //change button text
+
+    $('#btnSaveTrasnferencia').attr('disabled',true); //set button disable 
+    var url = "<?php echo site_url('stock/ajax_transferencia')?>";
+    $.ajax({
+
+        url : url,
+
+        type: "POST",
+
+        data: $('#form').serialize(),
+
+        dataType: "JSON",
+
+        success: function(data)
+
+        {
+
+
+
+            if(data.status) //if success close modal and reload ajax table
+
+            {
+
+                $('#modal_transferencia_form').modal('hide');
+
+                reload_table();
+
+            }
+
+            else
+
+            {
+
+                for (var i = 0; i < data.inputerror.length; i++) 
+
+                {
+
+                    $('[name="'+data.inputerror[i]+'"]').parent().parent().addClass('has-error'); //select parent twice to select div form-group class and add has-error class
+
+                    $('[name="'+data.inputerror[i]+'"]').next().text(data.error_string[i]); //select span help-block class set text error string
+
+                }
+
+            }
+
+            $('#btnSaveTrasnferencia').text('guardar'); //change button text
+
+            $('#btnSaveTrasnferencia').attr('disabled',false); //set button enable 
+
+
+
+
+
+        },
+
+        error: function (jqXHR, textStatus, errorThrown)
+
+        {
+
+            alert('Error adding / update data');
+
+            $('#btnSaveTrasnferencia').text('guardar'); //change button text
+
+            $('#btnSaveTrasnferencia').attr('disabled',false); //set button enable 
+
+
+
+        }
+
+    });
 
 }
 
@@ -488,7 +604,7 @@ function save()
 
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 
-                <h3 class="modal-title">Formulario de Productos</h3>
+                <h3 class="modal-title">Ajustar Stock</h3>
 
             </div>
 
@@ -537,6 +653,94 @@ function save()
             <div class="modal-footer">
 
                 <button type="button" id="btnSave" onclick="save()" class="btn btn-primary">Guardar</button>
+
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+
+            </div>
+
+        </div><!-- /.modal-content -->
+
+    </div><!-- /.modal-dialog -->
+
+</div><!-- /.modal -->
+<!--                                 -->
+<div class="modal fade" id="modal_transferencia_form" role="dialog">
+
+    <div class="modal-dialog">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+
+                <h3 class="modal-title">Transferencia Stock</h3>
+
+            </div>
+
+            <div class="modal-body form">
+
+                <form action="#" id="formTransferencia" class="form-horizontal">
+
+                    <input type="hidden" value="" name="id"/> 
+
+                    <div class="form-body">
+
+                        <div class="form-group">
+
+                            <label class="control-label col-md-3">Nombre</label>
+
+                            <div class="col-md-9">
+
+                                <input name="nombre" placeholder="Nombre" class="form-control" type="text" disabled="disabled">
+
+                                <span class="help-block"></span>
+
+                            </div>
+
+                        </div>
+
+                        <div class="form-group">
+
+                            <label class="control-label col-md-3">Cantidad</label>
+
+                            <div class="col-md-9">
+
+                                <input name="cantidad" placeholder="Cantidad" class="form-control" type="text">
+
+                                <span class="help-block"></span>
+
+                            </div>
+
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label col-md-3">Origen</label>
+                            <div class="col-md-9">
+                                <select id="origen" name="origen" class="form-control" disabled="disabled">
+                                </select>
+                                <span class="help-block"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label col-md-3">Destino</label>
+                            <div class="col-md-9">
+                                <select id="destino" name="destino" class="form-control">
+                                </select>
+                                <span class="help-block"></span>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+            <div class="modal-footer">
+
+                <button type="button" id="btnSaveTrasnferencia" onclick="save_transferencia()" class="btn btn-primary">Guardar</button>
 
                 <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
 

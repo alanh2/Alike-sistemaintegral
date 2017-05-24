@@ -2,7 +2,7 @@
 if (isset($venta)){
     $ventaid=$venta->id;
 ?>
-    <a href="http://systemix.com.ar/sistemaIntegral/index.php/venta/ver_detalles/<?php echo $venta->id;?>">Ver detalles</a>
+    <a href="<?php echo site_url("venta/ver_detalles/".$venta->id);?>">Ver detalles</a>
 <?
 }else{
 $ventaid='#';

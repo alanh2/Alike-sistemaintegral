@@ -2,7 +2,7 @@
 
             <div class="navbar-header">
 
-                <a class="navbar-brand" href="#">Sistema Integral</a>
+                <a class="navbar-brand" href="<?php echo base_url('index.php')?>">ORSHICELL</a>
 
             </div>
 
@@ -38,6 +38,11 @@
 
                     </a>
                     <ul class="dropdown-menu dropdown-messages">
+                                <li>
+
+                                    <a href="<?php echo site_url('cobro')?>">Cobro</a>
+
+                                </li>
                                 <li>
 
                                     <a href="<?php echo site_url('producto')?>">Productos</a>

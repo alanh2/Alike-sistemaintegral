@@ -4,7 +4,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 class Transaccion_model extends CI_Model {
 
 
-	var $tabla = array('0','mov_efectivos','mov_cheques','mov_mercadopagos','mov_transferencias','mov_cuentacorrientes','mov_panamas', 'mov_tarjetas');
+	var $tabla = array('0','mov_efectivos','mov_cheques','mov_mercadopagos','mov_transferencias','mov_cuentacorrientes','mov_panamas', 'mov_tarjetas', 'nota_credito');
 
 	public function __construct()
 	{
@@ -48,6 +48,7 @@ class Transaccion_model extends CI_Model {
 		$cuentacorrientes = 5;
 		$panamas = 6;
 		$tarjetas = 7;
+		$notacredito = 8;
 		$datos_preparados = array();
 		switch ($metododepago) {
 			case $efectivos:
@@ -81,6 +82,10 @@ class Transaccion_model extends CI_Model {
 				$datos_preparados['vencimiento'] = $data['vencimiento'];
 				$datos_preparados['digitos'] = $data['digitos'];
 				$datos_preparados['operacion'] = $operacion;			
+				break;
+			case $notacredito:
+				$datos_preparados['saldo'] = $data['monto'];
+				$datos_preparados['monto'] = $data['monto'];
 				break;
 			default:
 				//rechazar pago

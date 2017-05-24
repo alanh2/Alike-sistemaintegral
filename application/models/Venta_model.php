@@ -10,9 +10,9 @@ class Venta_model extends CI_Model {
 
 	var $table = 'ventas';
 
-	var $column_order = array('cliente','fecha','subtotal','descuento','total',null); //set column field database for datatable orderable
+	var $column_order = array('ventas.id','cliente','fecha','subtotal','descuento','total',null); //set column field database for datatable orderable
 
-	var $column_search = array('clientes.razon_social','fecha'); //set column field database for datatable searchable just firstname , lastname , address are searchable
+	var $column_search = array('clientes.razon_social','fecha','ventas.id'); //set column field database for datatable searchable just firstname , lastname , address are searchable
 
 	var $order = array('id' => 'desc'); // default order 
 
@@ -43,9 +43,10 @@ class Venta_model extends CI_Model {
 
 		$this->db->join('ventas_renglones', 'ventas_renglones.ventaid = ventas.id','left');
 
+		$this->db->join('ventas_estados', 'ventas_estados.id = ventas.estadoid');
 		//$this->db->join('productos', 'venta_renglones.productoid= producto.id');
 
-		$this->db->select('ventas.*, clientes.razon_social as cliente, vendedores.nombre as vendedor,IFNULL(SUM(  `total_renglon` ),0) AS total');
+		$this->db->select('ventas.*, ventas_estados.nombre as estado_nombre, clientes.razon_social as cliente, vendedores.nombre as vendedor,IFNULL(SUM(  `total_renglon` ),0) AS total');
 		
 		$this->db->group_by('ventas.id'); 
 		
@@ -114,8 +115,29 @@ class Venta_model extends CI_Model {
 		}
 
 	}
+	public function get_resumen_by_clienteid($clienteid)
+	{
+		$this->db->from($this->table);
+		$this->db->where('clienteid',$clienteid);
+		$this->db->where('total >','0');
+		$this->db->select('id, total as monto, fecha, "Venta" as tipo');
+		$query = $this->db->get();
 
-
+		return $query->result();
+	}
+	function actualizar_total($ventaid){
+		$total=$this->get_total($ventaid);
+		//echo $this->db->last_query();
+		//echo $this->db->affected_rows();
+		if($this->db->affected_rows()>0){
+			$data = array(
+					'total' => $total->total,
+				);
+			$where=array('id' => $ventaid);
+			$this->db->update($this->table, $data, $where);
+		}
+		return $this->db->affected_rows();
+	}
 
 	function get_datatables()
 
@@ -166,23 +188,115 @@ class Venta_model extends CI_Model {
 		//echo $this->db->last_query();
 		return $query->row();
 	}
+	/*public function get_stock_con_devoluciones_by_id($id='')
+	{
+		$this->db->from($this->table."_renglones");
+		$this->db->join('devoluciones_renglones', 'ventas_renglones.id=devoluciones_renglones.venta_renglonid');
+		$this->db->select('devoluciones_renglones.cantidad');
+		$this->db->where('ventas.id',$id);
+		$query = $this->db->get();
+		return $query->row();
+	}*/
+	public function reporte_simple($desde,$hasta){
+		$this->db->from($this->table);
+		$this->db->join('clientes', 'clientes.id = ventas.clienteid');
+		$this->db->join('vendedores', 'vendedores.id = ventas.vendedorid');
+		$this->db->join('localidades', 'localidades.id = clientes.localidadid');
+		$this->db->join('ventas_estados', 'ventas_estados.id = ventas.estadoid');
+		$this->db->join('ventas_renglones', 'ventas_renglones.ventaid = ventas.id','left');
+		$this->db->select('ventas.*, 
+			vendedores.nombre as vendedor,
+			ventas_estados.nombre as estado_nombre,
+			clientes.razon_social as cliente, clientes.tel_codigo_area, clientes.tel_numero, clientes.cel_numero, clientes.direccion, clientes.cp,
+			clientes.email, clientes.dni, clientes.cuitcuil, clientes.web, clientes.ranking, localidades.nombre as localidad');
+		$this->db->where('fecha >=', $desde);
+		$this->db->where('fecha <=', $hasta);
+		
+		/*$i = 0;
+
+		
+
+		foreach ($this->column_search as $item) // loop column 
+
+		{
+
+			if(isset($_POST['search']['value'])) // if datatable send POST for search
+
+			{
+
+				
+
+				if($i===0) // first loop
+
+				{
+
+					$this->db->group_start(); // open bracket. query Where with OR clause better with bracket. because maybe can combine with other WHERE with AND.
+
+					$this->db->like($item, $_POST['search']['value']);
+
+				}
+
+				else
+
+				{
+
+					$this->db->or_like($item, $_POST['search']['value']);
+
+				}
+
+
+
+				if(count($this->column_search) - 1 == $i) //last loop
+
+					$this->db->group_end(); //close bracket
+
+			}
+
+			$i++;
+
+		}
+
+		
+
+		if(isset($_POST['order'])) // here order processing
+
+		{
+
+			$this->db->order_by($this->column_order[$_POST['order']['0']['column']], $_POST['order']['0']['dir']);
+
+		} 
+
+		else if(isset($this->order))
+
+		{
+
+			$order = $this->order;
+
+			$this->db->order_by(key($order), $order[key($order)]);
+
+		}*/
+		$query = $this->db->get();
+		return $query->result();
+	}
 	public function get_by_id($id)
 	{
 		$this->db->from($this->table);
 		$this->db->join('clientes', 'clientes.id = ventas.clienteid');
 		$this->db->join('vendedores', 'vendedores.id = ventas.vendedorid');
 		$this->db->join('localidades', 'localidades.id = clientes.localidadid');
-		$this->db->join('ventas_estados', 'ventas_estados.id = ventas.estado');
+		$this->db->join('ventas_estados', 'ventas_estados.id = ventas.estadoid');
 		$this->db->join('ventas_renglones', 'ventas_renglones.ventaid = ventas.id','left');
 		$this->db->select('ventas.*, 
 			vendedores.nombre as vendedor,
 			ventas_estados.nombre as estado_nombre,
 			clientes.razon_social as cliente, clientes.tel_codigo_area, clientes.tel_numero, clientes.cel_numero, clientes.direccion, clientes.cp,
-			clientes.email, clientes.dni, clientes.cuitcuil, clientes.web, clientes.ranking,IFNULL(SUM(  `total_renglon` ),0) AS total, localidades.nombre as localidad');
+			clientes.email, clientes.dni, clientes.cuitcuil, clientes.web, clientes.ranking, localidades.nombre as localidad');
 		$this->db->where('ventas.id',$id);
 		$this->db->group_by('ventas.id'); 
 		$query = $this->db->get();
 		return $query->row();
+
+
 	}
 
 	/*public function get_by_id($id)

@@ -20,7 +20,37 @@ class Stock extends MY_Controller {
 
 	}
 
+	public function transferencia_entre_locales(){
+		$this->load->helper('url');
+		$data['view']='stock_transferencia_view';
+		$data['data']='';//aqui va la data que se le quiera pasar a la vista a travez de la master
+		$this->load->view('master_view',$data);
 
+	}
+	public function ajax_transferencia(){
+
+		$this->_validate();
+		$stockid=$this->input->post('id');
+		$cantidad=$this->input->post('cantidad');
+
+		$stock_origen=$this->stock->get_by_id($stockid);//stock origen
+		$stock_destino=$this->stock->get_by_producto_color_local($stock_origen->producto_colorid,$this->input->post('destino'));//stock destino
+		$stock_origen_cantidad_final=$stock->cantidad-$cantidad;
+		print_r($stock_destino);
+		/*if(($stock_origen_cantidad_final>0)&&($stock_destino!=null)){
+
+		}
+		
+		$stock_destino_cantidad_final=$stock->cantidad+$cantidad;
+
+		$data_stock_origen= array('cantidad'=>$stock_origen_cantidad_final);
+		$data_stock_destino= array('cantidad'=>$stock_destino_cantidad_final);
+		
+		//$this->stock->update(array('id' => $stockid), $data);
+		//print_r($this->input->post());
+		echo json_encode(array("status" => TRUE));
+*/
+	}
 
 	public function index()
 
@@ -75,10 +105,13 @@ class Stock extends MY_Controller {
 
 			$row[] = $producto->cantidad;
 
-			$row[] = '
-
-		      
-			  <a class="btn btn-sm btn-primary" href="javascript:void(0)" title="Edit" onclick="edit_stock('."'".$producto->id."'".')"><i class="glyphicon glyphicon-pencil"></i> Ajustar stock</a>';
+			$transferencia='<a class="btn btn-sm btn-primary" href="javascript:void(0)" title="Transfer" onclick="transferir_stock('."'".$producto->id."'".')"><i class="glyphicon glyphicon-transfer"></i> Transferir stock</a>';
+			$editar='<a class="btn btn-sm btn-primary" href="javascript:void(0)" title="Edit" onclick="edit_stock('."'".$producto->id."'".')"><i class="glyphicon glyphicon-pencil"></i> Ajustar stock</a>';
+			$action=$editar;
+			if ($producto->cantidad>0){
+				$action.=$transferencia;
+			}
+			$row[] = $action;
 	
 
 			$data[] = $row;
@@ -131,13 +164,13 @@ public function ajax_color_por_producto_para_venta($producto=NULL, $venta=NULL)
 
 			$row['nombre'] = $stock->nombre;
 
-			$row['l1'] = $stock->costo*$stock->porcentaje1;
+			$row['l1'] = $stock->costo+$stock->costo*$stock->porcentaje1/100;
 			
-			$row['l2'] = $stock->costo*$stock->porcentaje2;
+			$row['l2'] = $stock->costo+$stock->costo*$stock->porcentaje2/100;
 
-			$row['l3'] = $stock->costo*$stock->porcentaje3;
+			$row['l3'] = $stock->costo+$stock->costo*$stock->porcentaje3/100;
 
-			$row['l4'] = $stock->costo*$stock->porcentaje4;
+			$row['l4'] = $stock->costo+$stock->costo*$stock->porcentaje4/100;
 			
 			$row['cantidad'] = $stock->cantidad;
 

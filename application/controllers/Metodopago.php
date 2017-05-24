@@ -31,6 +31,7 @@ class Metodopago extends MY_Controller {
 	public function ajax_dropdown()
 	{
 		$list = $this->metodopago->get_metodos();
+		unset($list[7]);
 		$data = array();
 
 		foreach ($list as $metodo) {

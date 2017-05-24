@@ -63,19 +63,23 @@
                         </div>
 
                     </div>
-        
-
-                </div>
                
 
+                    <div class="form-group">
+                        <label class="control-label col-md-3">Cuenta corriente:</label>
+                        <div class="slideThree">    
+                            <input type="checkbox" value="1" id="slideThree" name="cuentacorriente" style="display: none;" />
+                            <label for="slideThree"></label>
+                        </div>
+                    </div>
             <!--</form>-->
-		        <div class="modal-footer">
+    		        <div class="modal-footer">
 
-				    <button type="button" id="btnSave" onclick="save()" class="btn btn-primary">Guardar</button>
+    				    <button type="button" id="btnSave" onclick="save()" class="btn btn-primary">Guardar</button>
 
-		            <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+    		            <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
 
-		        </div>
+    		        </div>
         </div>
         <div id="mensajesAnteriores" class="col-md-6"></div>
 		</div>
@@ -340,17 +344,20 @@ function _cargar_mensajes(clienteid){
                 cantidad++;
             });
             resultado = '</label></div>' + resultado;
-            promedio = Math.round((parseFloat(promedio) / cantidad)*2); //multiplico para agarrar los medios
-            estrellas ='';
-            for(i=1;i<promedio;i=i+2){
-                estrellas = estrellas + '<i class="fa fa-star"></i>';
+            if (data.length != 0){
+                promedio = Math.round((parseFloat(promedio) / cantidad)*2); //multiplico para agarrar los medios
+                estrellas ='';
+                for(i=1;i<promedio;i=i+2){
+                    estrellas = estrellas + '<i class="fa fa-star"></i>';
+                }
+                if (promedio - i == 1 ){ 
+                    estrellas = estrellas + '<i class="fa fa-star-half-o"></i>';
+                }
+                resultado = 'Puntaje promedio: ' + estrellas + '<span class="numero">('+ parseFloat(promedio)/2 + '/5)</span> ' + resultado;
+            }else{
+                resultado = ' <span class="numero">No hay comentarios</span> ' + resultado;
             }
-            if (promedio - i == 1 ){ 
-                estrellas = estrellas + '<i class="fa fa-star-half-o"></i>';
-            }
-            resultado = estrellas + ' <span class="numero">(' + parseFloat(promedio)/2 + '/5)</span> ' + resultado;
-
-            resultado = '<div class="row mensaje col-md-10"><label class="comentario col-md-12">Puntaje promedio: '+resultado;
+            resultado = '<div class="row mensaje col-md-10"><label class="comentario col-md-12">'+resultado;
             $('#mensajesAnteriores').html(resultado);
         },
         error: function (jqXHR, textStatus, errorThrown)
@@ -499,10 +506,11 @@ $('.porcentaje').change(function () {
 
             })
             <?php if (isset($venta)){?>
-            if(save_method=='mod'){
                     $('[name="cliente"]').val('<?php echo $venta->clienteid;?>');
                     $('[name="vendedor"]').val('<?php echo $venta->vendedorid;?>');
-            }
+            
+            <?php }else{?>
+                $('[name="cliente"]').val('504');
             <?php }?>
             _cargar_mensajes($('#cliente').val()); 
 
@@ -904,6 +912,84 @@ window.reset = function (e) {
 </script>
 
 <style>
+
+/* SLIDE THREE */
+.slideThree {
+    width: 80px;
+    height: 26px;
+    background: #337ab7;
+    margin: 0px 0px 0px 200px;
+
+    -webkit-border-radius: 50px;
+    -moz-border-radius: 50px;
+    border-radius: 50px;
+    position: relative;
+
+    -webkit-box-shadow: inset 0px 1px 1px rgba(0,0,0,0.5), 0px 1px 0px rgba(255,255,255,0.2);
+    -moz-box-shadow: inset 0px 1px 1px rgba(0,0,0,0.5), 0px 1px 0px rgba(255,255,255,0.2);
+    box-shadow: inset 0px 1px 1px rgba(0,0,0,0.5), 0px 1px 0px rgba(255,255,255,0.2);
+}
+
+.slideThree:after {
+    content: 'NO';
+    font: 12px/26px Arial, sans-serif;
+    color: #DDD;
+    position: absolute;
+    right: 10px;
+    z-index: 0;
+    font-weight: bold;
+    text-shadow: 1px 1px 0px rgba(255,255,255,.15);
+}
+
+.slideThree:before {
+    content: 'SI';
+    font: 12px/26px Arial, sans-serif;
+    color: #FFF;
+    position: absolute;
+    left: 10px;
+    z-index: 0;
+    font-weight: bold;
+}
+
+.slideThree label {
+    display: block;
+    width: 34px;
+    height: 20px;
+
+    -webkit-border-radius: 50px;
+    -moz-border-radius: 50px;
+    border-radius: 50px;
+
+    -webkit-transition: all .4s ease;
+    -moz-transition: all .4s ease;
+    -o-transition: all .4s ease;
+    -ms-transition: all .4s ease;
+    transition: all .4s ease;
+    cursor: pointer;
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    z-index: 1;
+
+    -webkit-box-shadow: 0px 2px 5px 0px rgba(0,0,0,0.3);
+    -moz-box-shadow: 0px 2px 5px 0px rgba(0,0,0,0.3);
+    box-shadow: 0px 2px 5px 0px rgba(0,0,0,0.3);
+    background: #fcfff4;
+
+    background: -webkit-linear-gradient(top, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);
+    background: -moz-linear-gradient(top, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);
+    background: -o-linear-gradient(top, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);
+    background: -ms-linear-gradient(top, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);
+    background: linear-gradient(top, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fcfff4', endColorstr='#b3bead',GradientType=0 );
+}
+
+.slideThree input[type=checkbox]:checked + label {
+    left: 43px;
+}
+
+
+
 
 .form-group{
 	margin-bottom: 5px;

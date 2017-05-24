@@ -8,6 +8,7 @@ class Notacredito_model extends CI_Model {
 	var $column_order = array('id','monto','saldo'); //set column field database for datatable orderable
 	var $column_search = array('nota_credito.monto','nota_credito.saldo'); //set column field database for datatable searchable just firstname , lastname , address are searchable
 	var $order = array('id' => 'desc'); // default order 
+	var $numero_metodo_pago = 8;
 
 	public function get_by_id($id)
 	{
@@ -16,6 +17,17 @@ class Notacredito_model extends CI_Model {
 		$query = $this->db->get();
 
 		return $query->row();
+	}
+
+	public function get_resumen_by_clienteid($clienteid)
+	{
+		$this->db->from($this->table);
+		$this->db->join('cobros', 'cobros.id = nota_credito.cobroid');
+		$this->db->where('cobros.clienteid',$clienteid);
+		$this->db->select('nota_credito.id as id, nota_credito.monto as monto, cobros.fecha as fecha, "Nota de credito" as tipo');
+		$query = $this->db->get();
+
+		return $query->result();
 	}
 	
 	public function save($data)
@@ -34,6 +46,18 @@ class Notacredito_model extends CI_Model {
 	{
 		$this->db->where('id', $id);
 		$this->db->delete($this->table);
+	}
+
+	public function get_saldo_by_cliente($clienteid)
+	{
+		$this->db->from($this->table);
+		$this->db->join('cobros', 'cobros.metodoid = nota_credito.id');
+		$this->db->where('metododepagoid',$this->numero_metodo_pago);
+		$this->db->where('clienteid',$clienteid);
+		$this->db->select_sum('nota_credito.saldo', 'saldo');
+
+		$query = $this->db->get();
+		return $query->row()->saldo;
 	}
 
 }

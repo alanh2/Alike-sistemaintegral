@@ -36,7 +36,7 @@
 
                         <th>Categoria</th>
 
-                        <th>Proveedor</th>
+                        <th>Subcategoria</th>
 
                         <th style="width:225px;">Accion</th>
 
@@ -132,6 +132,10 @@ $(document).ready(function() {
 
     //datatables
 
+    $('#table tfoot th').each( function () {
+        var title = $(this).text();
+        $(this).html( '<input type="text" placeholder="Buscar  '+title+'" />' );
+    } );
     table = $('#table').DataTable({ 
 
 
@@ -209,9 +213,20 @@ $(document).ready(function() {
 			}
 
 		}
+        
+	});//fin datatables
 
-	});
-
+    table.columns().every( function () {
+        var that = this;
+ 
+        $( 'input', this.footer() ).on( 'keyup change', function () {
+            if ( that.search() !== this.value ) {
+                that
+                    .search( this.value )
+                    .draw();
+            }
+        } );
+    } );
 	//get a reference to the select element
 
 	$select_categorias = $('#categoria');

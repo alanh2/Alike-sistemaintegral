@@ -30,6 +30,8 @@ class Devolucion extends MY_Controller {
 
 		$this->load->model('devolucion_model','devolucion');
 
+		$this->load->model('gasto_model','gasto');
+
 		$this->load->model('notacredito_model','notacredito');
 
 
@@ -352,14 +354,27 @@ class Devolucion extends MY_Controller {
 			);
 
 		//echo json_encode(array("status" => TRUE, 'id' => $insert));
-		$this->db->trans_begin(); 
+		//$this->db->trans_begin(); 
 		
-		$insert = $this->devolucion->save($data);
+		$devolucionid = $this->devolucion->save($data);
 
 		$data = $this->input->post('devoluciones');
-		foreach ($data as $key => $value) {
+		//print_r($_POST);
+		$devolucion="";
+		foreach ($data as $venta_renglon => $unidades) {
+			if(!isset($devolucion[$venta_renglon])){
+				$devolucion[$venta_renglon]["stock"]=0;
+				$devolucion[$venta_renglon]["RMA"]=0;
+			}
+			foreach($unidades as $key=> $value){
+				if($value==1){
+					$devolucion[$venta_renglon]["stock"]+=1;
+				}else{
+					$devolucion[$venta_renglon]["RMA"]+=1;
+				}
+			}
 			//We check to make sure that the value is either null or just an empty string
-			if (is_null($value) || $value=="") {
+			/*if (is_null($value) || $value=="") {
 				//unset($data[$key]);
 			}else{
 				$devolucion_renglon=$this->add_renglon($insert,$key,$value);
@@ -377,12 +392,39 @@ class Devolucion extends MY_Controller {
 				$this->stock->update(array('id' => $venta_renglon->stockid), $dataStock);
 		
 		
-			}	
-		}
+			}*/
 
-		//$monto_devolucion=$this->devolucion-;
-		//$insert = $this->notacredito->save($data);
-		if ($this->db->trans_status() === FALSE)
+		}
+		//print_r($devolucion);
+		foreach ($devolucion as $venta_renglonid=>$devoluciones){
+			$devolucion_renglon=$this->add_renglon($devolucionid,$venta_renglonid,$devoluciones['stock'],$devoluciones['RMA']);
+			$venta_renglon=$this->venta_renglones->get_by_id($venta_renglon);
+			$stock=$this->stock->get_by_id($venta_renglon->stockid);
+			$stock_cantidad_final=$stock->cantidad+$devoluciones['stock'];
+			$stock_rma_final=$stock->rma+$devoluciones['RMA'];
+			$dataStock= array('cantidad'=>$stock_cantidad_final,'rma'=>$stock_rma_final);
+			$this->stock->update(array('id' => $venta_renglon->stockid), $dataStock);
+		}
+			$this->devolucion->actualizar_total($devolucionid);
+			$monto_devolucion=$this->devolucion->get_total($devolucionid);
+			
+
+			$dataGasto=array();//ver datos gasto
+			$dataGasto = array(
+			'nombre' => 'Nota de Credito - Devolucion - Venta -'.$ventaid,
+			'tipos_gastoid' => '2',
+			'monto' => $monto_devolucion->total,
+			'fecha' => date("Y-m-d H:i:s"),
+			'vendedorid' => '1',
+			);
+			//print_r($dataGasto);
+			$gastoid =$this->gasto->save($dataGasto);
+					//echo $this->db->last_query();
+
+			$dataNotaCredito = array('monto'=>$monto_devolucion->total,'saldo'=>$monto_devolucion->total,'fecha' => date("Y-m-d H:i:s"),'devolucionid'=>$devolucionid,'gastoid'=>$gastoid);
+			$nota_creditoid = $this->notacredito->save($dataNotaCredito);
+
+		/*if ($this->db->trans_status() === FALSE)
 		{
 	        $this->db->trans_rollback();
 	    	$output['resultado'] = 'Error';
@@ -392,11 +434,12 @@ class Devolucion extends MY_Controller {
 	        $this->db->trans_commit();
 	    	$output['resultado'] = 'Ok';
 		//echo json_encode(array("status" => TRUE));
-		}
+		}*/
 		//print_r($output);
 
 		//print_r($this->input->post());
 	}
+
 
 
 
@@ -538,7 +581,7 @@ public function ajax_renglones($id)
 
 
 
-	public function add_renglon($devolucionid,$venta_renglonid,$cantidad)
+	public function add_renglon($devolucionid,$venta_renglonid,$stock,$rma)
 
 	{
 
@@ -552,7 +595,11 @@ public function ajax_renglones($id)
 
 				//'stockid' => $this->input->post('stock'),
 
-				'cantidad' => $cantidad,
+				'cantidad' => $stock+$rma,
+
+				'stock' => $stock,
+
+				'rma' => $rma,
 
 				//'precio_unitario' => $this->input->post('precio'),
 

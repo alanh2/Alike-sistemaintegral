@@ -17,9 +17,11 @@ body{
 }
 .renglones th{
   border: #aaa solid 2px;
+    text-align: center;
 }
 .renglones td{
   border: #aaa solid 1px;
+    text-align: center;
 }
 .noborder td{
   border:none;
@@ -59,9 +61,10 @@ body{
             <table id="table" class="table table-striped table-bordered" cellspacing="0" width="100%" border="1">
                 <thead>
                     <tr>
-                        <th>Tipo</th>
-                        <th>Fecha</th>
-                        <th>Total</th>
+                        <th width="10%">ID</th>
+                        <th width="30%">Tipo</th>
+                        <th width="30%">Fecha</th>
+                        <th width="30%">Total</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -78,12 +81,12 @@ $total=0;
             //$k->tipo=$k->tipo." (".$k->metodo_pago.")";
                 $k->monto=$k->monto*(-1);
         }
-       echo '<tr><td>'.$k->tipo.'</td><td>'.$k->fecha.'</td><td>'.$k->monto.'</td></tr>';
+       echo '<tr><td>'.$k->id.'</td><td>'.$k->tipo.'</td><td>'.$k->fecha.'</td><td>'.$k->monto.'</td></tr>';
     $total+=$k->monto;
     }
  ?>
-    <tr><td colspan="3"></td></tr>
-    <tr><td colspan="2"><b>Saldo hasta el día (<?php echo date('Y-m-d H:i:s')?>)</b></td><td><b><?php echo $total;?></b></td></tr>
+    <tr><td colspan="4"></td></tr>
+    <tr><td colspan="3"><b>Saldo hasta el día (<?php echo date('Y-m-d H:i:s')?>)</b></td><td><b><?php echo $total;?></b></td></tr>
                 </tbody>
             </table>     
 </td>

@@ -171,7 +171,7 @@ class Cliente extends MY_Controller {
 				'web' => $this->input->post('web'),
 			);
 		$this->cliente->update(array('id' => $this->input->post('id')), $data);
-		echo $this->db->last_query();
+		//echo $this->db->last_query();
 		echo json_encode(array("status" => TRUE));
 	}
 

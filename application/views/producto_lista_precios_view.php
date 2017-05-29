@@ -52,16 +52,19 @@ body{
             <th>Subcategoria</th>
             <th>Nombre</th>
             <th>Color</th>
-            <th>Cantidad</th>
+            <?php if($data['lista']==null){?>
             <th>1</th>
             <th>2</th>
             <th>3</th>
             <th>4</th>
+            <?php }else{
+                echo "<th>$</th>";
+            }?>
         </tr>
     </thead>
     <?php
     foreach ($data['stock'] as $producto) {
-    
+        if( true){// $producto->l1!=0 || $producto->l2!=0 || $producto->l3!=0 || $producto->l4!=0 ){
     ?>
     <tr>
     <td><?php echo $producto->id;?></td>
@@ -70,14 +73,38 @@ body{
     <td><?php echo $producto->subcategoria;?></td>
     <td><?php echo $producto->producto;?></td>
     <td><?php echo $producto->color;?></td>
-    <td><?php echo $producto->cantidad;?></td>
+
+    <?php if($data['lista']==null){?>
     <td>$<?php echo $producto->l1;?></td>
     <td>$<?php echo $producto->l2;?></td>
     <td>$<?php echo $producto->l3;?></td>
     <td>$<?php echo $producto->l4;?></td>
+    <?php }else{
+        switch ($data['lista']) {
+            case '1':
+            echo "<td>".$producto->l1."</td>";
+                break;
+            case '2':
+            echo "<td>".$producto->l2."</td>";
+                break;
+            case '3':
+            echo "<td>".$producto->l3."</td>";
+                break;
+            case '4':
+            echo "<td>".$producto->l4."</td>";
+                break;
+            default:
+            case '4':
+            echo "<td><td>";
+                break;
+                break;
+        }
+    }?>
     </tr>
      
-    <?php }?>
+    <?php 
+        }
+    }?>
     </table>            
 </td>
 </tr>

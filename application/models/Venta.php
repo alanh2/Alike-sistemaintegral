@@ -166,16 +166,6 @@ class Venta extends MY_Controller {
 		}
 	}
 
-	public function ver_detalles_con_cobros($id=NULL){
-		if ($id != null){
-			$data['view']='venta_detalle_cobros_view';
-			$data['venta'] = $this->venta->get_by_id($id);
-			$this->load->view('master_view',$data);
-		}else{
-			$this->index();
-		}
-	}
-	
 	public function ver_detalles($id=NULL){
 		if ($id != null){
 			$data['view']='venta_detalle_view';
@@ -600,20 +590,15 @@ public function ajax_renglones($id)
 
 			$row[] = $renglon->cantidad;
 
-			$row[] = $renglon->devueltos;
-
 			$row[] = '$'.$renglon->precio_unitario*$renglon->cantidad;
 
 			//add html for action
 
-			
-			$editar='<a class="btn btn-sm btn-primary" href="javascript:void(0)" title="Edit" onclick="edit_renglon('."'".$renglon->id."'".')"><i class="glyphicon glyphicon-pencil"></i> Editar</a>';
-			$borrar='<a class="btn btn-sm btn-danger" href="javascript:void(0)" title="Borrar" onclick="delete_renglon('."'".$renglon->id."'".')"><i class="glyphicon glyphicon-trash"></i> Borrar</a>';
-			if($renglon->devueltos>0){
-				$row[] = 'Hay devolución<p class="fa fa-exclamation-circle"></p>';
-			}else{
-				$row[] = $editar.$borrar;			
-			}
+			$row[] = '
+						<a class="btn btn-sm btn-primary" href="javascript:void(0)" title="Edit" onclick="edit_renglon('."'".$renglon->id."'".')"><i class="glyphicon glyphicon-pencil"></i> Editar</a>
+
+						<a class="btn btn-sm btn-danger" href="javascript:void(0)" title="Hapus" onclick="delete_renglon('."'".$renglon->id."'".')"><i class="glyphicon glyphicon-trash"></i> Borrar</a>';
+
 		
 
 			$data[] = $row;
@@ -649,8 +634,6 @@ public function ajax_renglones($id)
 
 		$data = array();
 		$start=0;
-		//$selector='<select><option value="0">No hacer nada</option><option value="1">Stock</option><option value="2">RMA</option><option value="1">Stock</option><option value="1">Stock</option></select>';
-		
 		foreach ($list as $renglon) {
 			$devueltos= $this->devolucion_renglones->get_by_renglon_id($renglon->id);
 			//print_r($devueltos) ;
@@ -665,10 +648,6 @@ public function ajax_renglones($id)
 					$row[] = $renglon->id;
 					$row[] = $renglon->producto." - ".$renglon->color;
 					$row[] = '$'.$renglon->precio_unitario;
-					$selector='
-					<input type="radio" name="devoluciones['.$renglon->id.']['.$i.']" value="1"> Stock
-					<input type="radio" name="devoluciones['.$renglon->id.']['.$i.']" value="2"> RMA';
-					$row[] = $selector;
 					$data[] = $row;
 				}
 	
@@ -774,92 +753,8 @@ public function ajax_renglones($id)
 	    	echo json_encode(array("status" => TRUE));
 		}
 	}
+
 	public function ajax_update_renglon()
-	{
-
-		$stockid=$this->input->post('stock');
-		$venta_renglonid=$this->input->post('id');
-		$cantidad=$this->input->post('cantidad');
-		$dataRenglon = array(
-
-				'stockid' => $stockid,
-
-				'cantidad' => $cantidad,
-
-				'precio_unitario' => $this->input->post('precio'),
-
-				'total_renglon' => $this->input->post('precio')*$this->input->post('cantidad'),
-
-			);
-		$this->db->trans_begin(); 
-		$venta_renglon=$this->venta_renglones->get_by_id($venta_renglonid);//renglon original
-		//echo $this->db->last_query();
-		$stock=$this->stock->get_by_id(	$venta_renglon->stockid);//stock original
-		$this->venta_renglones->update(array('id' => $venta_renglonid), $dataRenglon);
-		$this->venta->actualizar_total($venta_renglon->ventaid);
-		
-		$renglon_cantidad_inicial=$venta_renglon->cantidad;
-		$stock_cantidad_inicial=$stock->cantidad;
-		$stock_reservado_inicial=$stock->reservado;
-		//validar: si tengo devoluciones no me puede cambiar de stock, es decir tiene q apuntar al mismo local color producto.
-		//validar: si tengo devoluciones la cantidad del renglon tiene que ser mayor o igual a la cantidad de devoluciones que tenga
-		//mantener: si mantiene el stock cambio la diferencia de stock y reservado
-		//mantener: si cambia el stock ajusto y anulo el renglon anterior y creo el nuevo
-		if($stockid==$venta_renglon->stockid){
-			//$stock_cantidad_inicial=$this->stock->get_by_id($this->input->post('stock'))->cantidad;
-			$diferencia=$renglon_cantidad_inicial-$cantidad;//15-10=-5 compre 5 mas
-			//echo "dif:".$diferencia."<br>";
-			$stock_cantidad_final=$stock_cantidad_inicial+$diferencia;//100+(-5)=95 hay 5 menos de stock
-			$stock_reservado_final=$stock_reservado_inicial-$diferencia;
-			$dataStock= array('cantidad'=>$stock_cantidad_final, 'reservado'=>$stock_reservado_final);
-			if($stock_cantidad_final>=$venta_renglon->devueltos){
-				$this->stock->update(array('id' => $stockid), $dataStock);
-				$this->venta_renglones->update(array('id' => $venta_renglonid), $dataRenglon);
-				$status=TRUE;
-			}else{
-				$status=FALSE;
-			}
-			
-		}else{
-			//Primero se anula el stock anterior
-			if($venta_renglon->devueltos<1){
-				$stock_cantidad_final=$stock_cantidad_inicial+$venta_renglon->cantidad;//El stock se devuelve
-				$dataStock= array('cantidad'=>$stock_cantidad_final);
-				$this->stock->update(array('id' =>$venta_renglon->stockid), $dataStock);
-				//echo $this->db->last_query();
-				
-				//ahora se realiza el alta del otro stock
-				$stock=$this->stock->get_by_id($this->input->post('stock'));
-				$stock_cantidad_inicial=$stock->cantidad;
-				$stock_cantidad_final=$stock_cantidad_inicial-$cantidad;
-				$stock_reservado_final=$stock_reservado_inicial+$cantidad;
-				$dataStock= array('cantidad'=>$stock_cantidad_final, 'reservado'=>$stock_reservado_final);	
-				$this->stock->update(array('id' => $this->input->post('stock')), $dataStock);
-				//echo $this->db->last_query();
-				
-				$this->venta_renglones->update(array('id' => $venta_renglonid), $dataRenglon);
-				$status=TRUE;
-			}else{
-				$status=FALSE;
-			}
-		}
-		if ($this->db->trans_status() === FALSE)
-		{
-	        $this->db->trans_rollback();
-	    	$output['resultado'] = 'Error';
-	    	$status=FALSE;
-		}
-		else
-		{
-	        $this->db->trans_commit();
-	    	$output['resultado'] = 'Ok';
-		}
-
-		echo json_encode(array("status" => $status));
-		
-
-	}
-	/*public function ajax_update_renglon()
 	{
 
 		$stockid=$this->input->post('stock');
@@ -928,7 +823,7 @@ public function ajax_renglones($id)
 		
 
 	}
-*/
+
 	public function ajax_delete_renglon($id)
 	{
 
@@ -939,7 +834,8 @@ public function ajax_renglones($id)
 		$this->stock->update(array('id' =>$venta_renglon->stockid), $dataStock);
 		$this->venta_renglones->delete_by_id($id);
 		$this->venta->actualizar_total($venta_renglon->ventaid);
-				/*if ($this->db->trans_status() === FALSE)
+		echo $this->db->last_query();
+		/*if ($this->db->trans_status() === FALSE)
 		{
 	        $this->db->trans_rollback();
 	    	$output['resultado'] = 'Error';
@@ -951,7 +847,7 @@ public function ajax_renglones($id)
 	    	$output['resultado'] = 'Ok';
 	    	echo json_encode(array("status" => TRUE));
 		}*/
-	    	echo json_encode(array("status" => TRUE));
+	    	//echo json_encode(array("status" => TRUE));
 		
 	}
 

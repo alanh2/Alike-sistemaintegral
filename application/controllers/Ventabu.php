@@ -600,20 +600,15 @@ public function ajax_renglones($id)
 
 			$row[] = $renglon->cantidad;
 
-			$row[] = $renglon->devueltos;
-
 			$row[] = '$'.$renglon->precio_unitario*$renglon->cantidad;
 
 			//add html for action
 
-			
-			$editar='<a class="btn btn-sm btn-primary" href="javascript:void(0)" title="Edit" onclick="edit_renglon('."'".$renglon->id."'".')"><i class="glyphicon glyphicon-pencil"></i> Editar</a>';
-			$borrar='<a class="btn btn-sm btn-danger" href="javascript:void(0)" title="Borrar" onclick="delete_renglon('."'".$renglon->id."'".')"><i class="glyphicon glyphicon-trash"></i> Borrar</a>';
-			if($renglon->devueltos>0){
-				$row[] = 'Hay devolución<p class="fa fa-exclamation-circle"></p>';
-			}else{
-				$row[] = $editar.$borrar;			
-			}
+			$row[] = '
+						<a class="btn btn-sm btn-primary" href="javascript:void(0)" title="Edit" onclick="edit_renglon('."'".$renglon->id."'".')"><i class="glyphicon glyphicon-pencil"></i> Editar</a>
+
+						<a class="btn btn-sm btn-danger" href="javascript:void(0)" title="Hapus" onclick="delete_renglon('."'".$renglon->id."'".')"><i class="glyphicon glyphicon-trash"></i> Borrar</a>';
+
 		
 
 			$data[] = $row;

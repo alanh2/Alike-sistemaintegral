@@ -180,11 +180,13 @@ class Venta_model extends CI_Model {
 
 	}
 	public function get_total($id){
-		$this->db->from($this->table."_renglones");
-		$this->db->select('SUM(total_renglon) as total');
+		/*$this->db->from($this->table."_renglones");
+		$this->db->select('SUM(total_renglon) as total');// COALESCE(sum(num), 0) AS val
 		$this->db->group_by('ventaid'); 
 		$this->db->where('ventaid',$id);
-		$query = $this->db->get();
+
+		$query = $this->db->get();*/
+		$query= $this->db->query("SELECT SUM(total) as total FROM( (SELECT IFNULL(SUM(total_renglon),0) as total FROM `ventas_renglones` WHERE `ventaid` = '".$id."' GROUP BY `ventaid`) UNION (SELECT 0 total)) as tabla");
 		//echo $this->db->last_query();
 		return $query->row();
 	}
@@ -289,7 +291,7 @@ class Venta_model extends CI_Model {
 		$this->db->select('ventas.*, 
 			vendedores.nombre as vendedor,
 			ventas_estados.nombre as estado_nombre,
-			clientes.razon_social as cliente, clientes.tel_codigo_area, clientes.tel_numero, clientes.cel_numero, clientes.direccion, clientes.cp,
+			clientes.id as clienteid, clientes.razon_social as cliente, clientes.tel_codigo_area, clientes.tel_numero, clientes.cel_numero, clientes.direccion, clientes.cp,
 			clientes.email, clientes.dni, clientes.cuitcuil, clientes.web, clientes.ranking, localidades.nombre as localidad');
 		$this->db->where('ventas.id',$id);
 		$this->db->group_by('ventas.id'); 
@@ -297,6 +299,25 @@ class Venta_model extends CI_Model {
 		return $query->row();
 
 
+	}
+
+	public function total_debido_by_venta($id, $montocobro, $cobroid=NULL){
+		$this->db->from($this->table);
+		$this->db->join('aplicaciones_cobro_venta', 'aplicaciones_cobro_venta.ventaid = ventas.id', 'left');
+		$this->db->select('SUM(aplicaciones_cobro_venta.monto) as cobrado, ventas.total as total');
+		$this->db->where('ventas.id',$id);
+		if ($cobroid != NULL){
+			$this->db->where('aplicaciones_cobro_venta.cobroid !=',$cobroid);			
+		}
+		$this->db->group_by('ventas.id');
+		$query = $this->db->get();
+
+		$row = $query->row();
+		if (!isset($row->total)){
+			return 0;
+		}else{
+			return $row->total >= $row->cobrado + $montocobro;	
+		}
 	}
 
 	/*public function get_by_id($id)

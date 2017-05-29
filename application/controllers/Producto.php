@@ -45,6 +45,20 @@ class Producto extends MY_Controller {
 
 	}
 
+	public function busqueda()
+
+	{
+
+		$this->load->helper('url');
+
+		$data['view']='producto_busqueda_view';
+
+		$data['data']='';//aqui va la data que se le quiera pasar a la vista a travez de la master
+
+		$this->load->view('master_view',$data);
+
+	}
+
 
 
 	public function ajax_list()
@@ -121,8 +135,8 @@ class Producto extends MY_Controller {
 
 		//output to json format
 
-		//echo json_encode($output);
-		print_r($_POST); 
+		echo json_encode($output);
+		//print_r($_POST); 
 	}
 
 	public function lista_precios($lista=null){

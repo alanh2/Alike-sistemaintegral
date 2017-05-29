@@ -7,6 +7,7 @@ class Cobro extends MY_Controller {
 		parent::__construct();
 		$this->is_logged_in();
 		$this->load->model('cobro_model','cobro');
+		$this->load->model('cobro_renglones_model','cobroRenglones');
 		$this->load->model('transaccion_model','transaccion');
 		$this->load->model('cuentacorriente_model','cuentaCorriente');
 		$this->load->model('notacredito_model','notaCredito');
@@ -54,7 +55,7 @@ class Cobro extends MY_Controller {
 			$row[] = $cobro->fecha;
 			$row[] = $cobro->metodo_pago;
 			$row[] = '<a class="btn btn-sm btn-primary" href="javascript:void(0)" title="Edit" onclick="edit_cobro('."'".$cobro->id."'".')"><i class="glyphicon glyphicon-pencil"></i> Editar</a> '
-				  .'<a class="btn btn-sm btn-danger" href="javascript:void(0)" title="Delete" onclick="delete_cobro('."'".$cobro->id."'".')"><i class="glyphicon glyphicon-trash"></i> Borrar</a>';;
+				  .'<a class="btn btn-sm btn-danger" href="javascript:void(0)" title="Delete" onclick="delete_cobro('."'".$cobro->id."'".')"><i class="glyphicon glyphicon-trash"></i> Borrar</a>';
 		
 			$data[] = $row;
 		}
@@ -69,90 +70,121 @@ class Cobro extends MY_Controller {
 		echo json_encode($output);
 	}
 	
-	public function ajax_add()
+	public function ajax_add($ventaid=NULL)
 	{
-		$this->db->trans_begin(); 
-        $datametodo = array(
-        		"metodo" => $this->input->post('metodo'),
-        		"vencimiento" => $this->input->post('vencimiento'),
-        		"banco" => $this->input->post('banco'),
-        		"numeracion" => $this->input->post('numeracion'),
-        		"titular" => $this->input->post('titular'),
-        		"digitos" => $this->input->post('digitos'),
-        		"fecha" => $this->input->post('fecha'),
-        		"codigomp" => $this->input->post('codigomp'),
-        		"codigo_operacion" => $this->input->post('codigo_operacion'),
-        		"operacion" => 1,
-        		"monto" => $this->input->post('monto'),
-        	);
-
-		$metodoid = $this->transaccion->add_transaccion($datametodo['metodo'],1,$datametodo);
-        $datacobro = array(
-        		"monto" => $this->input->post('monto'),
-        		"metododepagoid" => $this->input->post('metodo'),
-        		"clienteid" => $this->input->post('cliente'),
-        		"fecha" => date('Y-m-d H:i:s'),
-        		"metodoid" => $metodoid,
-        	);
-		$cobroid = $this->cobro->save($datacobro);
-
-		if ($datametodo['metodo'] != 5){ // si no es un cobro del metodo cuenta corriente/nota de credito, intenta saldar ventas adeudadas
-			$monto = $this->pagar_deudas($this->input->post('cliente'), $this->input->post('monto'));
-			$this->pagar_ventas_pendientes($this->input->post('cliente'), $cobroid, $monto);
-		}
-		if ($this->db->trans_status() === FALSE)
+		$monto = $this->input->post('monto');
+		if ($ventaid != NULL && $this->venta->total_debido_by_venta($ventaid, $monto) == 1 && $monto > 0)
 		{
-	        $this->db->trans_rollback();
-	    	$output['resultado'] = 'Error';
-		}
-		else
-		{
-	        $this->db->trans_commit();
-	    	$output['resultado'] = 'Ok';
 
-		}
+			$this->db->trans_begin(); 
+	        $datametodo = array(
+	        		"metodo" => $this->input->post('metodo'),
+	        		"vencimiento" => $this->input->post('vencimiento'),
+	        		"banco" => $this->input->post('banco'),
+	        		"numeracion" => $this->input->post('numeracion'),
+	        		"titular" => $this->input->post('titular'),
+	        		"digitos" => $this->input->post('digitos'),
+	        		"fecha" => $this->input->post('fecha'),
+	        		"codigomp" => $this->input->post('codigomp'),
+	        		"codigo_operacion" => $this->input->post('codigo_operacion'),
+	        		"operacion" => 1,
+	        		"monto" => $monto,
+	        	);
 
+			$metodoid = $this->transaccion->add_transaccion($datametodo['metodo'],1,$datametodo);
+	        $datacobro = array(
+	        		"monto" => $monto,
+	        		"metododepagoid" => $this->input->post('metodo'),
+	        		"clienteid" => $this->input->post('cliente'),
+	        		"fecha" => date('Y-m-d H:i:s'),
+	        		"metodoid" => $metodoid,
+	        	);
+			$cobroid = $this->cobro->save($datacobro);
+
+			if ($ventaid!=NULL){
+				$this->aplicacionCobroVenta->save(array("cobroid" => $cobroid, "ventaid" => $ventaid, "monto" => $monto));
+			}
+
+			///////////////////////////////////////////////////
+			///Agregar registro en detalle cuenta corriente////
+			///////////////////////////////////////////////////
+
+/*			if ($datametodo['metodo'] != 5){ // si no es un cobro del metodo cuenta corriente/nota de credito, intenta saldar ventas adeudadas
+				$monto = $this->pagar_deudas($this->input->post('cliente'), $monto);
+				$this->pagar_ventas_pendientes($this->input->post('cliente'), $cobroid, $monto);
+			}*/
+			if ($this->db->trans_status() === FALSE)
+			{
+		        $this->db->trans_rollback();
+		    	$output['resultado'] = 'Error';
+			}
+			else
+			{
+		        $this->db->trans_commit();
+		    	$output['resultado'] = 'Ok';
+
+			}
+
+		}else{
+			$output['resultado'] = 'Error, supera monto total de venta';
+		}
 		echo json_encode($output);
 	}
 
-	public function ajax_update()
+	public function ajax_update($ventaid=NULL)
 	{
-		$this->db->trans_begin(); 
-        $datametodo = array(
-        		"metodo_anterior" => $this->input->post('metodo_anterior'),
-        		"metodo" => $this->input->post('metodo'),
-        		"mov_tabla_id_anterior" => $this->input->post('mov_tabla_id_anterior'),
-        		"vencimiento" => $this->input->post('vencimiento'),
-        		"banco" => $this->input->post('banco'),
-        		"numeracion" => $this->input->post('numeracion'),
-        		"titular" => $this->input->post('titular'),
-        		"digitos" => $this->input->post('digitos'),
-        		"fecha" => $this->input->post('fecha'),
-        		"codigomp" => $this->input->post('codigomp'),
-        		"codigo_operacion" => $this->input->post('codigo_operacion'),
-        		"operacion" => 1,
-        		"monto" => $this->input->post('monto'),
-        	);
-
-		$metodoid = $this->transaccion->actualizar($datametodo);
-
-        $datacobro = array(
-        		"monto" => $this->input->post('monto'),
-        		"metododepagoid" => $this->input->post('metodo'),
-        		"clienteid" => $this->input->post('cliente'),
-        		"fecha" => date('Y-m-d H:i:s'),
-        		"metodoid" => $metodoid,
-        	);
-		$this->cobro->update(array('id' => $this->input->post('id')),$datacobro);
-		if ($this->db->trans_status() === FALSE)
+		$monto = $this->input->post('monto');
+		$cobroid = $this->input->post('id');
+		if ($ventaid != NULL && $this->venta->total_debido_by_venta($ventaid, $monto, $cobroid) == 1 && $monto > 0)
 		{
-	        $this->db->trans_rollback();
-	    	$output['resultado'] = 'Error';
-		}
-		else
-		{
-	        $this->db->trans_commit();
-	    	$output['resultado'] = 'Ok';
+			$this->db->trans_begin(); 
+	        $datametodo = array(
+	        		"metodo_anterior" => $this->input->post('metodo_anterior'),
+	        		"metodo" => $this->input->post('metodo'),
+	        		"mov_tabla_id_anterior" => $this->input->post('mov_tabla_id_anterior'),
+	        		"vencimiento" => $this->input->post('vencimiento'),
+	        		"banco" => $this->input->post('banco'),
+	        		"numeracion" => $this->input->post('numeracion'),
+	        		"titular" => $this->input->post('titular'),
+	        		"digitos" => $this->input->post('digitos'),
+	        		"fecha" => $this->input->post('fecha'),
+	        		"codigomp" => $this->input->post('codigomp'),
+	        		"codigo_operacion" => $this->input->post('codigo_operacion'),
+	        		"operacion" => 1,
+	        		"monto" => $monto,
+	        	);
+
+			$metodoid = $this->transaccion->actualizar($datametodo);
+
+	        $datacobro = array(
+	        		"monto" => $monto,
+	        		"metododepagoid" => $this->input->post('metodo'),
+	        		"clienteid" => $this->input->post('cliente'),
+	        		"fecha" => date('Y-m-d H:i:s'),
+	        		"metodoid" => $metodoid,
+	        	);
+			$this->cobro->update(array('id' => $cobroid),$datacobro);
+
+			if ($ventaid!=NULL){
+				$this->aplicacionCobroVenta->update(array("cobroid" => $cobroid, "ventaid" => $ventaid), array("monto" => $monto));
+			}
+
+			///////////////////////////////////////////////////
+			///Modificar registro en detalle cuenta corriente//
+			///////////////////////////////////////////////////
+
+			if ($this->db->trans_status() === FALSE)
+			{
+		        $this->db->trans_rollback();
+		    	$output['resultado'] = 'Error';
+			}
+			else
+			{
+		        $this->db->trans_commit();
+		    	$output['resultado'] = 'Ok';
+			}
+		}else{
+			$output['resultado'] = 'Error, supera monto total de venta';
 		}
 		echo json_encode($output);
 	}
@@ -163,6 +195,11 @@ class Cobro extends MY_Controller {
 		$this->db->trans_begin();
 		$this->cobro->delete_by_id($id);
 		$this->transaccion->eliminar($cobro->metododepagoid, $cobro->metodoid);
+		$this->aplicacionCobroVenta->delete_by_cobroid($id);
+
+		///////////////////////////////////////////////////
+		///Modificar registro en detalle cuenta corriente//
+		///////////////////////////////////////////////////
 
 		if ($this->db->trans_status() === FALSE)
 		{
@@ -230,6 +267,38 @@ class Cobro extends MY_Controller {
 			}
 		}
 		return $monto;
+	}
+
+	public function ajax_detalle($id)
+	{
+		$this->load->helper('url');
+
+		$list = $this->cobroRenglones->get_datatables($id);
+
+		$data = array();
+		if(isset($_POST['start'])){
+			$start=$_POST['start'];
+		}else{
+			$start=0;
+		}
+		$no = $start;
+		foreach ($list as $cobro) {
+			$no++;
+			$row = array();
+			$row[] = $cobro->id;
+			$row[] = $cobro->fecha;
+			$row[] = '$'+$cobro->monto;
+			$row[] = $cobro->metodo_pago;
+			$row[] = '<a class="btn btn-sm btn-primary" href="javascript:void(0)" title="Edit" onclick="edit_cobro('."'".$cobro->id."'".')"><i class="glyphicon glyphicon-pencil"></i> Editar</a> '
+				  .'<a class="btn btn-sm btn-danger" href="javascript:void(0)" title="Delete" onclick="delete_cobro('."'".$cobro->id."'".')"><i class="glyphicon glyphicon-trash"></i> Borrar</a>';
+			$data[] = $row;
+		}
+		$output = array(
+						"recordsTotal" => $this->cobroRenglones->count_all($id),
+						"recordsFiltered" => $this->cobroRenglones->count_filtered($id),
+						"data" => $data,
+				);
+		echo json_encode($output);
 	}
 }
 

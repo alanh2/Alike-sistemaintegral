@@ -119,49 +119,10 @@ $this->load->library('Pdf');
         $pdf->SetTitle('Remito');
         $pdf->SetSubject('Remito');
         $pdf->SetKeywords('TCPDF, PDF, example, test, guide');
-
-// datos por defecto de cabecera, se pueden modificar en el archivo tcpdf_config_alt.php de libraries/config
-        //$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, "Reporte de ventas" . ' 001', "07/11/16", array(0, 64, 255), array(0, 64, 128));
-        //$pdf->setFooterData($tc = array(0, 64, 0), $lc = array(0, 64, 128));
-
-// datos por defecto de cabecera, se pueden modificar en el archivo tcpdf_config.php de libraries/config
-        //$pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
-        //$pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
-
-// se pueden modificar en el archivo tcpdf_config.php de libraries/config
-        //$pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
-
-// se pueden modificar en el archivo tcpdf_config.php de libraries/config
-        //$pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
-        //$pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
-        //$pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
-
-// se pueden modificar en el archivo tcpdf_config.php de libraries/config
         $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
-
-//relación utilizada para ajustar la conversión de los píxeles
         $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
-
-
-// ---------------------------------------------------------
-// establecer el modo de fuente por defecto
         $pdf->setFontSubsetting(false);
-
-// Establecer el tipo de letra
- 
-//Si tienes que imprimir carácteres ASCII estándar, puede utilizar las fuentes básicas como
-// Helvetica para reducir el tamaño del archivo.
-        //$pdf->SetFont('times', 'B', 10);
-
-// Añadir una página
-// Este método tiene varias opciones, consulta la documentación para más información.
         $pdf->AddPage();
-
-//fijar efecto de sombra en el texto
-        //$pdf->setTextShadow(array('enabled' => true, 'depth_w' => 0.2, 'depth_h' => 0.2, 'color' => array(196, 196, 196), 'opacity' => 1, 'blend_mode' => 'Normal'));
-
-// Establecemos el contenido para imprimir
-       
         $this->load->model('venta_model','venta');
         $this->load->model('venta_renglones_model','venta_renglones');
         $this->load->model('aplicacioncobroventa_model','aplicacionCobroVenta');
@@ -171,13 +132,33 @@ $this->load->library('Pdf');
         $html=$this->load->view('factura_view',$data,TRUE);
        
         $pdf->writeHTMLCell($w = 0, $h = 0, $x = '', $y = '', $html, $border = 0, $ln = 0, $fill = 0, $reseth = true, $align = '', $autopadding = true);
-
-// ---------------------------------------------------------
-// Cerrar el documento PDF y preparamos la salida
-// Este método tiene varias opciones, consulte la documentación para más información.
         $nombre_archivo = utf8_decode($ventaid.".pdf");
         $pdf->Output($nombre_archivo, 'I');
-
+        //$html=$this->load->view('factura_view',$data);
+    }
+    public function imprimir_venta_salvacell($ventaid) {
+        $this->load->library('Pdf');
+        $pdf = new Pdf('P', 'mm', 'A4', true, 'UTF-8', false);
+        $pdf->SetCreator(PDF_CREATOR);
+        $pdf->SetAuthor('Orshicell');
+        $pdf->SetTitle('Remito');
+        $pdf->SetSubject('Remito');
+        $pdf->SetKeywords('TCPDF, PDF, example, test, guide');
+        $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+        $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+        $pdf->setFontSubsetting(false);
+        $pdf->AddPage();
+        $this->load->model('venta_model','venta');
+        $this->load->model('venta_renglones_model','venta_renglones');
+        $this->load->model('aplicacioncobroventa_model','aplicacionCobroVenta');
+        $data['venta'] = $this->venta->get_by_id($ventaid);
+        $data['venta_renglones'] = $this->venta_renglones->get_by_venta($ventaid);
+        $data['venta_cobros'] = $this->aplicacionCobroVenta->get_by_venta_id($ventaid);
+        $html=$this->load->view('factura_salvacell_view',$data,TRUE);
+       
+        $pdf->writeHTMLCell($w = 0, $h = 0, $x = '', $y = '', $html, $border = 0, $ln = 0, $fill = 0, $reseth = true, $align = '', $autopadding = true);
+        $nombre_archivo = utf8_decode($ventaid.".pdf");
+        $pdf->Output($nombre_archivo, 'I');
         //$html=$this->load->view('factura_view',$data);
     }
 }

@@ -2,9 +2,11 @@
 
             <br>
 
-            <h3>Stock</h3>
+            <h3>Productos</h3>
 
             <br />
+
+            <button id="agregar" class="btn btn-success" onclick="window.open('<?php echo site_url("/producto/alta_producto/");?>')"><i class="glyphicon glyphicon-plus"></i> Agregar Producto</button>
 
             <button class="btn btn-default" onclick="reload_table()"><i class="glyphicon glyphicon-refresh"></i> Recargar</button>
 
@@ -30,11 +32,11 @@
 
                         <th>Modelo</th>
 
-                        <th>Categoria</th>
-
                         <th><strong>Nombre</strong></th>
 
-                        <th>Cantidad</th>
+                        <th>Categoria</th>
+
+                        <th>Subcategoria</th>
 
                         <th style="width:225px;">Accion</th>
 
@@ -60,11 +62,11 @@
 
                         <th>Modelo</th>
 
-                        <th>Categoria</th>
-
                         <th><strong>Nombre</strong></th>
 
-                        <th>Cantidad</th>
+                        <th>Categoria</th>
+
+                        <th>Proveedor</th>
 
                         <th>Action</th>
 
@@ -130,13 +132,17 @@ $(document).ready(function() {
 
     //datatables
 
+    $('#table tfoot th').each( function () {
+        var title = $(this).text();
+        $(this).html( '<input type="text" placeholder="Buscar  '+title+'" />' );
+    } );
     table = $('#table').DataTable({ 
 
 
 
 		"responsive": true,
 
-        "processing": true, //Feature control the processing indicator.
+        //"processing": true, //Feature control the processing indicator.
 
         "serverSide": true, //Feature control DataTables' server-side processing mode.
 
@@ -146,7 +152,7 @@ $(document).ready(function() {
 
         "ajax": {
 
-            "url": "<?php echo site_url('stock/ajax_list')?>",
+            "url": "<?php echo site_url('producto/ajax_list')?>",
 
             "type": "POST"
 
@@ -207,9 +213,20 @@ $(document).ready(function() {
 			}
 
 		}
+        
+	});//fin datatables
 
-	});
-
+    table.columns().every( function () {
+        var that = this;
+ 
+        $( 'input', this.footer() ).on( 'keyup change', function () {
+            if ( that.search() !== this.value ) {
+                that
+                    .search( this.value )
+                    .draw();
+            }
+        } );
+    } );
 	//get a reference to the select element
 
 	$select_categorias = $('#categoria');
@@ -306,7 +323,7 @@ $(document).ready(function() {
 
 
 
-function edit_stock(id)
+function edit_producto(id)
 
 {
 
@@ -324,7 +341,7 @@ function edit_stock(id)
 
     $.ajax({
 
-        url : "<?php echo site_url('stock/ajax_edit/')?>/" + id,
+        url : "<?php echo site_url('producto/ajax_edit/')?>/" + id,
 
         type: "GET",
 
@@ -336,15 +353,15 @@ function edit_stock(id)
 
 			
 
-			$('[name="id"]').val(data.stock_id);
+			$('[name="id"]').val(data.id);
 
-            $('[name="nombre"]').val(data.nombre+" - "+data.color);
+            $('[name="nombre"]').val(data.nombre);
 
-            $('[name="cantidad"]').val(data.cantidad);
+            $('[name="categoria"]').val(data.categoriaid);
 
             $('#modal_form').modal('show'); // show bootstrap modal when complete loaded
 
-            $('.modal-title').text('Ajustar Stock'); // Set title to Bootstrap modal title
+            $('.modal-title').text('Editar Producto'); // Set title to Bootstrap modal title
 
 
 
@@ -372,6 +389,8 @@ function reload_table()
 
 }
 
+
+
 function save()
 
 {
@@ -386,11 +405,11 @@ function save()
 
     if(save_method == 'add') {
 
-        url = "<?php echo site_url('stock/ajax_add')?>";
+        url = "<?php echo site_url('producto/ajax_add')?>";
 
     } else {
 
-        url = "<?php echo site_url('stock/ajax_update')?>";
+        url = "<?php echo site_url('producto/ajax_update')?>";
 
     }
 
@@ -470,6 +489,52 @@ function save()
 
 
 
+function delete_producto(id)
+
+{
+
+    if(confirm('Esta seguro que desea borrar este producto?'))
+
+    {
+
+        // ajax delete data to database
+
+        $.ajax({
+
+            url : "<?php echo site_url('producto/ajax_delete')?>/"+id,
+
+            type: "POST",
+
+            dataType: "JSON",
+
+            success: function(data)
+
+            {
+
+                //if success reload ajax table
+
+                $('#modal_form').modal('hide');
+
+                reload_table();
+
+            },
+
+            error: function (jqXHR, textStatus, errorThrown)
+
+            {
+
+                alert('Error deleting data');
+
+            }
+
+        });
+
+
+
+    }
+
+}
+
 
 
 </script>
@@ -506,7 +571,7 @@ function save()
 
                             <div class="col-md-9">
 
-                                <input name="nombre" placeholder="Nombre" class="form-control" type="text" disabled="disabled">
+                                <input name="nombre" placeholder="Nombre" class="form-control" type="text">
 
                                 <span class="help-block"></span>
 
@@ -516,11 +581,13 @@ function save()
 
                         <div class="form-group">
 
-                            <label class="control-label col-md-3">Cantidad</label>
+                            <label class="control-label col-md-3">	</label>
 
                             <div class="col-md-9">
 
-                                <input name="cantidad" placeholder="Cantidad" class="form-control" type="text">
+                                <select id="categoria" name="categoria" class="form-control">
+
+                                </select>
 
                                 <span class="help-block"></span>
 

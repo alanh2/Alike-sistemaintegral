@@ -72,6 +72,11 @@ class Aplicacioncobroventa_model extends CI_Model {
 		$this->db->where('id', $id);
 		$this->db->delete($this->table);
 	}
+	public function delete_by_cobroid($cobroid)
+	{
+		$this->db->where('cobroid', $cobroid);
+		$this->db->delete($this->table);
+	}
 
 
 }

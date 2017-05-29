@@ -8,7 +8,7 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>OC - <?php echo $this->router->fetch_class();?></title>
+    <title>OC - <?php if(isset($titulo)){echo $titulo;}else{ echo $this->router->fetch_class();}?></title>
 
     <link href="<?php echo base_url('assets/bootstrap/css/bootstrap.min.css')?>" rel="stylesheet">
 

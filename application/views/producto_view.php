@@ -132,10 +132,6 @@ $(document).ready(function() {
 
     //datatables
 
-    $('#table tfoot th').each( function () {
-        var title = $(this).text();
-        $(this).html( '<input type="text" placeholder="Buscar  '+title+'" />' );
-    } );
     table = $('#table').DataTable({ 
 
 
@@ -212,21 +208,27 @@ $(document).ready(function() {
 
 			}
 
-		}
+		},
+        "fnInitComplete": function(oSettings, json) {
+        var table = $('#example').DataTable();
+        $("#example tfoot th").each( function ( i ) {
+        var select = $('Filter on:')
+        .appendTo( this )
+        .on( 'change', function () {
+        table.column( i )
+        .search( $(this).val() )
+        .draw();
+        } );
+
+        table.column( i ).data().unique().sort().each( function ( d, j ) {
+        select.append( ''+d+'' )
+        } );
+        } );
+        }
         
 	});//fin datatables
 
-    table.columns().every( function () {
-        var that = this;
- 
-        $( 'input', this.footer() ).on( 'keyup change', function () {
-            if ( that.search() !== this.value ) {
-                that
-                    .search( this.value )
-                    .draw();
-            }
-        } );
-    } );
+
 	//get a reference to the select element
 
 	$select_categorias = $('#categoria');

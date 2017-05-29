@@ -44,23 +44,40 @@ class Producto_model extends CI_Model {
 
 	}
 
-	public function get_lista_precios(){
-		//mientras va la query de una
-		$query=$this->db->query("SELECT stock.id,marcas.nombre as marca, modelos.nombre as modelo, subcategorias.nombre as subcategoria, productos.nombre as producto, colores.nombre as color, stock.cantidad,
-ROUND(productos_colores.costo + productos_colores.costo*productos_colores.porcentaje1/'100') as 'l1',
-ROUND(productos_colores.costo + productos_colores.costo*productos_colores.porcentaje2/'100') as 'l2',
-ROUND(productos_colores.costo + productos_colores.costo*productos_colores.porcentaje3/'100') as 'l3',
-ROUND(productos_colores.costo + productos_colores.costo*productos_colores.porcentaje4/'100') as 'l4'
-FROM `stock` 
-INNER JOIN productos_colores on stock.producto_colorid = productos_colores.id 
-INNER JOIN productos on productos_colores.productoid= productos.id 
-INNER JOIN subcategorias on productos.subcategoriaid= subcategorias.id 
-INNER JOIN modelos on productos.modeloid= modelos.id 
-INNER JOIN marcas on marcas.id=modelos.marcaid 
-INNER JOIN colores on productos_colores.colorid= colores.id 
-INNER JOIN locales on stock.localid= locales.id
-ORDER BY marcas.nombre,modelos.nombre
-");
+	public function get_lista_precios($lista=null){
+		$l1=$l2=$l3=$l4="";
+		switch ($lista) {
+			case '1':
+				$l1="ROUND(productos_colores.costo + productos_colores.costo*productos_colores.porcentaje1/'100') as 'l1' ";
+				break;
+			case '2':
+				$l2="ROUND(productos_colores.costo + productos_colores.costo*productos_colores.porcentaje2/'100') as 'l2' ";
+				break;
+			case '3':
+				$l2="ROUND(productos_colores.costo + productos_colores.costo*productos_colores.porcentaje3/'100') as 'l3' ";
+				break;
+			case '4':
+				$l2="ROUND(productos_colores.costo + productos_colores.costo*productos_colores.porcentaje4/'100') as 'l4' ";
+				break;
+			default:
+				$l1="ROUND(productos_colores.costo + productos_colores.costo*productos_colores.porcentaje1/'100') as 'l1', ";
+				$l2="ROUND(productos_colores.costo + productos_colores.costo*productos_colores.porcentaje2/'100') as 'l2', ";
+				$l3="ROUND(productos_colores.costo + productos_colores.costo*productos_colores.porcentaje3/'100') as 'l3', ";
+				$l4="ROUND(productos_colores.costo + productos_colores.costo*productos_colores.porcentaje4/'100') as 'l4' ";
+				break;
+		}
+
+		$query=$this->db->query("SELECT stock.id,marcas.nombre as marca, modelos.nombre as modelo, subcategorias.nombre as subcategoria, productos.nombre as producto, colores.nombre 	as color, stock.cantidad, ".$l1.$l2.$l3.$l4.
+		"FROM `stock`
+		INNER JOIN productos_colores on stock.producto_colorid = productos_colores.id 
+		INNER JOIN productos on productos_colores.productoid= productos.id 
+		INNER JOIN subcategorias on productos.subcategoriaid= subcategorias.id 
+		INNER JOIN modelos on productos.modeloid= modelos.id 
+		INNER JOIN marcas on marcas.id=modelos.marcaid 
+		INNER JOIN colores on productos_colores.colorid= colores.id 
+		INNER JOIN locales on stock.localid= locales.id
+		ORDER BY marcas.nombre,modelos.nombre
+		");
 		return $query->result();
 	}	
 

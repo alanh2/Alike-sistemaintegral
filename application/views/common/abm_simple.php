@@ -15,9 +15,9 @@
 var modal_abierto=false;
 $(document).ready(function() {
 	<?php if(isset($_REQUEST['search'])){?>
-		search="<?php echo $_REQUEST['search']; ?>";
+		$search="<?php echo $_REQUEST['search']; ?>";
 	<?php }else{?>
-		search='';
+		$search='';
 		<?php }?>
 	$(document).keypress(function(event) {
 		if(event.charCode==43){//+
@@ -46,3 +46,9 @@ $(document).ready(function() {
 	});
 });
 </script>
+<style type="text/css">
+#page-wrapper{
+    background-image: url("<?php echo base_url('assets/images/fondo_claro.jpg');?>");
+}
+#table{ background:#ffffff; }
+</style>

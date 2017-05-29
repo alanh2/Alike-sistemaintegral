@@ -56,9 +56,9 @@ class Venta_renglones_model extends CI_Model {
 
 		$this->db->join('ventas_estados', 'ventas_estados.id = ventas.estadoid');
 
-		$this->db->join('devoluciones_renglones', 'ventas_renglones.id=devoluciones_renglones.venta_renglonid','left');
+		$this->db->join('devoluciones_renglones', 'devoluciones_renglones.venta_renglonid = ventas_renglones.id','left');
 		
-		$this->db->select('ventas_renglones.*, ventas_estados.nombre as estado_nombre, concat(subcategorias.nombre," ", productos.nombre," ", marcas.nombre," ", modelos.nombre )as producto, colores.nombre as color, IFNULL(devoluciones_renglones.cantidad,0) as devueltos');
+		$this->db->select('ventas_renglones.*, ventas_estados.nombre as estado_nombre,devoluciones_renglones.cantidad as devueltos, concat(subcategorias.nombre," ", productos.nombre," ", marcas.nombre," ", modelos.nombre )as producto, colores.nombre as color');
 
 		if ($ventaid !=NULL){
 			$this->db->where('ventaid',$ventaid);	
@@ -131,7 +131,7 @@ class Venta_renglones_model extends CI_Model {
 	}
 
 	public function get_by_venta($ventaid){
-	$this->get_datatables($ventaid);
+	$this->_get_datatables_query($ventaid);
 			$query = $this->db->get();
 			return $query->result();
 
@@ -199,21 +199,22 @@ class Venta_renglones_model extends CI_Model {
 		
 		$this->db->join('stock', 'ventas_renglones.stockid= stock.id');
 
-		$this->db->join('devoluciones_renglones', 'ventas_renglones.id=devoluciones_renglones.venta_renglonid', 'left');
-
 		$this->db->join('productos_colores', 'stock.producto_colorid= productos_colores.id');
 
 		$this->db->join('colores', 'productos_colores.colorid= colores.id');
 		
 		$this->db->join('productos', 'productos_colores.productoid= productos.id');
 
-		$this->db->select('ventas_renglones.*, productos.nombre as producto, productos.id as productoid, colores.nombre as color,IFNULL(devoluciones_renglones.cantidad,0) as devueltos');
+		$this->db->join('devoluciones_renglones', 'devoluciones_renglones.venta_renglonid = ventas_renglones.id','left');
+
+		$this->db->select('ventas_renglones.*, devoluciones_renglones.cantidad as devueltos, productos.nombre as producto, productos.id as productoid, colores.nombre as color');
 		
 		$this->db->where('ventas_renglones.id', $id);
 
 		$query = $this->db->get();
 
-		
+		//echo $this->db->last_query();
+
 		return $query->row();
 
 	}

@@ -1,77 +1,15 @@
-        <div id="page-wrapper">
-            <br>
-            <h3>Cobros</h3>
-            <br />
-            <button id="agregar" class="btn btn-success" onclick="add_cobro()"><i class="glyphicon glyphicon-plus"></i> Agregar Cobro</button>
-            <button class="btn btn-default" onclick="reload_table()"><i class="glyphicon glyphicon-refresh"></i> Recargar</button>
-            <br />
-            <br />
-            <table id="table" class="table table-striped table-bordered" cellspacing="0" width="100%">
-                <thead>
-                    <tr>
-                        <th style="width:25px;">ID</th>
-                        <th>Cliente</th>
-                        <th>Monto</th>
-                        <th>Fecha</th>
-                        <th>Método de pago</th>
-                        <th style="width:150px;">Acción</th>
-                    </tr>
-                </thead>
-                <tbody>
-                </tbody>
-    
-                <tfoot>
-                    <tr>
-                        <th>ID</th>
-                        <th>Cliente</th>
-                        <th>Monto</th>
-                        <th>Fecha</th>
-                        <th>Método de pago</th>
-                        <th>Acción</th>
-                    </tr>
-                </tfoot>
-            </table> 
-        </div>
-
-<script src="<?php echo base_url('assets/jquery/jquery-2.1.4.min.js')?>"></script>
-<script src="<?php echo base_url('assets/bootstrap/js/bootstrap.min.js')?>"></script>
-<script src="<?php echo base_url('assets/datatables/js/jquery.dataTables.min.js')?>"></script>
-<script src="<?php echo base_url('assets/datatables/js/dataTables.bootstrap.js')?>"></script>
-<script src="<?php echo base_url('assets/bootstrap-datepicker/js/bootstrap-datepicker.min.js')?>"></script>
-<script src="<?php echo base_url('assets/js/common.js')?>"></script>
-
-<script src="<?php echo base_url('assets/dashboard/js/metisMenu.js')?>"></script>
-<script src="<?php echo base_url('assets/dashboard/js/raphael-min.js')?>"></script>
-<!--<script src="<?php echo base_url('assets/dashboard/js/morris.min.js')?>"></script>
-<script src="<?php echo base_url('assets/dashboard/js/morris-data.js')?>"></script>-->
-<script src="<?php echo base_url('assets/dashboard/js/sb-admin-2.js')?>"></script>
-
+<?php 
+    $ventaidasociada = '';
+    if (isset($venta->id)){
+        $ventaidasociada = $venta->id;
+    }
+    $clienteidasociado = '';
+    if (isset($venta->clienteid)){
+        $clienteidasociado = $venta->clienteid;
+    }
+ ?>
 <script type="text/javascript">
-
-var save_method; //for save method string
-var table;
-
 $(document).ready(function() {
-	$(document).keypress(function(event) {
-		if(event.charCode==43){//+
-			$("#agregar").trigger("click");
-		}
-		//alert('Handler for .keypress() called. - ' + event.charCode);
-	});
-	$('#modal_form').on('shown.bs.modal', function () {
-		$('#nombre').focus();
-		//$(this).find('[autofocus]').focus();
-	});
-	
-	$("#modal_form").on('hidden.bs.modal', function () {
-		$(this).data('bs.modal', null);
-	});
-	
-	$('#form').submit(function(event) {
-		save();
-		$('#nombre').attr('disabled',true); 
-		event.preventDefault();
-	});
     $select_metodos = $('#metodos');
     $.ajax({
         url: "<?php echo site_url('metodopago/ajax_dropdown')?>"
@@ -90,97 +28,36 @@ $(document).ready(function() {
         }
 
     });
-
-
-    $select_clientes = $('#clientes');
-    $.ajax({
-        url: "<?php echo site_url('cliente/ajax_dropdown')?>"
-        , "type": "POST"
-        , data:{length:'',start:0}
-        , dataType: 'JSON'
-        , success: function (data) {
-            $select_clientes.html('');
-            $.each(data.clientes, function (key, val) {
-                $select_clientes.append('<option value="' + val.id + '">' + val.nombre + '</option>');
-            })
+    function mostrar_campos(metodo){
+        $(".metodo").hide();
+        switch ($("#metodos").val()){
+            case "1":
+                break;
+            case "2":
+                $(".metodo.cheque").show();
+                break;
+            case "3":
+                $(".metodo.mercadopago").show();
+                break;
+            case "4":
+                $(".metodo.transferencia").show();
+                break;
+            case "7":
+                $(".metodo.tarjeta").show();
+                break;
         }
-        , error: function () {
-            $select_clientes.html('<option id="-1">ninguna disponible</option>');
-        }
-    });
-
-    //datatables
-    table = $('#table').DataTable({ 
-
-		"responsive": true,
-        "processing": true, //Feature control the processing indicator.
-        "serverSide": true, //Feature control DataTables' server-side processing mode.
-        "order": [], //Initial no order.
-		 // Load data for the table's content from an Ajax source
-        "ajax": {
-            "url": "<?php echo site_url('cobro/ajax_list')?>",
-            "type": "POST"
-        },
-
-        //Set column definition initialisation properties.
-        "columnDefs": [
-        { 
-            "targets": [ -1], //last column
-            "orderable": false, //set not orderable
-        },
-        ],
-		"language":{
-		    "sProcessing":     "Procesando...",
-			"sLengthMenu":     "Mostrar _MENU_ registros",
-			"sZeroRecords":    "No se encontraron resultados",
-			"sEmptyTable":     "Ningún dato disponible en esta tabla",
-			"sInfo":           "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
-			"sInfoEmpty":      "Mostrando registros del 0 al 0 de un total de 0 registros",
-			"sInfoFiltered":   "(filtrado de un total de _MAX_ registros)",
-			"sInfoPostFix":    "",
-			"sSearch":         "Buscar:",
-			"sUrl":            "",
-			"sInfoThousands":  ",",
-			"sLoadingRecords": "Cargando...",
-			"oPaginate": {
-				"sFirst":    "Primero",
-				"sLast":     "Último",
-				"sNext":     "Siguiente",
-				"sPrevious": "Anterior"
-			}
-		}
-	});
-function mostrar_campos(metodo){
-    $(".metodo").hide();
-    switch ($("#metodos").val()){
-        case "1":
-            break;
-        case "2":
-            $(".metodo.cheque").show();
-            break;
-        case "3":
-            $(".metodo.mercadopago").show();
-            break;
-        case "4":
-            $(".metodo.transferencia").show();
-            break;
-        case "7":
-            $(".metodo.tarjeta").show();
-            break;
     }
-}
-$("#metodos").change(function(){
-    mostrar_campos($("#metodos").val());
+    $("#metodos").change(function(){
+        mostrar_campos($("#metodos").val());
+    });
 });
-});
-
 
 function add_cobro()
 {
     save_method = 'add';
     $('.form-group').removeClass('has-error'); // clear error class
     $('.help-block').empty(); // clear error string
-    $('#modal_form').modal('show'); // show bootstrap modal
+    $('#modal_form_cobro').modal('show'); // show bootstrap modal
     $('.modal-title').text('Agregar Cobro'); // Set Title to Bootstrap modal title
     $('#nombre').focus();
 }
@@ -211,7 +88,7 @@ $("#metodos").change(function(){
 function edit_cobro(id)
 {
     save_method = 'update';
-    $('#form')[0].reset(); // reset form on modals
+    $('#form_cobro')[0].reset(); // reset form on modals
     $('.form-group').removeClass('has-error'); // clear error class
     $('.help-block').empty(); // clear error string
 
@@ -224,7 +101,7 @@ function edit_cobro(id)
         {
             
             $('[name="id"]').val(id);
-            $("#clientes").val(data.clienteid);
+            $("#cliente").val(data.clienteid);
             $("#metodos").val(data.metododepagoid);
             $('[name="metodo_anterior"]').val(data.metododepagoid);
             $('[name="mov_tabla_id_anterior"]').val(data.metodoid);
@@ -240,9 +117,9 @@ function edit_cobro(id)
             $('[name="codigomp"]').val(data.codigomp);
             $('[name="codigo_operacion"]').val(data.codigo_operacion);
 
-            $('#modal_form').modal('show'); // show bootstrap modal when complete loaded
+            $('#modal_form_cobro').modal('show'); // show bootstrap modal when complete loaded
             $('.modal-title').text('Editar Cobro'); // Set title to Bootstrap modal title
-            $('[name="clientes"]').focus();
+            $('[name="cliente"]').focus();
 
         },
         error: function (jqXHR, textStatus, errorThrown)
@@ -252,57 +129,47 @@ function edit_cobro(id)
     });
 }
 
-
-function reload_table()
+function save_cobro()
 {
-    table.ajax.reload(null,false); //reload datatable ajax 
-}
-
-function save()
-{
-    $('#btnSave').text('saving...'); //change button text
-    $('#btnSave').attr('disabled',true); //set button disable 
+    $('#btnCobroSave').text('saving...'); //change button text
+    $('#btnCobroSave').attr('disabled',true); //set button disable 
     var url;
 
     if(save_method == 'add') {
-        url = "<?php echo site_url('cobro/ajax_add')?>";
+        url = "<?php echo site_url('cobro/ajax_add'.'/'.$ventaidasociada)?>";
     } else {
-        url = "<?php echo site_url('cobro/ajax_update')?>";
+        url = "<?php echo site_url('cobro/ajax_update'.'/'.$ventaidasociada)?>";
     }
 
     // ajax adding data to database
     $.ajax({
         url : url,
         type: "POST",
-        data: $('#form').serialize(),
+        data: $('#form_cobro').serialize(),
         dataType: "JSON",
         success: function(data)
         {
 
             if(data.resultado == "Ok") //if success close modal and reload ajax table
             {
-                $('#modal_form').modal('hide');
-                reload_table();
+                $('#modal_form_cobro').modal('hide');
+                reload_cobros();
+                $('#form_cobro')[0].reset(); // reset form on modals
             }
             else
             {
-                for (var i = 0; i < data.inputerror.length; i++) 
-                {
-                    $('[name="'+data.inputerror[i]+'"]').parent().parent().addClass('has-error'); //select parent twice to select div form-group class and add has-error class
-                    $('[name="'+data.inputerror[i]+'"]').next().text(data.error_string[i]); //select span help-block class set text error string
-                }
+                alert(data.resultado);
             }
-            $('#btnSave').text('guardar'); //change button text
-            $('#btnSave').attr('disabled',false); //set button enable 
+            $('#btnCobroSave').text('guardar'); //change button text
+            $('#btnCobroSave').attr('disabled',false); //set button enable 
             $('#nombre').attr('disabled',false); 
-    		$('#form')[0].reset(); // reset form on modals
 
         },
         error: function (jqXHR, textStatus, errorThrown)
         {
             alert('Error adding / update data');
-            $('#btnSave').text('guardar'); //change button text
-            $('#btnSave').attr('disabled',false); //set button enable 
+            $('#btnCobroSave').text('guardar'); //change button text
+            $('#btnCobroSave').attr('disabled',false); //set button enable 
             $('#nombre').attr('disabled',false); 
 
         }
@@ -321,8 +188,8 @@ function delete_cobro(id)
             success: function(data)
             {
                 //if success reload ajax table
-                $('#modal_form').modal('hide');
-                reload_table();
+                $('#modal_form_cobro').modal('hide');
+                reload_cobros();
             },
             error: function (jqXHR, textStatus, errorThrown)
             {
@@ -332,36 +199,13 @@ function delete_cobro(id)
 
     }
 }
-
-
-
-$("input").change(function(){
-
-    $(this).parent().parent().removeClass('has-error');
-
-    $(this).next().empty();
-
-});
-
-$("textarea").change(function(){
-
-    $(this).parent().parent().removeClass('has-error');
-
-    $(this).next().empty();
-
-});
-
-$("select").change(function(){
-
-    $(this).parent().parent().removeClass('has-error');
-
-    $(this).next().empty();
-
-});
+function reload_cobros()
+{
+    cobros.ajax.reload(null,false); //reload datatable ajax 
+}
 </script>
-
 <!-- Bootstrap modal -->
-<div class="modal fade" id="modal_form" role="dialog">
+<div class="modal fade" id="modal_form_cobro" role="dialog">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -369,17 +213,11 @@ $("select").change(function(){
                 <h3 class="modal-title">Formulario de Cobro</h3>
             </div>
             <div class="modal-body form">
-                <form action="#" id="form" class="form-horizontal">
+                <form action="#" id="form_cobro" class="form-horizontal">
                     <input type="hidden" name="id"/>
                     <input type="hidden" name="mov_tabla_id_anterior"/>
                     <input type="hidden" name="metodo_anterior"/>
-                    <div class="form-group">
-                        <label class="control-label col-md-5">Cliente</label>
-                        <div class="col-md-6">
-                            <select id="clientes" name="cliente" class="form-control" data-bind="value:metodo">
-                            </select>                            <span class="help-block"></span>
-                        </div>
-                    </div>
+                    <input type="hidden" id="cliente" name="cliente" value="<?php echo $clienteidasociado; ?>" />
                     <div class="form-group">
                         <label class="control-label col-md-5">Elija el método de pago</label>
                         <div class="col-md-6">
@@ -461,30 +299,13 @@ $("select").change(function(){
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" id="btnSave" onclick="save()" class="btn btn-primary">Guardar</button>
+                <button type="button" id="btnCobroSave" onclick="save_cobro()" class="btn btn-primary">Guardar</button>
                 <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
             </div>
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 <!-- End Bootstrap modal -->
-<script type="text/javascript">
-    $('.datepicker').datepicker({
-
-    autoclose: true,
-
-    format: "yyyy-mm-dd",
-
-    todayHighlight: true,
-
-    orientation: "top auto",
-
-    todayBtn: true,
-
-    todayHighlight: true,  
-
-});
-</script>
 <style>
 .metodo{
     display: none;

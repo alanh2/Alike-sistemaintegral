@@ -4,25 +4,11 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link href="<?php echo base_url('assets/bootstrap/css/bootstrap.min.css')?>" rel="stylesheet">
-
-    <link href="<?php echo base_url('assets/datatables/css/dataTables.bootstrap.css')?>" rel="stylesheet">
-
-    <link href="<?php echo base_url('assets/css/jquery-ui.css')?>" rel="stylesheet">
-
-    <link href="<?php echo base_url('assets/dashboard/css/metisMenu.min.css')?>" rel="stylesheet">
-
-    <link href="<?php echo base_url('assets/dashboard/css/timeline.css')?>" rel="stylesheet">
-
-    <link href="<?php echo base_url('assets/dashboard/css/sb-admin-2.css')?>" rel="stylesheet">
-
-    <link href="<?php echo base_url('assets/dashboard/css/morris.css')?>" rel="stylesheet">
-
-    <link href="<?php echo base_url('assets/dashboard/css/font-awesome.min.css')?>" rel="stylesheet">
-
-
-    <link rel="stylesheet" href="<?php echo base_url('linea-icon.css'); ?>" />
-    <link rel="stylesheet" href="<?php echo base_url('fancy-buttons.css'); ?>" />
+    <link rel="stylesheet" href="<?php echo HTTP_CSS_PATH; ?>bootstrap.min.css" >
+    <link rel="stylesheet" href="<?php echo HTTP_CSS_PATH; ?>bootstrap.css" />
+    <link rel="stylesheet" href="<?php echo HTTP_CSS_PATH; ?>font-awesome.min.css" />
+    <link rel="stylesheet" href="<?php echo HTTP_CSS_PATH; ?>linea-icon.css" />
+    <link rel="stylesheet" href="<?php echo HTTP_CSS_PATH; ?>fancy-buttons.css" />
 
     <!--=== Google Fonts ===-->
     <link href='http://fonts.googleapis.com/css?family=Bangers' rel='stylesheet' type='text/css'>
@@ -31,11 +17,11 @@
     <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700' rel='stylesheet' type='text/css'>
 
     <!--=== Other CSS files ===-->
-    <link rel="stylesheet" href="<?php echo base_url('custom.css'); ?>" >
+    <link rel="stylesheet" href="<?php echo HTTP_CSS_PATH; ?>custom.css" >
 
     <!--=== Main Stylesheets ===-->
-    <link rel="stylesheet" href="<?php echo base_url('style.css'); ?>" />
-    <link rel="stylesheet" href="<?php echo base_url('responsive.css'); ?>" />
+    <link rel="stylesheet" href="<?php echo HTTP_CSS_PATH; ?>style.css" />
+    <link rel="stylesheet" href="<?php echo HTTP_CSS_PATH; ?>responsive.css" />
 
     <title>Admin Login</title>
 </head>
@@ -53,7 +39,7 @@
                 <?php
             }
             echo validation_errors('<div class="alert alert-danger">','</div>');
-            echo form_open(site_url('users_admin/login'));
+            echo form_open(base_url().'users_admin/login');
 
             echo form_label('Nombre de usuario:');
             echo form_input(array('id' => 'username', 'name' => 'username', 'class' => 'form-control'));

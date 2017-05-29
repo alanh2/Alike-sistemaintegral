@@ -17,17 +17,17 @@
         <div class="row">
             <div class="col-lg-3 col-md-6">
                 <div class="menu">
-                    <span class=" titulo">Ventas</span><br><hr/>
+                    <div class=" titulo">Ventas</div><br><hr/>
                     <a class="link" href="<?php echo site_url('venta/alta_venta/')?>" target="_blank" title="Nueva Venta">Nueva Venta</a><br><hr/>
-                    <a class="link " href="<?php echo site_url('venta/')?>" target="_blank" title="Nuevo Producto">Listar Ventas</a><br><hr/>
-                    <span class="link">Ver Venta</span>
+                    <a class="link " href="<?php echo site_url('venta/')?>" target="_blank" title="Listar Ventas">Listado</a><br><hr/>
+                    <span class="link">Ver</span>
                     <input onkeyup="javascript: if(event.keyCode == 13) window.open('<?php echo site_url('venta/alta_venta/')?>/'+$('#ventaid').val());" class="form-control" type="text" value="" id="ventaid" placeholder="Venta" />
 
                 </div>
             </div>
             <div class="col-lg-3 col-md-6">
                 <div class="menu">
-                    <span class=" titulo">Cobros</span><br><hr/>
+                    <div class=" titulo">Cobros</div><br><hr/>
                     <a class="link" href="<?php echo site_url('cobro/')?>" target="_blank" title="Listar Cobros">Listar Cobros</a><br><hr/>
                     <!--<span class="link">Buscar Cobros</span>
                     <input onkeyup="javascript: if(event.keyCode == 13) window.open('<?php echo site_url('cobro/?search=')?>'+$('#cobroid').val());" class="form-control" type="text" value="" id="cobroid" placeholder="Cobro" />-->
@@ -36,8 +36,8 @@
             </div>
             <div class="col-lg-3 col-md-6">
                 <div class="menu">
-                    <span class=" titulo">Clientes</span><br><hr/>
-                    <a class="link" href="<?php echo site_url('cliente/')?>" target="_blank" title="Listar Clientes">Listar Clientes</a><br><hr/>
+                    <div class=" titulo">Clientes</div><br><hr/>
+                    <a class="link" href="<?php echo site_url('cliente/')?>" target="_blank" title="Listar Clientes">Listado</a><br><hr/>
                     <span class="link">Buscar Cliente</span>
                     <input onkeyup="javascript: if(event.keyCode == 13) window.open('<?php echo site_url('cliente/?search=')?>'+$('#clienteid').val());" class="form-control" type="text" value="" id="clienteid" placeholder="Cliente" />
 
@@ -45,13 +45,22 @@
             </div>  
             <div class="col-lg-3 col-md-6">
                 <div class="menu">
-                    <span class=" titulo">Listados</span><br><hr/>
-                    <a class="link" href="<?php echo site_url('cliente/')?>" target="_blank" title="clientes">CLIENTES</a><br>
-                    <a class="link" href="<?php echo site_url('producto/')?>" target="_blank" title="Productos">PRODUCTOS</a><br>
-                    <a class="link" href="<?php echo site_url('gasto/')?>" target="_blank" title="Gastos">GASTOS</a><br>
-                    <a class="link" href="<?php echo site_url('producto/lista_precios')?>" target="_blank" title="Gastos">PRECIOS</a><br>
+                    <div class=" titulo">Productos</div><br><hr/>
+                    <a class="link" href="<?php echo site_url('producto/')?>" target="_blank" title="Productos">Listado</a><br><hr>
+                    <a class="link" href="<?php echo site_url('producto/lista_precios')?>" target="_blank" title="Gastos">Precios</a><br>
                 </div>
             </div>
+        </div><br/>
+        <div class="row">
+
+            <div class="col-lg-3 col-md-6">
+                <div class="menu">
+                    <div class=" titulo">Gastos</div><br><hr/>
+                    <a class="link" href="<?php echo site_url('gasto/')?>" target="_blank" title="Listar Clientes">Listado</a><br><hr/>
+                    <a class="link" href="<?php echo site_url('tipogasto/')?>" target="_blank" title="Listar Clientes">Tipo gastos</a><br><hr/>
+
+                </div>
+            </div>  
         </div>
     </div>
 </div>
@@ -68,8 +77,9 @@ hr{
     background-image: url("<?php echo base_url('assets/images/fondo_claro.jpg');?>");
 }
 .titulo{
-    font-size: 35px;
-    color: #FFF;
+    font-size: 20px;
+    color: #F0AD4E;
+    text-align: center;
 }
 a{
     text-decoration: none;
@@ -88,9 +98,9 @@ a:hover{
 .menu{
     border-radius: 25px;
     padding: 20px;
-    background: #00f;
 
-    border: solid 2px #fff;
+
+    border: solid 2px #fff; 
   /*background: #6f6; // without a background or border applied you won't be able to see if its rounded*/
 }
 

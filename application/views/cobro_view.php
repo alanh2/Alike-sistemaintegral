@@ -239,6 +239,9 @@ function edit_cobro(id)
             $('[name="fecha"]').val(data.fecha);
             $('[name="codigomp"]').val(data.codigomp);
             $('[name="codigo_operacion"]').val(data.codigo_operacion);
+            if (data.pagado == 1){
+         	   $('[name="pagado"]').prop("checked",true);
+        	}
 
             $('#modal_form').modal('show'); // show bootstrap modal when complete loaded
             $('.modal-title').text('Editar Cobro'); // Set title to Bootstrap modal title

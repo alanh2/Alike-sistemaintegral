@@ -58,11 +58,13 @@ class Transaccion_model extends CI_Model {
 				$datos_preparados['vencimiento'] = $data['vencimiento'];
 				$datos_preparados['banco'] = $data['banco'];
 				$datos_preparados['numeracion'] = $data['numeracion'];
-				$datos_preparados['operacion'] = $operacion;			
+				$datos_preparados['operacion'] = $operacion;
+				$datos_preparados['pagado'] = $data['pagado'];
 				break;
 			case $mps:
 				$datos_preparados['codigomp'] = $data['codigomp'];
 				$datos_preparados['operacion'] = $operacion;			
+				$datos_preparados['pagado'] = $data['pagado'];
 				break;
 			case $transferencias:
 				$datos_preparados['banco'] = $data['banco'];
@@ -82,6 +84,7 @@ class Transaccion_model extends CI_Model {
 				$datos_preparados['vencimiento'] = $data['vencimiento'];
 				$datos_preparados['digitos'] = $data['digitos'];
 				$datos_preparados['operacion'] = $operacion;			
+				$datos_preparados['pagado'] = $data['pagado'];
 				break;
 			case $notacredito:
 				$datos_preparados['saldo'] = $data['monto'];

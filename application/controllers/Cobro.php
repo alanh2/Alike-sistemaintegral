@@ -8,6 +8,7 @@ class Cobro extends MY_Controller {
 		$this->is_logged_in();
 		$this->load->model('cobro_model','cobro');
 		$this->load->model('cobro_renglones_model','cobroRenglones');
+		$this->load->model('detalle_cuentacorriente_model','detalleCuentacorriente');
 		$this->load->model('transaccion_model','transaccion');
 		$this->load->model('cuentacorriente_model','cuentaCorriente');
 		$this->load->model('notacredito_model','notaCredito');
@@ -73,7 +74,11 @@ class Cobro extends MY_Controller {
 	public function ajax_add($ventaid=NULL)
 	{
 		$monto = $this->input->post('monto');
-		if ($ventaid != NULL && $this->venta->total_debido_by_venta($ventaid, $monto) == 1 && $monto > 0)
+		$pagado = 0;
+		if ($this->input->post('pagado') == 'on'){
+			$pagado = 1;
+		}
+		if ((($ventaid != NULL && $this->venta->total_debido_by_venta($ventaid, $monto) == 1) || ($ventaid == NULL)) && $monto > 0)
 		{
 
 			$this->db->trans_begin(); 
@@ -87,6 +92,7 @@ class Cobro extends MY_Controller {
 	        		"fecha" => $this->input->post('fecha'),
 	        		"codigomp" => $this->input->post('codigomp'),
 	        		"codigo_operacion" => $this->input->post('codigo_operacion'),
+	        		"pagado" => $pagado,
 	        		"operacion" => 1,
 	        		"monto" => $monto,
 	        	);
@@ -105,9 +111,15 @@ class Cobro extends MY_Controller {
 				$this->aplicacionCobroVenta->save(array("cobroid" => $cobroid, "ventaid" => $ventaid, "monto" => $monto));
 			}
 
-			///////////////////////////////////////////////////
-			///Agregar registro en detalle cuenta corriente////
-			///////////////////////////////////////////////////
+	        $datadetallecc = array(
+	        		"monto" => $monto,
+	        		"clienteid" => $this->input->post('cliente'),
+	        		"fecha" => date('Y-m-d H:i:s'),
+	        		"tipo_operacion" => 1, //cobro
+	        		"operacionid" => $cobroid,
+	        		"vendedorid" => 1,
+	        	);
+			$detalleccid = $this->detalleCuentacorriente->registrar($datadetallecc);
 
 /*			if ($datametodo['metodo'] != 5){ // si no es un cobro del metodo cuenta corriente/nota de credito, intenta saldar ventas adeudadas
 				$monto = $this->pagar_deudas($this->input->post('cliente'), $monto);
@@ -122,6 +134,7 @@ class Cobro extends MY_Controller {
 			{
 		        $this->db->trans_commit();
 		    	$output['resultado'] = 'Ok';
+		    	$output['pagado'] = $this->input->post('pagado');
 
 			}
 
@@ -135,7 +148,11 @@ class Cobro extends MY_Controller {
 	{
 		$monto = $this->input->post('monto');
 		$cobroid = $this->input->post('id');
-		if ($ventaid != NULL && $this->venta->total_debido_by_venta($ventaid, $monto, $cobroid) == 1 && $monto > 0)
+		$pagado = 0;
+		if ($this->input->post('pagado') == "on"){
+			$pagado = 1;
+		}
+		if ((($ventaid != NULL && $this->venta->total_debido_by_venta($ventaid, $monto) == 1) || ($ventaid == NULL)) && $monto > 0)
 		{
 			$this->db->trans_begin(); 
 	        $datametodo = array(
@@ -150,6 +167,7 @@ class Cobro extends MY_Controller {
 	        		"fecha" => $this->input->post('fecha'),
 	        		"codigomp" => $this->input->post('codigomp'),
 	        		"codigo_operacion" => $this->input->post('codigo_operacion'),
+	        		"pagado" => $pagado,
 	        		"operacion" => 1,
 	        		"monto" => $monto,
 	        	);
@@ -160,7 +178,6 @@ class Cobro extends MY_Controller {
 	        		"monto" => $monto,
 	        		"metododepagoid" => $this->input->post('metodo'),
 	        		"clienteid" => $this->input->post('cliente'),
-	        		"fecha" => date('Y-m-d H:i:s'),
 	        		"metodoid" => $metodoid,
 	        	);
 			$this->cobro->update(array('id' => $cobroid),$datacobro);
@@ -169,9 +186,14 @@ class Cobro extends MY_Controller {
 				$this->aplicacionCobroVenta->update(array("cobroid" => $cobroid, "ventaid" => $ventaid), array("monto" => $monto));
 			}
 
-			///////////////////////////////////////////////////
-			///Modificar registro en detalle cuenta corriente//
-			///////////////////////////////////////////////////
+	        $datadetallecc = array(
+	        		"monto" => $monto,
+	        		"clienteid" => $this->input->post('cliente'),
+	        		"tipo_operacion" => 1, //cobro
+	        		"operacionid" => $cobroid,
+	        		"vendedorid" => 1,
+	        	);
+			$detalleccid = $this->detalleCuentacorriente->actualizar_detalle_cc($datadetallecc);
 
 			if ($this->db->trans_status() === FALSE)
 			{
@@ -182,6 +204,7 @@ class Cobro extends MY_Controller {
 			{
 		        $this->db->trans_commit();
 		    	$output['resultado'] = 'Ok';
+		    	$output['pagado'] = $this->input->post('pagado');
 			}
 		}else{
 			$output['resultado'] = 'Error, supera monto total de venta';
@@ -197,9 +220,7 @@ class Cobro extends MY_Controller {
 		$this->transaccion->eliminar($cobro->metododepagoid, $cobro->metodoid);
 		$this->aplicacionCobroVenta->delete_by_cobroid($id);
 
-		///////////////////////////////////////////////////
-		///Modificar registro en detalle cuenta corriente//
-		///////////////////////////////////////////////////
+		$this->detalleCuentacorriente->eliminar_detalle_cc(1, $id);
 
 		if ($this->db->trans_status() === FALSE)
 		{

@@ -314,7 +314,7 @@ class Venta_model extends CI_Model {
 
 		$row = $query->row();
 		if (!isset($row->total)){
-			return 0;
+			return 1;
 		}else{
 			return $row->total >= $row->cobrado + $montocobro;	
 		}

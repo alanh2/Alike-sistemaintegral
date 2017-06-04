@@ -24,6 +24,7 @@ class Notacredito_model extends CI_Model {
 		$this->db->from($this->table);
 		$this->db->join('cobros', 'cobros.id = nota_credito.cobroid');
 		$this->db->where('cobros.clienteid',$clienteid);
+		$this->db->or_where('nota_credito.clienteid',$clienteid);
 		$this->db->select('nota_credito.id as id, nota_credito.monto as monto, cobros.fecha as fecha, "Nota de credito" as tipo');
 		$query = $this->db->get();
 

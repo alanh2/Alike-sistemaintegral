@@ -52,7 +52,7 @@ class Cobro extends MY_Controller {
 			$row = array();
 			$row[] = $cobro->id;
 			$row[] = $cobro->razon_social;
-			$row[] = $cobro->monto;
+			$row[] = '$'.$cobro->monto;
 			$row[] = $cobro->fecha;
 			$row[] = $cobro->metodo_pago;
 			$row[] = '<a class="btn btn-sm btn-primary" href="javascript:void(0)" title="Edit" onclick="edit_cobro('."'".$cobro->id."'".')"><i class="glyphicon glyphicon-pencil"></i> Editar</a> '
@@ -152,7 +152,7 @@ class Cobro extends MY_Controller {
 		if ($this->input->post('pagado') == "on"){
 			$pagado = 1;
 		}
-		if ((($ventaid != NULL && $this->venta->total_debido_by_venta($ventaid, $monto) == 1) || ($ventaid == NULL)) && $monto > 0)
+		if ((($ventaid != NULL && $this->venta->total_debido_by_venta($ventaid, $monto, $cobroid) == 1) || ($ventaid == NULL)) && $monto > 0)
 		{
 			$this->db->trans_begin(); 
 	        $datametodo = array(
@@ -308,7 +308,7 @@ class Cobro extends MY_Controller {
 			$row = array();
 			$row[] = $cobro->id;
 			$row[] = $cobro->fecha;
-			$row[] = '$'+$cobro->monto;
+			$row[] = '$' . $cobro->monto;
 			$row[] = $cobro->metodo_pago;
 			$row[] = '<a class="btn btn-sm btn-primary" href="javascript:void(0)" title="Edit" onclick="edit_cobro('."'".$cobro->id."'".')"><i class="glyphicon glyphicon-pencil"></i> Editar</a> '
 				  .'<a class="btn btn-sm btn-danger" href="javascript:void(0)" title="Delete" onclick="delete_cobro('."'".$cobro->id."'".')"><i class="glyphicon glyphicon-trash"></i> Borrar</a>';

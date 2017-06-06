@@ -206,6 +206,23 @@ function reload_cobros()
 {
     cobros.ajax.reload(null,false); //reload datatable ajax 
 }
+    //datepicker
+
+$('.datepickerCobro').datepicker({
+
+    autoclose: true,
+
+    format: "yyyy-mm-dd",
+
+    todayHighlight: true,
+
+    orientation: "top auto",
+
+    todayBtn: true,
+
+    todayHighlight: true,  
+
+});
 </script>
 <!-- Bootstrap modal -->
 <div class="modal fade" id="modal_form_cobro" role="dialog">
@@ -246,7 +263,7 @@ function reload_cobros()
                     <div class="form-group tarjeta cheque metodo">
                         <label class="control-label col-md-5">Vencimiento</label>
                         <div class="col-md-6">
-                            <input id="vencimiento" name="vencimiento" class="form-control datepicker"/>
+                            <input id="vencimiento" name="vencimiento" class="form-control datepickerCobro"/>
                             <span class="help-block"></span>
                         </div>                          
                     </div>

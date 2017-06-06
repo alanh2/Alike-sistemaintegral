@@ -41,10 +41,10 @@ class Detalle_cuentacorriente_model extends CI_Model {
 		$this->db->delete($this->table);
 	}
 
-	public function get_by_operacion_id($tipo_operacion, $operacionid)
+	public function get_by_operacion($tipo_operacionid, $operacionid)
 	{
 		$this->db->from($this->table);
-		$this->db->where('tipo_operacion', $tipo_operacion);
+		$this->db->where('tipo_operacionid', $tipo_operacionid);
 		$this->db->where('operacionid', $operacionid);
 		$query = $this->db->get();
 
@@ -76,20 +76,20 @@ class Detalle_cuentacorriente_model extends CI_Model {
 	public function calcular_saldo_actual($data, $saldo_anterior){
 //	var $tipo_operacion = array('0','cobro','envio','venta','gasto');
 		$saldo_actual = $saldo_anterior;
-		if ($data["tipo_operacion"] == 1 || $data["tipo_operacion"] == 2){
+		if ($data["tipo_operacionid"] == 1 || $data["tipo_operacionid"] == 4){
 			$saldo_actual += $data["monto"];
 		}
-		if ($data["tipo_operacion"] == 3 || $data["tipo_operacion"] == 4){
+		if ($data["tipo_operacionid"] == 2 || $data["tipo_operacionid"] == 3){
 			$saldo_actual -= $data["monto"];
 		}
 		return $saldo_actual;
 	}
 
-	public function armar_datos($data, $detalle=NULL){
+	public function armar_datos($data, $detalle_cc=NULL){
 		$saldo_anterior = 0;
 		
-		if ($detalle != NULL){
-			$saldo_anterior = $detalle->saldo_anterior;
+		if ($detalle_cc != NULL){
+			$saldo_anterior = $detalle_cc->saldo_anterior;
 		}else{
 			$ultimo_detalle= $this->get_last_detalle_by_cliente($data["clienteid"]);
 			if ($ultimo_detalle == NULL){
@@ -103,7 +103,7 @@ class Detalle_cuentacorriente_model extends CI_Model {
 		$dataDetallecc = array(
     		"saldo_anterior" => $saldo_anterior,
     		"saldo_actual" => $saldo_actual,
-    		"tipo_operacion" => $data["tipo_operacion"], 
+    		"tipo_operacionid" => $data["tipo_operacionid"], 
     		"operacionid" => $data["operacionid"],
     		"vendedorid" => $data["vendedorid"],
     		"clienteid" => $data["clienteid"],
@@ -120,16 +120,16 @@ class Detalle_cuentacorriente_model extends CI_Model {
 		return $this->save($dataDetallecc);
 	}
 
-	public function actualizar_detalle_cc($data)
+	public function edit_detalle_cc($data)
 	{
-		$detalle = $this->get_by_operacion_id($data["tipo_operacion"], $data["operacionid"]);
+		$detalle = $this->get_by_operacion($data["tipo_operacionid"], $data["operacionid"]);
 		$dataDetallecc = $this->armar_datos($data, $detalle);
 
 		$diferencia = $dataDetallecc["saldo_actual"] - $detalle->saldo_actual;
 
 		$detallescc = $this->get_all_by_cliente($detalle->clienteid, $detalle->id);
 		foreach ($detallescc as $d) {
-			$this->actualizar($d, $diferencia);
+			$this->ajustar($d, $diferencia);//Diferencia es el valor final que va a tomar el registro.
 		}
 
 		return $this->update(array('id' => $detalle->id), $dataDetallecc);
@@ -137,13 +137,13 @@ class Detalle_cuentacorriente_model extends CI_Model {
 
 	public function eliminar_detalle_cc($tipo_operacion, $operacionid)
 	{
-		$detalle = $this->get_by_operacion_id($tipo_operacion, $operacionid);
+		$detalle = $this->get_by_operacion($tipo_operacion, $operacionid);
 		if ($detalle != NULL){
 			$diferencia = $detalle->saldo_anterior - $detalle->saldo_actual;
 
 			$detallescc = $this->get_all_by_cliente($detalle->clienteid, $detalle->id);
 			foreach ($detallescc as $d) {
-				$this->actualizar($d, $diferencia);
+				$this->ajustar($d, $diferencia);
 			}
 
 			return $this->delete_by_id($detalle->id);
@@ -152,7 +152,7 @@ class Detalle_cuentacorriente_model extends CI_Model {
 		}
 	}
 
-	public function actualizar($detalle, $diferencia)
+	public function ajustar($detalle, $diferencia)
 	{
 		$dataDetallecc = array(
     		"saldo_anterior" => $detalle->saldo_anterior + $diferencia,

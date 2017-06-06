@@ -12,6 +12,7 @@
                         <th style="width:25px;">ID</th>
                         <th>Marca</th>
                         <th>Nombre</th>
+                        <th>Nombre Comercial</th>
                         <th style="width:225px;">Accion</th>
                     </tr>
                 </thead>
@@ -21,8 +22,9 @@
                 <tfoot>
                     <tr>
                         <th>ID</th>
-                        <th>Nombre</th>
                         <th>Marca</th>
+                        <th>Nombre</th>
+                        <th>Nombre Comercial</th>
                         <th>Action</th>
                     </tr>
                 </tfoot>
@@ -157,6 +159,7 @@ function edit_modelo(id)
 			$('[name="id"]').val(data.id);
             $('[name="marca"]').val(data.marcaid);
             $('[name="nombre"]').val(data.nombre);
+            $('[name="nombre_comercial"]').val(data.nombre_comercial);
             $('#modal_form').modal('show'); // show bootstrap modal when complete loaded
             $('.modal-title').text('Editar Modelo'); // Set title to Bootstrap modal title
 			$('[name="nombre"]').focus();
@@ -265,6 +268,13 @@ function delete_modelo(id)
                             <label class="control-label col-md-3">Nombre</label>
                             <div class="col-md-9">
                                 <input id="nombre" name="nombre" placeholder="Nombre" class="form-control" type="text" autofocus>
+                                <span class="help-block"></span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-3">Nombre Comercial</label>
+                            <div class="col-md-9">
+                                <input id="nombre_comercial" name="nombre_comercial" placeholder="Nombre comercial" class="form-control" type="text" autofocus>
                                 <span class="help-block"></span>
                             </div>
                         </div>

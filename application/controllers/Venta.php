@@ -137,6 +137,80 @@ class Venta extends MY_Controller {
 			$this->load->view('master_view',$data);
 		}
 	}	
+	public function reporte_simple($desde,$hasta){
+		$this->load->helper('url');
+		$data['view']='venta_reporte_view';
+		$data['data']['reporte'] = $this->venta->reporte_simple($desde,$hasta);
+		//print_r($data['data']['reporte']);
+		//echo $this->db->last_query();
+				
+		$this->load->view('master_view',$data);
+		
+	}	
+	public function reporte_fin_de_mes($desde,$hasta){
+		$this->load->helper('url');
+		$data['view']='venta_reporte_fin_de_mes_view';
+		$data['data']['reporte'] = $this->venta->reporte_ventas_finalizadas($desde,$hasta);
+		//print_r($data['data']['reporte']);
+		//echo $this->db->last_query();
+				
+		$this->load->view('master_view',$data);
+		
+	}
+	public function ajax_reporte_simple($desde,$hasta){
+
+	
+		$this->load->helper('url');
+
+		$list = $this->venta->reporte_simple($desde,$hasta);
+
+		$data = array();
+
+		$no = 0;
+
+		foreach ($list as $venta) {
+
+			$no++;
+
+			$row = array();
+
+			$row[] = $venta->id;
+
+			$row[] = $venta->fecha;
+
+			$row[] = $venta->total;
+
+			$row[] = $venta->cuentacorriente;
+
+			$row[] = $venta->vendedor;
+
+			$row[] = $venta->estado_nombre;
+
+			$row[] = $venta->cliente;
+
+			$data[] = $row;
+
+		}
+
+
+
+		$output = array(
+
+						"draw" => $_POST['draw'],
+
+						"recordsTotal" => $this->venta->count_all(),
+
+						"recordsFiltered" => $this->venta->count_filtered(),
+
+						"data" => $data,
+
+				);
+
+		//output to json format
+		//echo $this->db->last_query();
+		echo json_encode($output);
+
+	}
 
 	public function imprimir_remito($id=NULL){
 		if ($id != null){
@@ -387,6 +461,18 @@ class Venta extends MY_Controller {
 				);
 		$dataEstado=array('estadoid'=>1);
 		$this->venta->update(array('id' =>$data['ventaid']), $dataEstado);
+
+		$venta=$this->venta->get_by_id($data['ventaid']);
+        $datadetallecc = array(
+        		"monto" => $venta->total,
+        		"clienteid" =>  $data['clienteid'],
+        		"fecha" => date('Y-m-d H:i:s'),
+        		"tipo_operacionid" => 3, //cobro
+        		"operacionid" => $data['ventaid'],
+        		"vendedorid" => 1,
+        	);
+		$detalleccid = $this->detalleCuentacorriente->registrar($datadetallecc);
+
 		
 		if ($this->db->trans_status() === FALSE || !isset($transaccion_result) || !isset($cobro_result) || !isset($aplicacion_result))
 		{

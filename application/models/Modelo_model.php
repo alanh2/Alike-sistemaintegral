@@ -5,7 +5,7 @@ class Modelo_model extends CI_Model {
 
 	var $table = 'modelos';
 	var $column_order = array('id','nombre','marca',null); //set column field database for datatable orderable
-	var $column_search = array('modelos.id','modelos.nombre','marcas.nombre'); //set column field database for datatable searchable just firstname , lastname , address are searchable
+	var $column_search = array('modelos.id','modelos.nombre','modelos.nombre_comercial','marcas.nombre'); //set column field database for datatable searchable just firstname , lastname , address are searchable
 	var $order = array('id' => 'desc'); // default order 
 
 	public function __construct()

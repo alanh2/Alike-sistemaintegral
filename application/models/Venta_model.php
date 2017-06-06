@@ -205,7 +205,7 @@ class Venta_model extends CI_Model {
 		$this->db->join('vendedores', 'vendedores.id = ventas.vendedorid');
 		$this->db->join('localidades', 'localidades.id = clientes.localidadid');
 		$this->db->join('ventas_estados', 'ventas_estados.id = ventas.estadoid');
-		$this->db->join('ventas_renglones', 'ventas_renglones.ventaid = ventas.id','left');
+		//$this->db->join('ventas_renglones', 'ventas_renglones.ventaid = ventas.id','left');
 		$this->db->select('ventas.*, 
 			vendedores.nombre as vendedor,
 			ventas_estados.nombre as estado_nombre,
@@ -280,6 +280,25 @@ class Venta_model extends CI_Model {
 		$query = $this->db->get();
 		return $query->result();
 	}
+	public function reporte_ventas_finalizadas($desde,$hasta){
+		$this->db->from($this->table);
+		$this->db->join('clientes', 'clientes.id = ventas.clienteid');
+		$this->db->join('vendedores', 'vendedores.id = ventas.vendedorid');
+		$this->db->join('localidades', 'localidades.id = clientes.localidadid');
+		$this->db->join('ventas_estados', 'ventas_estados.id = ventas.estadoid');
+		//$this->db->join('ventas_renglones', 'ventas_renglones.ventaid = ventas.id','left');
+		$this->db->select('ventas.*, 
+			vendedores.nombre as vendedor,
+			ventas_estados.nombre as estado_nombre,
+			clientes.razon_social as cliente, clientes.tel_codigo_area, clientes.tel_numero, clientes.cel_numero, clientes.direccion, clientes.cp,
+			clientes.email, clientes.dni, clientes.cuitcuil, clientes.web, clientes.ranking, localidades.nombre as localidad');
+		$this->db->where('fecha >=', $desde);
+		$this->db->where('fecha <=', $hasta);
+		$this->db->where('estadoid', '1');
+		$query = $this->db->get();
+		return $query->result();
+	}
+	
 	public function get_by_id($id)
 	{
 		$this->db->from($this->table);
@@ -301,7 +320,7 @@ class Venta_model extends CI_Model {
 
 	}
 
-	public function total_debido_by_venta($id, $montocobro, $cobroid=NULL){
+	public function total_debido_by_venta($id, $montocobro, $cobroid=NULL){//Cuanto resta de pagar una venta, para validar el maximo de pago posible en abm cobros dentro de venta.
 		$this->db->from($this->table);
 		$this->db->join('aplicaciones_cobro_venta', 'aplicaciones_cobro_venta.ventaid = ventas.id', 'left');
 		$this->db->select('SUM(aplicaciones_cobro_venta.monto) as cobrado, ventas.total as total');
@@ -319,27 +338,6 @@ class Venta_model extends CI_Model {
 			return $row->total >= $row->cobrado + $montocobro;	
 		}
 	}
-
-	/*public function get_by_id($id)
-	{
-
-		$this->db->from($this->table);
-
-		$this->db->join('clientes', 'clientes.id = ventas.clienteid');
-		
-		$this->db->join('vendedores', 'vendedores.id = ventas.vendedorid');
-
-		$this->db->select('ventas.*, 
-			clientes.razon_social as cliente, clientes.tel_codigo_area, clientes.tel_numero, clientes.cel_numero, clientes.direccion, clientes.localidad, clientes.cp,
-			clientes.email, clientes.dni, clientes.cuil, clientes.cuit, clientes.ranking, vendedores.nombre as vendedor');
-
-		$this->db->where('ventas.id',$id);
-
-		$query = $this->db->get();
-
-		return $query->row();
-
-	}*/
 
 	public function save($data)
 	{

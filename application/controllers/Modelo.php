@@ -64,6 +64,9 @@ class Modelo extends MY_Controller {
 
 			$row[] = $modelo->nombre;
 
+			$row[] = $modelo->nombre_comercial;
+
+			//
 			//add html for action
 			if($this->able_to_delete($modelo->id)){
 
@@ -193,6 +196,8 @@ class Modelo extends MY_Controller {
 
 				'nombre' => $this->input->post('nombre'),
 
+				'nombre_comercial ' => $this->input->post('nombre_comercial'),
+
 				'marcaid' => $this->input->post('marca'),
 
 				);
@@ -214,7 +219,9 @@ class Modelo extends MY_Controller {
 		$data = array(
 
 				'nombre' => $this->input->post('nombre'),
-				
+
+				'nombre_comercial ' => $this->input->post('nombre_comercial'),
+
 				'marcaid' => $this->input->post('marca'),
 
 			);
@@ -262,6 +269,18 @@ class Modelo extends MY_Controller {
 			$data['inputerror'][] = 'nombre';
 
 			$data['error_string'][] = 'El nombre no puede estar vacio';
+
+			$data['status'] = FALSE;
+
+		}
+		
+		if($this->input->post('nombre_comercial') == '')
+
+		{
+
+			$data['inputerror'][] = 'nombre_comercial';
+
+			$data['error_string'][] = 'El nombre comercial no puede estar vacio';
 
 			$data['status'] = FALSE;
 

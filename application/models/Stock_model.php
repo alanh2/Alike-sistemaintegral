@@ -10,7 +10,7 @@ class Stock_model extends CI_Model {
 
 	var $table = 'stock';
 
-	var $column_order = array(null); //set column field database for datatable orderable
+	var $column_order = array(null,'marcas.nombre',null,null,null,null,'stock.localid'); //set column field database for datatable orderable
 
 	var $column_search = array('stock.id','marcas.nombre','modelos.nombre','subcategorias.nombre','productos.nombre','colores.name'); //set column field database for datatable searchable just firstname , lastname , address are searchable
 
@@ -69,8 +69,9 @@ class Stock_model extends CI_Model {
 		$this->db->join('subcategorias', 'subcategorias.id = productos.subcategoriaid');
 //		$this->db->join('categorias', 'categorias.id = productos.categoriaid');
 
-		$this->db->select('stock.cantidad, stock.id as stock_id, colores.name as color, subcategorias.nombre as subcategoria, productos.*, modelos.nombre as modelo, marcas.nombre as marca');
+		//$this->db->select('stock.cantidad, stock.id as stock_id, colores.name as color, subcategorias.nombre as subcategoria, productos.*, modelos.nombre as modelo, marcas.nombre as marca');
 
+		$this->db->select('stock.cantidad, stock.reservado, stock.id as stock_id, stock.localid, stock.producto_colorid, colores.name as color, subcategorias.nombre as subcategoria, productos.*, modelos.nombre as modelo, marcas.nombre as marca, locales.nombre as local');
 		$i = 0;
 
 		
@@ -99,7 +100,7 @@ class Stock_model extends CI_Model {
 
 				{
 
-					$this->db->or_like($item, $_POST['search']['value']);
+					$this->db->like($item, $_POST['search']['value']);
 
 				}
 
@@ -215,7 +216,45 @@ class Stock_model extends CI_Model {
 	}
 
 
+	public function get_by_producto_color_local($producto_colorid,$localid){
+		$this->db->from($this->table);		
 
+		$this->db->join('productos_colores', 'productos_colores.id = stock.producto_colorid');
+
+		$this->db->join('colores', 'colores.id = productos_colores.colorid');
+
+		$this->db->join('productos', 'productos.id = productos_colores.productoid');
+
+		$this->db->join('locales', 'locales.id = stock.localid');
+
+		$this->db->join('modelos', 'modelos.id = productos.modeloid');
+
+		$this->db->join('marcas', 'marcas.id = modelos.marcaid');
+
+		$this->db->join('subcategorias', 'subcategorias.id = productos.subcategoriaid');
+//		$this->db->join('categorias', 'categorias.id = productos.categoriaid');
+
+		$this->db->select('stock.cantidad, stock.reservado, stock.id as stock_id, stock.localid, stock.producto_colorid, colores.name as color, subcategorias.nombre as subcategoria, productos.*, modelos.nombre as modelo, marcas.nombre as marca, locales.nombre as local');
+
+
+		$this->db->where('stock.producto_colorid',$producto_colorid);
+		$this->db->where('stock.localid',$localid);
+
+		$query = $this->db->get();
+
+
+
+		return $query->row();
+	}
+	public function registrar_transferencia($data){
+
+
+		$this->db->insert('stock_transferencias', $data);
+
+		return $this->db->insert_id();
+		//$this->stock->update(array('id' => $stock_destino->stock_id), $data_stock_destino);				
+		//$data_stock_transferencia=array('origenid'=>$stock_origen->stock_id,'destinoid'=>$stock_destino->stock_id,'cantidad'=>$cantidad,'vendedor'=>'1','fecha'=> date('Y-m-d H:i:s'));	
+	}
 	public function get_by_id($id)
 
 	{
@@ -237,7 +276,7 @@ class Stock_model extends CI_Model {
 		$this->db->join('subcategorias', 'subcategorias.id = productos.subcategoriaid');
 //		$this->db->join('categorias', 'categorias.id = productos.categoriaid');
 
-		$this->db->select('stock.cantidad, stock.reservado, stock.rma, stock.id as stock_id, colores.name as color, subcategorias.nombre as subcategoria, productos.*, modelos.nombre as modelo, marcas.nombre as marca');
+		$this->db->select('stock.cantidad, stock.reservado, stock.rma,stock.localid,  stock.producto_colorid, stock.id as stock_id, colores.name as color, subcategorias.nombre as subcategoria, productos.*, modelos.nombre as modelo, marcas.nombre as marca,concat(subcategorias.nombre," ", productos.nombre," ", marcas.nombre," ", modelos.nombre )as producto');
 
 
 		$this->db->where('stock.id',$id);

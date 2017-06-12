@@ -13,24 +13,24 @@ class Enviometodo_model extends CI_Model {
 
 	public function actualizar($data)
 	{
-		if($data['metodo'] != $data['metodo_envio_anterior']){
+		if($data['metodoenvio'] != $data['metodo_envio_anterior']){
 			$this->db->where('id', $data['env_tabla_id_anterior']);
 			$this->db->delete($this->tiposenvios[$data['metodo_envio_anterior']]);
 
 			return $this->add_envio($data);
 		}else{
 			$datosEnvio = $this->_armarEnvio($data);
-			$this->update($this->tiposenvios[$data['metodo']], array('id' => $data['env_tabla_id_anterior']), $datosEnvio);
+			$this->update($this->tiposenvios[$data['metodoenvio']], array('id' => $data['env_tabla_id_anterior']), $datosEnvio);
 			return $data['env_tabla_id_anterior'];
 		}
 	}
 	public function add_envio($data)
 	{
 		$datosEnvio = $this->_armarEnvio($data);
-/*		$this->db->insert($this->tiposenvios[$data['metodo']], $datosEnvio);
+/*		$this->db->insert($this->tiposenvios[$data['metodoenvio']], $datosEnvio);
 		return $this->db->insert_id();
 		*/
-		return $this->save($this->tiposenvios[$data['metodo']], $datosEnvio);
+		return $this->save($this->tiposenvios[$data['metodoenvio']], $datosEnvio);
 		 
 	}
 
@@ -51,28 +51,24 @@ class Enviometodo_model extends CI_Model {
 
 		$datos_preparados = array();
 		
-		switch ($data['metodo']) {
+		switch ($data['metodoenvio']) {
 			case $retiro:
 				$datos_preparados['id'] = null;
 				break;
 			case $oca:
-				$datos_preparados['costo'] = $data['costo'];
 				$datos_preparados['direccion'] = $data['direccion'];
 				$datos_preparados['tracking'] = $data['tracking'];
 				break;
 			case $oca_express:
-				$datos_preparados['costo'] = $data['costo'];
 				$datos_preparados['direccion'] = $data['direccion'];
 				$datos_preparados['tracking'] = $data['tracking'];
 				break;
 			case $moto:
-				$datos_preparados['costo'] = $data['costo'];
 				$datos_preparados['direccion'] = $data['direccion'];
 				$datos_preparados['tracking'] = $data['tracking'];
 				$datos_preparados['motoid'] = $data['motoid'];
 				break;
 			case $otros:
-				$datos_preparados['costo'] = $data['costo'];
 				$datos_preparados['direccion'] = $data['direccion'];
 				$datos_preparados['tracking'] = $data['tracking'];
 				$datos_preparados['direccionempresa'] = $data['direccion_empresa'];
@@ -96,10 +92,10 @@ class Enviometodo_model extends CI_Model {
 		return $this->db->affected_rows();
 	}
 
-	public function delete_by_id($id)
+	public function delete_by_id($id, $metodo)
 	{
 		$this->db->where('id', $id);
-		$this->db->delete($this->table);
+		$this->db->delete($this->tiposenvios[$metodo]);
 	}
 
 

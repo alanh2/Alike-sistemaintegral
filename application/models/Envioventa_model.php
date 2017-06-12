@@ -70,6 +70,11 @@ class Envioventa_model extends CI_Model {
 		$this->db->where('id', $id);
 		$this->db->delete($this->table);
 	}
-
+	
+	public function delete_by_envioid($envioid)
+	{
+		$this->db->where('envioid', $envioid);
+		$this->db->delete($this->table);
+	}
 
 }

@@ -107,17 +107,21 @@ class UsersAdminModel extends CI_Model
         $this->db->from($this->table);
         $this->db->where('usuarios.nombre', $user_data['nombre']);
         $this->db->where('usuarios.clave', $user_data['clave']);
+        $this->db->join('locales', 'locales.id = usuarios.localid');
         $this->db->join('vendedores', 'vendedores.id = usuarios.vendedorid');
-        $this->db->select('usuarios.*, CONCAT(vendedores.nombre," ", vendedores.apellido) AS vendedor, vendedores.email');
+        $this->db->select('usuarios.*, CONCAT(vendedores.nombre," ", vendedores.apellido) AS vendedor, vendedores.email, locales.nombre as local');
         $query  = $this->db->get();
-        echo $this->db->last_query();
+        //echo $this->db->last_query();
         $result = $query->row_array();
 
         if(count($result) > 0){
             return $data = array(
                 'id' => $result['id'],
                 'usuario' => $result['nombre'],
-                'clave' => $result['clave'],
+                //'clave' => $result['clave'],
+                'jerarquia'=>$result['jerarquia'],
+                'localid'=>$result['localid'],
+                'local'=>$result['local'],
                 'vendedor' => $result['vendedor'],
                 'email' => $result['email']
             );

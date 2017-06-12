@@ -44,7 +44,8 @@ class Venta extends MY_Controller {
 	public function index()
 
 	{
-
+		$this->isAdmin();
+		
 		$this->load->helper('url');
 
 		$data['view']='venta_view';
@@ -241,6 +242,7 @@ class Venta extends MY_Controller {
 	}
 
 	public function ver_detalles_con_cobros($id=NULL){
+		$this->isAdmin();
 		if ($id != null){
 			$data['view']='venta_detalle_cobros_view';
 			$data['venta'] = $this->venta->get_by_id($id);
@@ -251,6 +253,8 @@ class Venta extends MY_Controller {
 	}
 	
 	public function ver_detalles($id=NULL){
+		$this->isAdmin();
+		
 		if ($id != null){
 			$data['view']='venta_detalle_view';
 			$data['venta'] = $this->venta->get_by_id($id);
@@ -360,7 +364,7 @@ class Venta extends MY_Controller {
 	}
 
 	public function alta_venta($id=NULL){
-
+		$this->isAdmin();
 		$this->cargar_venta($id);
 		$this->load->helper('url');
 		if($id!=NULL){
@@ -524,7 +528,7 @@ class Venta extends MY_Controller {
 			$action='<a class="btn btn-sm btn-info" href="'.site_url('venta/ver_detalles/'.$venta->id).'" title="Ver Detalles"><i class="glyphicon glyphicon-list"></i></a>
 				<a class="btn btn-sm btn-success" href="'.site_url('venta/alta_venta/'.$venta->id).'" title="Modificar"><i class="fa fa-edit"></i></a> 
 				<a class="btn btn-sm btn-warning" href="'.site_url('Pdfs/imprimir_venta/'.$venta->id).'" title="Imprimir" target="_blank"><i class="fa fa-print"></i></a> ';
-			if(strtotime($venta->fecha) < strtotime('-30 days')){
+			if((strtotime($venta->fecha) < strtotime('-30 days'))&&($venta->estadoid>0)){
 				$row[] = $action;
 			}
 			else{

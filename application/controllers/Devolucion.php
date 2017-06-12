@@ -40,7 +40,7 @@ class Devolucion extends MY_Controller {
 	public function index()
 
 	{
-
+		
 		$this->load->helper('url');
 
 		$data['view']='devolucion_view';
@@ -151,7 +151,8 @@ class Devolucion extends MY_Controller {
 
 	
 	public function alta_devolucion($id=NULL){
-
+		$this->isAdmin();
+		
 		$this->load->helper('url');
 		if($id!=NULL){
 			
@@ -342,6 +343,7 @@ class Devolucion extends MY_Controller {
 	{
 
 		//$this->_validate();
+		$venta=$this->venta->get_by_id($ventaid);
 		$data = array(
 
 				
@@ -407,9 +409,8 @@ class Devolucion extends MY_Controller {
 		}
 			$this->devolucion->actualizar_total($devolucionid);
 			$monto_devolucion=$this->devolucion->get_total($devolucionid);
-			
 
-			$dataGasto=array();//ver datos gasto
+			/*$dataGasto=array();//ver datos gasto
 			$dataGasto = array(
 			'nombre' => 'Nota de Credito - Devolucion - Venta -'.$ventaid,
 			'tipos_gastoid' => '2',
@@ -418,10 +419,10 @@ class Devolucion extends MY_Controller {
 			'vendedorid' => '1',
 			);
 			//print_r($dataGasto);
-			$gastoid =$this->gasto->save($dataGasto);
-					//echo $this->db->last_query();
+			//$gastoid =$this->gasto->save($dataGasto);
+					//echo $this->db->last_query();*/
 
-			$dataNotaCredito = array('monto'=>$monto_devolucion->total,'saldo'=>$monto_devolucion->total,'fecha' => date("Y-m-d H:i:s"),'devolucionid'=>$devolucionid,'gastoid'=>$gastoid);
+			$dataNotaCredito = array('monto'=>$monto_devolucion->total,'saldo'=>$monto_devolucion->total,'fecha' => date("Y-m-d H:i:s"),'devolucionid'=>$devolucionid, 'clienteid'=>$venta->clienteid/*,'gastoid'=>$gastoid*/);
 			$nota_creditoid = $this->notacredito->save($dataNotaCredito);
 
 		/*if ($this->db->trans_status() === FALSE)

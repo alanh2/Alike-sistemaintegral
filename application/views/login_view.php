@@ -56,9 +56,9 @@
             echo form_open(site_url('users_admin/login'));
 
             echo form_label('Nombre de usuario:');
-            echo form_input(array('id' => 'username', 'name' => 'username', 'class' => 'form-control'));
+            echo form_input(array('id' => 'nombre', 'name' => 'nombre', 'class' => 'form-control'));
             echo form_label('Contraseña:');
-            echo form_input(array('id' => 'password', 'type' => 'password', 'name' => 'password', 'class' => 'form-control'));
+            echo form_input(array('id' => 'clave', 'type' => 'password', 'name' => 'clave', 'class' => 'form-control'));
             echo form_submit(array('id' => 'submit', 'value' => 'Ingresar', 'class'=>'login'));
             echo form_close();
             ?>

@@ -28,8 +28,12 @@ $(document).ready(function() {
         }
 
     });
-    function mostrar_campos(metodo){
-        $(".metodo").hide();
+    $("#metodosEnvio").change(function(){
+        mostrar_campos_envio($("#metodosEnvio").val());
+    });
+});
+    function mostrar_campos_envio(metodo){
+        $(".metodoEnvio").hide();
         switch (metodo){
             case "1": //Retira el cliente
                 break;
@@ -46,12 +50,8 @@ $(document).ready(function() {
                 $(".metodoEnvio.otros").show();
                 break;
         }
+        alert
     }
-    $("#metodosEnvio").change(function(){
-        mostrar_campos($("#metodosEnvio").val());
-    });
-});
-
 function add_envio()
 {
     save_method = 'add';
@@ -79,23 +79,19 @@ function edit_envio(id)
             
             $('[name="id"]').val(id);
             $("#cliente").val(data.clienteid);
-            $("#metodosEnvio").val(data.metododepagoid);
-            $('[name="metodo_anterior"]').val(data.metododepagoid);
-            $('[name="mov_tabla_id_anterior"]').val(data.metodoid);
-            $('[name="monto"]').val(data.monto);
+            $("#metodosEnvio").val(data.metodoenvio);
+            $('[name="metodo_anterior"]').val(data.metodoenvio);
+            $('[name="mov_tabla_id_anterior"]').val(data.envtablaid);
+            $('[name="costo"]').val(data.costo);
 
-            mostrar_campos(data.metododepagoid);
-            $('[name="vencimiento"]').val(data.vencimiento);
-            $('[name="banco"]').val(data.banco);
-            $('[name="numeracion"]').val(data.numeracion);
-            $('[name="titular"]').val(data.titular);
-            $('[name="digitos"]').val(data.digitos);
-            $('[name="fecha"]').val(data.fecha);
-            $('[name="codigomp"]').val(data.codigomp);
-            $('[name="codigo_operacion"]').val(data.codigo_operacion);
-            if (data.pagado == 1){
-               $('[name="pagado"]').prop("checked",true);
-            }
+            mostrar_campos_envio(data.metodoenvio);
+            $('[name="direccion"]').val(data.direccion);
+            $('[name="nombre_empresa"]').val(data.nombreempresa);
+            $('[name="direccion_empresa"]').val(data.direccionempresa);
+            $('[name="tracking"]').val(data.tracking);
+            $('[name="recibe"]').val(data.recibe);
+            $('[name="dni"]').val(data.dni);
+            $('[name="fecha_estimada"]').val(data.fechaestimada);
             
             $('#modal_form_envio').modal('show'); // show bootstrap modal when complete loaded
             $('.modal-title').text('Editar Envio'); // Set title to Bootstrap modal title
@@ -154,6 +150,22 @@ function save_envio()
 
         }
     });
+
+    $('.datepickerEnvio').datepicker({
+
+    autoclose: true,
+
+    format: "yyyy-mm-dd",
+
+    todayHighlight: true,
+
+    orientation: "top auto",
+
+    todayBtn: true,
+
+    todayHighlight: true,  
+
+});
 }
 
 function delete_envio(id)
@@ -184,21 +196,7 @@ function reload_envios()
     envios.ajax.reload(null,false); //reload datatable ajax 
 }
 
-$('.datepickerEnvio').datepicker({
 
-    autoclose: true,
-
-    format: "yyyy-mm-dd",
-
-    todayHighlight: true,
-
-    orientation: "top auto",
-
-    todayBtn: true,
-
-    todayHighlight: true,  
-
-});
 </script>
 <!-- Bootstrap modal -->
 <div class="modal fade" id="modal_form_envio" role="dialog">
@@ -244,7 +242,7 @@ $('.datepickerEnvio').datepicker({
                             <span class="help-block"></span>
                         </div>
                     </div>
-                    <div class="form-group metodo moto">
+                    <div class="form-group metodoEnvio moto">
                         <label class="control-label col-md-5">Elija la moto deseada</label>
                         <div class="col-md-6">
                             <select id="motoid" name="motoid" class="form-control" data-bind="value:motoid">
@@ -252,35 +250,35 @@ $('.datepickerEnvio').datepicker({
                             <span class="help-block"></span>
                         </div>
                     </div>
-                    <div class="form-group metodo oca ocaexpress moto otros">
+                    <div class="form-group metodoEnvio oca ocaexpress moto otros">
                         <label class="control-label col-md-5">Costo ($)</label>
                         <div class="col-md-6">
                             <input id="costo" name="costo" class="form-control" value="<? if (isset($metodo_envio->costo)){echo $metodo_envio->costo; } ?>"/>
                             <span class="help-block"></span>
                         </div>
                     </div>
-                    <div class="form-group metodo oca ocaexpress moto otros">
+                    <div class="form-group metodoEnvio oca ocaexpress moto otros">
                         <label class="control-label col-md-5">Dirección</label>
                         <div class="col-md-6">
                             <input id="direccion" name="direccion" class="form-control" value="<? if (isset($metodo_envio->direccion)){echo $metodo_envio->direccion; } ?>"/>
                             <span class="help-block"></span>
                         </div>
                     </div>
-                    <div class="form-group metodo otros">
+                    <div class="form-group metodoEnvio otros">
                         <label class="control-label col-md-5">Nombre de la empresa</label>
                         <div class="col-md-6">
                             <input id="nombre_empresa" name="nombre_empresa" class="form-control" value="<? if (isset($metodo_envio->nombreempresa)){echo $metodo_envio->nombreempresa; } ?>"/>
                             <span class="help-block"></span>
                         </div>
                     </div>
-                    <div class="form-group metodo otros">
+                    <div class="form-group metodoEnvio otros">
                         <label class="control-label col-md-5">Dirección de la empresa</label>
                         <div class="col-md-6">
                             <input id="direccion_empresa" name="direccion_empresa" class="form-control" value="<? if (isset($metodo_envio->direccionempresa)){echo $metodo_envio->direccionempresa; } ?>"/>
                             <span class="help-block"></span>
                         </div>
                     </div>
-                    <div class="form-group metodo oca ocaexpress moto otros">
+                    <div class="form-group metodoEnvio oca ocaexpress moto otros">
                         <label class="control-label col-md-5">Código de seguimiento</label>
                         <div class="col-md-6">
                             <input id="tracking" name="tracking" class="form-control" value="<? if (isset($metodo_envio->tracking)){echo $metodo_envio->tracking; } ?>"/>

@@ -81,7 +81,7 @@ class Users_admin extends CI_Controller {
 
     public function login(){
         if(isset($_SESSION['admin'])){
-            redirect(base_url()."admin/index");
+            redirect(site_url());
         }else{
             $this->form_validation->set_rules('nombre','Nombre de usuario','trim|required|min_length[5]|max_length[50]');
             $this->form_validation->set_rules('clave','Contraseña','required|min_length[5]');
@@ -89,7 +89,7 @@ class Users_admin extends CI_Controller {
             if($this->form_validation->run() == TRUE){
                 $data = array();
                 $data['nombre'] = $_POST['nombre'];
-                $data['clave'] = md5($_POST['clave']);
+                $data['clave'] = $_POST['clave'];//md5($_POST['clave']);
 
 
                 $user_data = $this->user_admin->login($data);
@@ -98,7 +98,7 @@ class Users_admin extends CI_Controller {
                     $_SESSION['admin'] = $user_data;
 
                     if($_SESSION['admin']){
-                        redirect(base_url()."admin/index");
+                        redirect(site_url());
                     }
                 }else{
                     $this->session->set_flashdata("error","Usuario o contraseña incorrectos.");
@@ -112,7 +112,7 @@ class Users_admin extends CI_Controller {
 
     public function logout(){
         unset($_SESSION['admin']);
-        redirect(base_url()."users_admin/login","refresh");
+        redirect(site_url("users_admin/login"),"refresh");
     }
 
     public function change_password(){

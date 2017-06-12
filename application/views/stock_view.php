@@ -34,6 +34,8 @@
 
                         <th><strong>Nombre</strong></th>
 
+                        <th>Local</th>
+
                         <th>Cantidad</th>
 
                         <th style="width:225px;">Accion</th>
@@ -63,6 +65,8 @@
                         <th>Categoria</th>
 
                         <th><strong>Nombre</strong></th>
+                        
+                        <th>Local</th>
 
                         <th>Cantidad</th>
 
@@ -140,7 +144,7 @@ $(document).ready(function() {
 
         "serverSide": true, //Feature control DataTables' server-side processing mode.
 
-        "order": [], //Initial no order.
+        "order": [[6,'asc']], //Initial no order.
 
          // Load data for the table's content from an Ajax source
 
@@ -160,7 +164,7 @@ $(document).ready(function() {
 
         { 
 
-            "targets": [ -1], //last column
+            "targets": [ 1,3,4,5,7,8], //last column
 
             "orderable": false, //set not orderable
 
@@ -323,7 +327,7 @@ function edit_stock(id)
 
             $('[name="id"]').val(data.stock_id);
 
-            $('[name="nombre"]').val(data.nombre+" - "+data.color);
+            $('[name="nombre"]').val(data.producto+" - "+data.color);
 
             $('[name="cantidad"]').val(data.cantidad);
 
@@ -378,12 +382,12 @@ function transferir_stock(id)
 
             $('[name="id"]').val(data.stock_id);
 
-            $('[name="nombre"]').val(data.nombre+" - "+data.color);
+            $('[name="nombre"]').val(data.producto+" - "+data.color);
 
-            $('[name="cantidad"]').val(data.cantidad);
+            $('[name="cantidad"]').val(0);
 
-            //$('[name="origen"]').val(data.localid);
-
+            $('[name="origen"]').val(data.localid);
+            //console.log(data.localid);
             $('#modal_transferencia_form').modal('show'); // show bootstrap modal when complete loaded
 
             $('.modal-title').text('Transferencia Stock'); // Set title to Bootstrap modal title
@@ -424,7 +428,7 @@ function save_transferencia(){
 
         type: "POST",
 
-        data: $('#form').serialize(),
+        data: $('#formTransferencia').serialize(),
 
         dataType: "JSON",
 
@@ -717,7 +721,7 @@ function save()
                         <div class="form-group">
                             <label class="control-label col-md-3">Origen</label>
                             <div class="col-md-9">
-                                <select id="origen" name="origen" class="form-control" disabled="disabled">
+                                <select id="origen" name="origen" class="form-control">
                                 </select>
                                 <span class="help-block"></span>
                             </div>

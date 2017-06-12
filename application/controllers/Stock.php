@@ -14,7 +14,7 @@ class Stock extends MY_Controller {
 
 		parent::__construct();
 
-		$this->is_logged_in();
+		//$this->is_logged_in();
 
 		$this->load->model('stock_model','stock');
 
@@ -34,27 +34,37 @@ class Stock extends MY_Controller {
 		$cantidad=$this->input->post('cantidad');
 
 		$stock_origen=$this->stock->get_by_id($stockid);//stock origen
+		//print_r($stock_origen);
 		$stock_destino=$this->stock->get_by_producto_color_local($stock_origen->producto_colorid,$this->input->post('destino'));//stock destino
-		$stock_origen_cantidad_final=$stock->cantidad-$cantidad;
-		print_r($stock_destino);
+		$stock_origen_cantidad_final=$stock_origen->cantidad-$cantidad;
+		$stock_destino_cantidad_final=$stock_destino->cantidad+$cantidad;
+		
+		$data_stock_origen= array('cantidad'=>$stock_origen_cantidad_final);
+		$data_stock_destino= array('cantidad'=>$stock_destino_cantidad_final);
+		
+		$this->stock->update(array('id' => $stock_origen->stock_id), $data_stock_origen);
+		$this->stock->update(array('id' => $stock_destino->stock_id), $data_stock_destino);				
+		$data_stock_transferencia=array('origenid'=>$stock_origen->stock_id,'destinoid'=>$stock_destino->stock_id,'cantidad'=>$cantidad,'vendedorid'=>'1','fecha'=> date('Y-m-d H:i:s'));
+		$this->stock->registrar_transferencia($data_stock_transferencia);
+
+		//echo $this->db->last_query();
+		//print_r($stock_destino);
 		/*if(($stock_origen_cantidad_final>0)&&($stock_destino!=null)){
 
 		}
 		
 		$stock_destino_cantidad_final=$stock->cantidad+$cantidad;
 
-		$data_stock_origen= array('cantidad'=>$stock_origen_cantidad_final);
-		$data_stock_destino= array('cantidad'=>$stock_destino_cantidad_final);
-		
 		//$this->stock->update(array('id' => $stockid), $data);
-		//print_r($this->input->post());
+		//print_r($this->input->post());*/
 		echo json_encode(array("status" => TRUE));
-*/
+
 	}
 
 	public function index()
 
 	{
+		$this->isAdmin();
 
 		$this->load->helper('url');
 
@@ -84,38 +94,41 @@ class Stock extends MY_Controller {
 			$start=0;
 		}
 		$no = $start;
-
 		foreach ($list as $producto) {
-			$producto->id=$producto->stock_id;//Aca se pone distinto para poder traer todos los campos de productos y no haya conflicto con el campo ID
-			$no++;
+			//Mientras se filtra aca el local, luego refactor para meterlo en el model
+			//if ($producto->localid==$_SESSION['admin']['localid']){
+				$producto->id=$producto->stock_id;//Aca se pone distinto para poder traer todos los campos de productos y no haya conflicto con el campo ID
+				$no++;
 
-			$row = array();
+				$row = array();
 
-			$row[] = $producto->id;
+				$row[] = $producto->id;
 
-			$row[] = $producto->codigo;
+				$row[] = $producto->codigo;
 
-			$row[] = $producto->marca;
+				$row[] = $producto->marca;
 
-			$row[] = $producto->modelo;
+				$row[] = $producto->modelo;
 
-			$row[] = $producto->subcategoria;
+				$row[] = $producto->subcategoria;
 
-			$row[] = $producto->nombre." - ".$producto->color;
+				$row[] = $producto->nombre." - ".$producto->color;
 
-			$row[] = $producto->cantidad;
+				$row[] = $producto->local;
 
-			$transferencia='<a class="btn btn-sm btn-primary" href="javascript:void(0)" title="Transfer" onclick="transferir_stock('."'".$producto->id."'".')"><i class="glyphicon glyphicon-transfer"></i> Transferir stock</a>';
-			$editar='<a class="btn btn-sm btn-primary" href="javascript:void(0)" title="Edit" onclick="edit_stock('."'".$producto->id."'".')"><i class="glyphicon glyphicon-pencil"></i> Ajustar stock</a>';
-			$action=$editar;
-			if ($producto->cantidad>0){
-				$action.=$transferencia;
-			}
-			$row[] = $action;
-	
+				$row[] = $producto->cantidad;
 
-			$data[] = $row;
+				$transferencia='<a class="btn btn-sm btn-primary" href="javascript:void(0)" title="Transfer" onclick="transferir_stock('."'".$producto->id."'".')"><i class="glyphicon glyphicon-transfer"></i> Transferir stock</a>';
+				$editar='<a class="btn btn-sm btn-primary" href="javascript:void(0)" title="Edit" onclick="edit_stock('."'".$producto->id."'".')"><i class="glyphicon glyphicon-pencil"></i> Ajustar stock</a>';
+				$action=$editar;
+				if ($producto->cantidad>0){
+					$action.=$transferencia;
+				}
+				$row[] = $action;
+		
 
+				$data[] = $row;
+			//}//Fin validacion local
 		}
 
 

@@ -5,8 +5,8 @@
     <h3></h3>
     <br />
     <div class="col-12">
-      <a href="<?php echo site_url('Pdfs/imprimir_venta/'.$venta->id)?>" target="_blank"><i class="fa fa-print"></i>Imprimir</div></a>
-<div class="col-md-6 alpha">
+      <a href="<?php echo site_url('Pdfs/imprimir_venta/'.$venta->id)?>" target="_blank"><i class="fa fa-print"></i>Imprimir</a></div>
+<div class="col-md-6 col-sm-12 alpha">
     <div class="panel panel-info">
       <div class="panel-heading">
         <h3 class="panel-title"><i class="fa fa-info"></i> Información general <a href="<?php echo site_url('venta/alta_venta/'.$venta->id); ?>" class="fa fa-edit pull-right"></a></h3>
@@ -103,7 +103,7 @@
                     <tr>
                         <th style="width:25px;">ID</th>
                         <th>Fecha estimada</th>
-                        <!--th>Monto</th-->
+                        <th>Monto</th>
                         <th>Metodo</th>
                         <th>Acciones</th>
                     </tr>
@@ -113,8 +113,8 @@
                 <tfoot>
                     <tr>
                         <th>ID</th>
-                        <th>Fecha estimada></th>
-                        <!--th>Monto</th-->
+                        <th>Fecha estimada</th>
+                        <th>Monto</th>
                         <th>Metodo</th>
                         <th>Acciones</th>
                     </tr>
@@ -209,7 +209,6 @@
 </div>
 
 
-
 <script src="<?php echo base_url('assets/jquery/jquery-2.1.4.min.js')?>"></script>
 
 <script src="<?php echo base_url('assets/jquery/jquery-ui.js')?>"></script>
@@ -236,7 +235,10 @@
 
 <script src="<?php echo base_url('assets/dashboard/js/sb-admin-2.js')?>"></script>
 
-
+<?php
+    $this->view('_cobro_modal_view.php');
+    $this->view('_envio_modal_view.php');
+?>
 
 <script type="text/javascript">
 $(document).ready(function() {
@@ -657,7 +659,3 @@ cobros = $('#cobrosdt').DataTable({
 }
 </style>
 <!-- End Bootstrap modal -->
-<?php
-    $this->view('_cobro_modal_view.php');
-    $this->view('_envio_modal_view.php');
-?>

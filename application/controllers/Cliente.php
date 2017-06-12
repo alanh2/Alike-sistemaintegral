@@ -12,6 +12,7 @@ class Cliente extends MY_Controller {
 		$this->load->model('cobro_model','cobro');
 		$this->load->model('notacredito_model','notacredito');
 		$this->load->model('cuentacorriente_model','cuentacorriente');
+		$this->load->model('detalle_cuentacorriente_model','detalleCuentacorriente');
 	}
 
 	public function index()
@@ -44,6 +45,30 @@ class Cliente extends MY_Controller {
 		usort($data['data']['movimientos'],  "cmp");
 		
 		//print_r($data['data']['movimient	os']);
+		$data['data']['cliente'] = $cliente;
+		$this->load->view('master_view',$data);
+	}
+
+	public function detalle_cuenta_cliente($clienteid)
+	{
+		$this->load->helper('url');
+/*		$notasCredito = $this->notacredito->get_resumen_by_clienteid($clienteid);
+		$ventas = $this->venta->get_resumen_by_clienteid($clienteid);
+		$cobros = $this->cobro->get_resumen_by_clienteid($clienteid);
+*/
+		$cliente = $this->cliente->get_by_id($clienteid);
+		$movimientos = $this->detalleCuentacorriente->get_all_by_cliente($clienteid);
+
+		$data['view']='detalle_cc_view';
+		$data['data']['movimientos'] = $movimientos;
+		//$data['data']['movimientos'] = array_merge($ventas,$notasCredito, $cobros);
+		/*function cmp($a, $b)
+		{
+		    return strcmp($a->fecha, $b->fecha);
+		}
+
+		usort($data['data']['movimientos'],  "cmp");
+		*/
 		$data['data']['cliente'] = $cliente;
 		$this->load->view('master_view',$data);
 	}

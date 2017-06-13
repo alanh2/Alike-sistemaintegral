@@ -34,6 +34,7 @@ class Envio extends MY_Controller {
 	{
 		$data =$this->envio->get_by_id($id);
 		$metodo = $this->enviometodo->get_datos_metodo_by_id($data->envtablaid, $data->metodoenvio);
+		unset($metodo->costo);
 		$data = array_merge((array) $data,(array) $metodo);
 		echo json_encode($data);
 	}
@@ -144,13 +145,15 @@ class Envio extends MY_Controller {
 	{
 		$costo = $this->input->post('costo');
 		$envioid = $this->input->post('id');
-		$metodoEnvio = $metodoEnvio;
+		$metodoEnvio = $this->input->post('metodoEnvio');
 		if ($metodoEnvio == 1){
 			$costo = 0;
 		}
 		$this->db->trans_begin(); 
         $datametodo = array(
         		"metodoenvio" => $metodoEnvio,
+        		"metodo_envio_anterior" => $this->input->post('metodo_envio_anterior'),
+        		"env_tabla_id_anterior" => $this->input->post('env_tabla_id_anterior'),
         		"motoid" => $this->input->post('motoid'),
         		"direccion" => $this->input->post('direccion'),
         		"nombre_empresa" => $this->input->post('nombre_empresa'),
@@ -158,16 +161,17 @@ class Envio extends MY_Controller {
         		"tracking" => $this->input->post('tracking'),
         );
 
-		$metodoEnvioid = $this->enviometodo->actualizar($datametodo['metodo'],1,$datametodo);
+		$metodoEnvioid = $this->enviometodo->actualizar($datametodo);
         $dataenvio = array(
         		"costo" => $costo,
         		"recibe" => $this->input->post('recibe'),
         		"dni" => $this->input->post('dni'),
         		"metodoenvio" => $metodoEnvio,
-        		"fecha_estimada" => $this->input->post('fecha_estimada'),
+        		"fechaestimada" => $this->input->post('fecha_estimada'),
         		"envtablaid" => $metodoEnvioid,
-        		"clienteid" => $this->input->post('cliente'),
+        		"clienteid" => $this->input->post('clienteid'),
         );
+
 		$this->envio->update(array('id' => $envioid),$dataenvio);
 
 /*		if ($ventaid!=NULL){
@@ -175,13 +179,13 @@ class Envio extends MY_Controller {
 		}*/
 
         $datadetallecc = array(
-        		"monto" => $monto,
-        		"clienteid" => $this->input->post('cliente'),
-        		"tipo_operacion" => 2, //envio
+        		"monto" => $costo,
+        		"clienteid" => $this->input->post('clienteid'),
+        		"tipo_operacionid" => 2, //envio
         		"operacionid" => $envioid,
         		"vendedorid" => 1,
         	);
-		$detalleccid = $this->detalleCuentacorriente->actualizar_detalle_cc($datadetallecc);
+		$detalleccid = $this->detalleCuentacorriente->edit_detalle_cc($datadetallecc);
 
 		if ($this->db->trans_status() === FALSE)
 		{
@@ -202,8 +206,9 @@ class Envio extends MY_Controller {
 		$this->db->trans_begin();
 		$envio = $this->envio->get_by_id($id);
 		$this->envio->delete_by_id($id);
-		$this->enviometodo->delete_by_id($id, $envio->envtablaid);
+		$this->enviometodo->delete_by_id($envio->envtablaid, $envio->metodoenvio);
 		$this->envioVenta->delete_by_envioid($id);
+		$this->detalleCuentacorriente->eliminar_detalle_cc(2, $id);
 
 		if ($this->db->trans_status() === FALSE)
 		{

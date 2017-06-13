@@ -19,6 +19,7 @@ class Cobro extends MY_Controller {
 
 	public function index()
 	{
+		$this->isAdmin();
 		$this->load->helper('url');
 		$data['view']='cobro_view';
 		$data['data']='';//aqui va la data que se le quiera pasar a la vista a travez de la master
@@ -27,6 +28,7 @@ class Cobro extends MY_Controller {
 
 	public function edit_cobro()
 	{
+		$this->isAdmin();
 		$this->load->helper('url');
 		$data['view']='cobro_edit_view';
 		$data['data']='';//aqui va la data que se le quiera pasar a la vista a travez de la master
@@ -115,7 +117,7 @@ class Cobro extends MY_Controller {
 	        		"monto" => $monto,
 	        		"clienteid" => $this->input->post('cliente'),
 	        		"fecha" => date('Y-m-d H:i:s'),
-	        		"tipo_operacion" => 1, //cobro
+	        		"tipo_operacionid" => 1, //cobro
 	        		"operacionid" => $cobroid,
 	        		"vendedorid" => 1,
 	        	);
@@ -189,11 +191,11 @@ class Cobro extends MY_Controller {
 	        $datadetallecc = array(
 	        		"monto" => $monto,
 	        		"clienteid" => $this->input->post('cliente'),
-	        		"tipo_operacion" => 1, //cobro
+	        		"tipo_operacionid" => 1, //cobro
 	        		"operacionid" => $cobroid,
 	        		"vendedorid" => 1,
 	        	);
-			$detalleccid = $this->detalleCuentacorriente->actualizar_detalle_cc($datadetallecc);
+			$detalleccid = $this->detalleCuentacorriente->edit_detalle_cc($datadetallecc);
 
 			if ($this->db->trans_status() === FALSE)
 			{

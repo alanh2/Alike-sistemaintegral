@@ -31,6 +31,28 @@ $(document).ready(function() {
     $("#metodosEnvio").change(function(){
         mostrar_campos_envio($("#metodosEnvio").val());
     });
+    
+    $select_motos = $('#motoid');
+    $.ajax({
+        url: "<?php echo site_url('moto/ajax_dropdown')?>"
+        , "type": "GET"
+        , data:{}
+        , dataType: 'JSON'
+        , success: function (data) {
+            $select_motos.html('');
+            $.each(data.motos, function (key, val) {
+                $select_motos.append('<option value="' + val.id + '">' + val.nombre + '</option>');
+            })
+            <?php if (isset($metodo_envio->motoid)){ ?>
+            $("#motoid").val('<?php echo $metodo_envio->motoid; ?>');
+            <?php } ?>
+        }
+        , error: function () {
+            $select_motos.html('<option id="-1">ninguno disponible</option>');
+
+        }
+
+    });
 });
     function mostrar_campos_envio(metodo){
         $(".metodoEnvio").hide();
@@ -85,6 +107,10 @@ function edit_envio(id)
             $('[name="costo"]').val(data.costo);
 
             mostrar_campos_envio(data.metodoenvio);
+
+            $('[name="ventaid"]').val(<?php echo $ventaidasociada; ?>);
+            $('[name="metodo_envio_anterior"]').val(data.metodoenvio);
+            $('[name="env_tabla_id_anterior"]').val(data.envtablaid);
             $('[name="direccion"]').val(data.direccion);
             $('[name="nombre_empresa"]').val(data.nombreempresa);
             $('[name="direccion_empresa"]').val(data.direccionempresa);

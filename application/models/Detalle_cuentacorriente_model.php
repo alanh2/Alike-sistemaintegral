@@ -123,6 +123,7 @@ class Detalle_cuentacorriente_model extends CI_Model {
 	public function edit_detalle_cc($data)
 	{
 		$detalle = $this->get_by_operacion($data["tipo_operacionid"], $data["operacionid"]);
+		//print_r($detalle);
 		$dataDetallecc = $this->armar_datos($data, $detalle);
 
 		$diferencia = $dataDetallecc["saldo_actual"] - $detalle->saldo_actual;

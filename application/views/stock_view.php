@@ -164,7 +164,7 @@ $(document).ready(function() {
 
         { 
 
-            "targets": [ 1,3,4,5,7,8], //last column
+            "targets": [ 1,2,3,4,5,7,8], //last column
 
             "orderable": false, //set not orderable
 

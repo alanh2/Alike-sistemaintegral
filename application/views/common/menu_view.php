@@ -2,7 +2,7 @@
 
             <div class="navbar-header">
 
-                <a class="navbar-brand" href="<?php echo base_url('index.php')?>">ORSHICELL</a>
+                <a class="navbar-brand" href="<?php echo base_url('index.php')?>">ORSHICELL<?php if(isset($_SESSION['admin'])){echo ' - '.$_SESSION['admin']['vendedor'].' - Local ( '.$_SESSION['admin']['local'].' )';} ?></a>
 
             </div>
 
@@ -493,7 +493,7 @@
 
                         <li class="divider"></li>
 
-                        <li><a href="login.html"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
+                        <li><a href="<?php echo site_url("users_admin/logout");?>"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
 
                         </li>
 

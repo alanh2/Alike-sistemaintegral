@@ -72,7 +72,7 @@ $ventaid='#';
                     </div>
                 </div>
             </div>
-            <a href="<?php echo site_url("/venta/metodo_pago_venta/".$ventaid);?>">
+            <a href="<?php echo site_url("/venta/ver_detalles_con_cobros/".$ventaid);?>">
                 <div class="panel-footer">
                     <span class="pull-left hidden-xs">Completar método de pago!</span>
                     <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
@@ -97,7 +97,7 @@ $ventaid='#';
                 </div>
             </div>
 
-            <a href="<?php echo site_url("/venta/envios_venta/".$ventaid);?>">
+            <a href="<?php echo site_url("/venta/ver_detalles_con_cobros/".$ventaid);?>">
                 <div class="panel-footer">
                     <span class="pull-left hidden-xs">Completar método de envío!</span>
                     <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>

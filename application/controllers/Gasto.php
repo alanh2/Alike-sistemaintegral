@@ -26,6 +26,8 @@ class Gasto extends MY_Controller {
 
 	{
 
+		$this->isAdmin();
+		
 		$this->load->helper('url');
 
 		$data['view']='gasto_view';

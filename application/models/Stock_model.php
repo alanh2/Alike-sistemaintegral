@@ -12,7 +12,7 @@ class Stock_model extends CI_Model {
 
 	var $column_order = array(null,'marcas.nombre',null,null,null,null,'stock.localid'); //set column field database for datatable orderable
 
-	var $column_search = array('stock.id','marcas.nombre','modelos.nombre','subcategorias.nombre','productos.nombre','colores.name'); //set column field database for datatable searchable just firstname , lastname , address are searchable
+	var $column_search = array('marcas.nombre','modelos.nombre','productos.nombre'); //set column field database for datatable searchable just firstname , lastname , address are searchable
 
 	var $order = array('id' => 'desc'); // default order 
 
@@ -100,7 +100,7 @@ class Stock_model extends CI_Model {
 
 				{
 
-					$this->db->like($item, $_POST['search']['value']);
+					$this->db->or_like($item, $_POST['search']['value']);
 
 				}
 
@@ -171,7 +171,7 @@ class Stock_model extends CI_Model {
 
 	}
 
-	function get_por_producto_para_venta($producto,$venta)
+	function get_por_producto_para_venta($producto,$venta,$localid)
 
 	{
 
@@ -182,8 +182,12 @@ class Stock_model extends CI_Model {
 		$this->db->join('colores', 'productos_colores.colorid = colores.id');
 
 		$this->db->where('productos_colores.productoid', $producto);
+		$this->db->where('stock.localid', $localid);
 
 		$this->db->select('stock.id as stockid, productos_colores.*, colores.nombre, stock.cantidad,');
+
+		$this->db->order_by('colores.nombre', 'asc');
+		
 		$query = $this->db->get();
 		//echo $this->db->last_query();
 		return $query->result();

@@ -13,8 +13,8 @@ class Producto_model extends CI_Model {
 	var $column_order = array('id','marca','modelo','nombre','categoria','subcategoria',null); //set column field database for datatable orderable
 
 	var $column_search = array('marcas.nombre','subcategorias.nombre','categorias.nombre','modelos.nombre','proveedores.nombre','productos.nombre'); //set column field database for datatable searchable just firstname , lastname , address are searchable
-
-	var $order = array('id' => 'desc'); // default order 
+//label: val.subcategoria+" "+val.nombre+" "+val.marca+" "+val.modelo,
+	var $order = array('subcategorias.nombre, productos.nombre' => 'asc'); // default order 
 
 	var $joins=array();
 
@@ -76,7 +76,9 @@ class Producto_model extends CI_Model {
 		INNER JOIN marcas on marcas.id=modelos.marcaid 
 		INNER JOIN colores on productos_colores.colorid= colores.id 
 		INNER JOIN locales on stock.localid= locales.id
+		WHERE localid=1
 		ORDER BY marcas.nombre,modelos.nombre
+
 		");
 		return $query->result();
 	}	
@@ -284,12 +286,18 @@ class Producto_model extends CI_Model {
 		$table="stock";
 		$where= array('producto_colorid'=>$producto_colorid);
 		$query = $this->db->get_where($table,$where);
-		$data=array('cantidad'=>$stock,'localid'=>1,'producto_colorid'=>$producto_colorid);
-		if($this->db->affected_rows()==1){
-			$this->db->update($table, $data, $where);
+		$data1=array('cantidad'=>$stock,'localid'=>1,'producto_colorid'=>$producto_colorid);
+		$data2=array('cantidad'=>'0','localid'=>2,'producto_colorid'=>$producto_colorid);
+		$data3=array('cantidad'=>'0','localid'=>3,'producto_colorid'=>$producto_colorid);
+		if($this->db->affected_rows()>0){
+			$this->db->update($table, $data1, $where);
+			$this->db->update($table, $data1, $where);
+			$this->db->update($table, $data1, $where);
 		}
 		else{
-			$this->db->insert($table, $data);
+			$this->db->insert($table, $data1);
+			$this->db->insert($table, $data2);
+			$this->db->insert($table, $data3);
 		}
 		//echo $this->db->last_query();
 

@@ -23,10 +23,14 @@
             <br />
 
             <br />
-            <button id="button" class="btn btn-primary">Guardar</button>
-            
-            <button id="selectAll" class="btn btn-success"><i class="glyphicon glyphicon-plus"></i> Seleccionar todos</button>
-            <button id="unselectAll" class="btn btn-danger"><i class="glyphicon glyphicon-minus"></i> Seleccionar todos</button>
+
+            <!--
+            <button id="selectAll" class="btn btn-success"><i class="glyphicon glyphicon-plus"></i> Todos a stock</button>
+            <button id="unselectAll" class="btn btn-danger"><i class="glyphicon glyphicon-minus"></i> Seleccionar todos</button>-->
+            <button class="btn btn-primary save">Guardar</button>
+            <button class="btn btn-success all2stock"><i class="glyphicon glyphicon-list"></i> Todos a STOCK</button>
+            <button class="btn btn-success all2RMA"><i class="glyphicon glyphicon-list"></i> Todos a RMA</button>
+            <form>
             <table id="table" class="table table-striped table-bordered" cellspacing="0" width="100%">
 
                 <thead>
@@ -38,6 +42,8 @@
                         <th>Producto</th>
 
                         <th>Precio</th>
+
+                        <th>Accion</th>
                     </tr>
 
                 </thead>
@@ -58,15 +64,17 @@
 
                         <th>Precio</th>
 
+                        <th>Accion</th>
+
                     </tr>
 
                 </tfoot>
 
-            </table> 
-
-
-
-
+            </table>
+            </form> 
+            <button class="btn btn-primary save">Guardar</button>
+            <button class="btn btn-success all2stock"><i class="glyphicon glyphicon-list"></i> Todos a STOCK</button>
+            <button class="btn btn-success all2RMA"><i class="glyphicon glyphicon-list"></i> Todos a RMA</button> 
 
 <script src="<?php echo base_url('assets/jquery/jquery-2.1.4.min.js')?>"></script>
 
@@ -229,10 +237,15 @@ $(document).ready(function() {
 
     });
 $('#table tbody').on( 'click', 'tr', function () {
-        $(this).toggleClass('selected');
+        //$(this).toggleClass('selected');
     } );
- 
-    $('#selectAll').click(function(){
+    $('.all2stock').click(function(){
+        $("input:radio:even").prop("checked", true).trigger("click");
+    });
+    $('.all2RMA').click(function(){
+        $("input:radio:odd").prop("checked", true).trigger("click");
+    });
+   /* $('#selectAll').click(function(){
         $(table.rows().nodes()).addClass('selected');
     });
     $('#selectAll').click(function(){
@@ -240,25 +253,28 @@ $('#table tbody').on( 'click', 'tr', function () {
     });
     $('#unselectAll').click(function(){
         $(table.rows().nodes()).removeClass('selected');
-    });
-    $('#button').click( function () {
-         var devoluciones=[];
-         table.rows('.selected').data().each(function(a){
+    });*/
+     
+    $('.save').click( function () {
+         var devoluciones = $('form').serialize();
+         console.log(devoluciones);
+         //var devoluciones=[];
+         /*table.rows('.selected').data().each(function(a){
             if(typeof  devoluciones[a[0]] === 'undefined') {
                 devoluciones[a[0]]=0;
             }
             devoluciones[a[0]]++;
          });
-         console.log(devoluciones);
-         console.log('JSON: ');
+         //console.log(devoluciones);
+         //console.log('JSON: ');
          console.log(JSON.stringify(devoluciones));
-         
-         var prueba = [];
+         */
+         /*var prueba = [];
          prueba[0]= 'a';
          prueba[1]= 'b';
          jsonPrueba = JSON.stringify(prueba);
          console.log(jsonPrueba);
-
+*/
         url = "<?php echo site_url('devolucion/ajax_add/'.$ventaid)?>";
 
          $.ajax({
@@ -267,7 +283,7 @@ $('#table tbody').on( 'click', 'tr', function () {
 
             type: "POST",
 
-            data:{"devoluciones":devoluciones},
+            data:devoluciones,
 
             //Options to tell jQuery not to process data or worry about content-type.
 
@@ -590,6 +606,7 @@ function delete_renglon(id)
         text-align: center;
     }
 }
-table.dataTable tbody tr.selected{background-color:#B0BED9}
+table.dataTable tbody tr.selected{background-color:#11c67e}
+
 </style>
 <!-- End Bootstrap modal -->

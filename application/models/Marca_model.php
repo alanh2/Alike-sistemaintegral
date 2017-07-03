@@ -3,10 +3,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Marca_model extends CI_Model {
 
-	var $table = 'Marcas';
+	var $table = 'marcas';
 	var $column_order = array('id','nombre',null); //set column field database for datatable orderable
 	var $column_search = array('id','nombre'); //set column field database for datatable searchable just firstname , lastname , address are searchable
-	var $order = array('id' => 'desc'); // default order 
+	var $order = array('nombre' => 'asc'); // default order 
 
 	public function __construct()
 	{

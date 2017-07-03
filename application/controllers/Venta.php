@@ -115,6 +115,7 @@ class Venta extends MY_Controller {
 	}
 
 	public function metodo_pago_venta($id=NULL){
+		$this->isAdmin();
 		if($id==NULL){
 			$this->alta_venta();
 		}else{
@@ -126,6 +127,7 @@ class Venta extends MY_Controller {
 	}	
 
 	public function envios_venta($id=NULL){
+		$this->isAdmin();
 		if($id==NULL){
 			$this->alta_venta();
 		}else{
@@ -139,6 +141,7 @@ class Venta extends MY_Controller {
 		}
 	}	
 	public function reporte_simple($desde,$hasta){
+		$this->isAdmin();
 		$this->load->helper('url');
 		$data['view']='venta_reporte_view';
 		$data['data']['reporte'] = $this->venta->reporte_simple($desde,$hasta);
@@ -147,8 +150,17 @@ class Venta extends MY_Controller {
 				
 		$this->load->view('master_view',$data);
 		
-	}	
+	}
+	public function reporte_ventas_por_vendedor($vendedor,$desde,$hasta){
+		$this->isAdmin();
+		$this->load->helper('url');
+		$data['view']='venta_reporte_por_vendedor_view';
+		$data['data']['reporte'] = $this->venta->reporte_ventas_por_vendedor($vendedor,$desde,$hasta);
+		
+		$this->load->view('master_view',$data);
+	}
 	public function reporte_fin_de_mes($desde,$hasta){
+		$this->isAdmin();
 		$this->load->helper('url');
 		$data['view']='venta_reporte_fin_de_mes_view';
 		$data['data']['reporte'] = $this->venta->reporte_ventas_finalizadas($desde,$hasta);
@@ -214,6 +226,7 @@ class Venta extends MY_Controller {
 	}
 
 	public function imprimir_remito($id=NULL){
+		$this->isAdmin();
 		if ($id != null){
 			$data['view']='venta_detalle_view';
 			$data['venta'] = $this->venta->get_by_id($id);
@@ -388,6 +401,7 @@ class Venta extends MY_Controller {
 
 	//En esta parte se agregan productos a la venta
 	public function renglones_venta($id=NULL){
+		$this->isAdmin();
 		if($id==NULL){
 			$this->alta_venta();
 		}else{

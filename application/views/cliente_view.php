@@ -107,7 +107,7 @@ $(document).ready(function() {
         "order": [], //Initial no order.
 		 // Load data for the table's content from an Ajax source
         "ajax": {
-            "url": "<?php echo site_url('cliente/ajax_list')?>",
+            "url": "<?php echo site_url('cliente/ajax_list/'.$_SESSION['admin']['localid'])?>",
             "type": "POST"
         },
 

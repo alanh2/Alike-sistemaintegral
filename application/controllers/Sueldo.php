@@ -25,6 +25,7 @@ class Sueldo extends MY_Controller {
 	public function index()
 
 	{
+		$this->isAdmin();
 
 		$this->load->helper('url');
 

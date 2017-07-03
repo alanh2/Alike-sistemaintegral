@@ -12,6 +12,7 @@ class Local extends MY_Controller {
 
 	public function index()
 	{
+		$this->isAdmin();
 		$this->load->helper('url');
 		$data['view']='local_view';
 		$data['data']='';//aqui va la data que se le quiera pasar a la vista a travez de la master

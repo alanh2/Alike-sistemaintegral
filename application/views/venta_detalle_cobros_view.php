@@ -6,7 +6,7 @@
     <br />
     <div class="col-12">
       <a href="<?php echo site_url('Pdfs/imprimir_venta/'.$venta->id)?>" target="_blank"><i class="fa fa-print"></i>Imprimir</a></div>
-<div class="col-md-6 col-sm-12 alpha">
+<div class="col-md-12 col-sm-12 alpha">
     <div class="panel panel-info">
       <div class="panel-heading">
         <h3 class="panel-title"><i class="fa fa-info"></i> Información general <a href="<?php echo site_url('venta/alta_venta/'.$venta->id); ?>" class="fa fa-edit pull-right"></a></h3>
@@ -36,6 +36,9 @@
       </div>
     </div>
 </div>
+
+
+            <button id="agregar" class="btn btn-success" onclick="add_renglon()"><i class="glyphicon glyphicon-plus"></i> Agregar Renglon</button>
 <div class="col-md-12 alpha omega">
     <div class="panel panel-primary">
         <div class="panel-heading col-md-12">
@@ -638,6 +641,77 @@ cobros = $('#cobrosdt').DataTable({
 });
 
 </script>
+<div class="modal-body form">
+
+                <form action="#" id="form" class="form-horizontal">
+
+                    <input type="hidden" value="" name="id"/>
+                    <input type="hidden" value="<?php echo $venta->id;?>" name="venta"/> 
+
+                    <div class="form-body">
+
+                        <div class="form-group">
+
+                            <label class="control-label col-md-3">Nombre</label>
+
+                            <div class="col-md-9">
+
+                                <input id="producto" name="producto" placeholder="Producto" class="form-control" type="text" autocomplete="off">
+                                <input type="hidden" name="productovalue" id="productoValue" />
+                                <span class="help-block"></span>
+
+                            </div>
+
+                        </div>
+
+                        <div class="form-group">
+
+                            <label class="control-label col-md-3">Color</label>
+
+                            <div class="col-md-9">
+
+                                <select id="stock" name="stock" class="form-control">
+
+                                </select>
+
+                                <span class="help-block"></span>
+
+                            </div>
+
+                        </div>
+
+                        <div class="form-group">
+
+                            <label class="control-label col-md-3">Cantidad</label>
+
+                            <div class="col-md-9">
+
+                                <input id="cantidad" name="cantidad" placeholder="Cantidad" class="form-control" type="text">
+                                <span class="help-block"></span>
+
+                            </div>
+
+                        </div>
+
+                        <div class="form-group">
+
+                            <label class="control-label col-md-3">Precio</label>
+
+                            <div class="col-md-9">
+
+                                <input id="precio" name="precio" placeholder="Precio" class="form-control" type="text">
+                                <span class="help-block"></span>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </form>
+
+            </div>
+
 <style>
 .ui-front{
     z-index: 99999;

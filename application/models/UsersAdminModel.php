@@ -123,6 +123,7 @@ class UsersAdminModel extends CI_Model
                 'localid'=>$result['localid'],
                 'local'=>$result['local'],
                 'vendedor' => $result['vendedor'],
+                'vendedorid' => $result['vendedorid'],
                 'email' => $result['email']
             );
         }else{

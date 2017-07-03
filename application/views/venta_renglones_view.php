@@ -246,15 +246,15 @@ $(document).ready(function() {
           minLength: 0,
           source: autocompleteProductos,
           focus: function( event, ui ) {
-            $('#producto').val( ui.item.subcategoria+" "+ui.item.nombre+" "+ui.item.marca+" "+ui.item.modelo );
+            $('#producto').val( ui.item.nombre );
             $('#productoValue').val( ui.item.id );
           },
           change: function( event, ui ) {
-            $('#producto').val( ui.item.subcategoria+" "+ui.item.nombre+" "+ui.item.marca+" "+ui.item.modelo );
+            $('#producto').val( ui.item.nombre );
             $('#productoValue').val( ui.item.id );
           },
           select: function( event, ui ) {
-            $('#producto').val( ui.item.subcategoria+" "+ui.item.nombre+" "+ui.item.marca+" "+ui.item.modelo);
+            $('#producto').val( ui.item.nombre);
             $('#productoValue').val( ui.item.id );
             return false;
           }
@@ -521,7 +521,7 @@ function cargar_colores($productoid,$color_default=null){
 
         $.ajax({
 
-            url: "<?php echo site_url('stock/ajax_color_por_producto_para_venta')?>/"+$productoid+"/<?php echo $venta->id; ?>"
+            url: "<?php echo site_url('stock/ajax_color_por_producto_para_venta')?>/"+$productoid+"/<?php echo $venta->id.'/'.$venta->localid; ?>"
 
             , "type": "POST"
 

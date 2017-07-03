@@ -25,6 +25,7 @@ class Modelo extends MY_Controller {
 	public function index($search=null)
 
 	{
+		$this->isAdmin();
 
 		$this->load->helper('url');
 

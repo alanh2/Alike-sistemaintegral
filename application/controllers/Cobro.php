@@ -38,13 +38,13 @@ class Cobro extends MY_Controller {
 	public function ajax_edit($id)
 	{
 		$cobro =$this->cobro->get_by_id($id);
-		unset($cobro->fecha);
+		unset($cobro->fecha);//saco la fecha porque no es necesario para editar el cobro
 		$metodo = $this->transaccion->get_transaccion($cobro->metododepagoid, $cobro->metodoid);
 		$data = array_merge((array) $cobro,(array) $metodo);
 		echo json_encode($data);
 	}
 
-	public function ajax_list()
+	public function ajax_list()// hacer q reciba el id null y sacar el ajax_detalle
 	{
 		$this->load->helper('url');
 		$list = $this->cobro->get_datatables();
@@ -80,7 +80,7 @@ class Cobro extends MY_Controller {
 		if ($this->input->post('pagado') == 'on'){
 			$pagado = 1;
 		}
-		if ((($ventaid != NULL && $this->venta->total_debido_by_venta($ventaid, $monto) == 1) || ($ventaid == NULL)) && $monto > 0)
+		if ((($ventaid != NULL && $this->venta->total_debido_by_venta($ventaid, $monto) == 1) || ($ventaid == NULL)) && $monto > 0)//el ==1 seria equivalente a true y chequea que la suma de los montos de los cobros de la venta sea <= que el total de la venta
 		{
 
 			$this->db->trans_begin(); 
@@ -154,7 +154,7 @@ class Cobro extends MY_Controller {
 		if ($this->input->post('pagado') == "on"){
 			$pagado = 1;
 		}
-		if ((($ventaid != NULL && $this->venta->total_debido_by_venta($ventaid, $monto, $cobroid) == 1) || ($ventaid == NULL)) && $monto > 0)
+		if ((($ventaid != NULL && $this->venta->total_debido_by_venta($ventaid, $monto, $cobroid) == 1) || ($ventaid == NULL)) && $monto > 0) //idem que ajax_add pero con el cobroid trato diferente el cobro que modifico
 		{
 			$this->db->trans_begin(); 
 	        $datametodo = array(
@@ -206,7 +206,6 @@ class Cobro extends MY_Controller {
 			{
 		        $this->db->trans_commit();
 		    	$output['resultado'] = 'Ok';
-		    	$output['pagado'] = $this->input->post('pagado');
 			}
 		}else{
 			$output['resultado'] = 'Error, supera monto total de venta';
@@ -222,7 +221,7 @@ class Cobro extends MY_Controller {
 		$this->transaccion->eliminar($cobro->metododepagoid, $cobro->metodoid);
 		$this->aplicacionCobroVenta->delete_by_cobroid($id);
 
-		$this->detalleCuentacorriente->eliminar_detalle_cc(1, $id);
+		$this->detalleCuentacorriente->eliminar_detalle_cc(1, $id);// busca por tipo_operacion_id y operacionid
 
 		if ($this->db->trans_status() === FALSE)
 		{
@@ -237,6 +236,8 @@ class Cobro extends MY_Controller {
 		echo json_encode($output);
 	}
 
+
+//metodo deprecado
 	private function pagar_ventas_pendientes($clienteid, $cobroid, $monto){
 		if ($monto > 0){
 			$ventas = $this->cuentaCorriente->ventas_adeudadas($clienteid);
@@ -270,7 +271,7 @@ class Cobro extends MY_Controller {
 			}
 		}
 	}
-
+//metodo deprecado
 	private function pagar_deudas($clienteid, $monto){
 		if ($monto > 0){
 			$deudas = $this->cuentaCorriente->get_deudas($clienteid);
@@ -292,7 +293,7 @@ class Cobro extends MY_Controller {
 		return $monto;
 	}
 
-	public function ajax_detalle($id)
+	public function ajax_detalle($id) //para detalle
 	{
 		$this->load->helper('url');
 

@@ -34,12 +34,12 @@ class Envio extends MY_Controller {
 	{
 		$data =$this->envio->get_by_id($id);
 		$metodo = $this->enviometodo->get_datos_metodo_by_id($data->envtablaid, $data->metodoenvio);
-		unset($metodo->costo);
+		unset($metodo->costo); //borrar cuando se saque el campo costo de cada tabla de metodo de envio
 		$data = array_merge((array) $data,(array) $metodo);
 		echo json_encode($data);
 	}
 
-	public function ajax_list()
+	public function ajax_list()// hacer q reciba el id null y sacar el ajax_detalle
 	{
 		$this->load->helper('url');
 		$list = $this->envio->get_datatables();
@@ -66,7 +66,8 @@ class Envio extends MY_Controller {
 		//output to json format
 		echo json_encode($output);
 	}
-	public function pasar_costos(){
+
+	public function pasar_costos(){// script para ejecutar solo en el traspaso de costos de la tabla del metodo a la de envios (migracion x unica vez)
 		$tiposenvios = array('0','env_retiros','env_ocas','env_ocaexpress','env_motos','env_otros');
 
 		$this->db->from('envios');
@@ -208,7 +209,7 @@ class Envio extends MY_Controller {
 		$this->envio->delete_by_id($id);
 		$this->enviometodo->delete_by_id($envio->envtablaid, $envio->metodoenvio);
 		$this->envioVenta->delete_by_envioid($id);
-		$this->detalleCuentacorriente->eliminar_detalle_cc(2, $id);
+		$this->detalleCuentacorriente->eliminar_detalle_cc(2, $id);// busca por tipo_operacion_id y operacionid
 
 		if ($this->db->trans_status() === FALSE)
 		{
@@ -223,7 +224,7 @@ class Envio extends MY_Controller {
 		echo json_encode($output);
 	}
 
-	public function ajax_detalle($id)
+	public function ajax_detalle($id)//para detalle
 	{
 		$this->load->helper('url');
 

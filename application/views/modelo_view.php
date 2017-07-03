@@ -148,6 +148,7 @@ function edit_modelo(id)
     $('.form-group').removeClass('has-error'); // clear error class
     $('.help-block').empty(); // clear error string
 
+    modal_abierto=true;
     //Ajax Load data from ajax
     $.ajax({
         url : "<?php echo site_url('modelo/ajax_edit/')?>/" + id,

@@ -1,4 +1,13 @@
-
+<?php switch ($venta->localid){
+    case '2':
+      $zocalo='http://systemix.com.ar/sistemaIntegral/assets/images/zocalo_factura_salvacell.jpg';
+    break;
+    case '3':
+      $zocalo='http://systemix.com.ar/sistemaIntegral/assets/images/zocalo_factura_seicell.jpg';
+    break;
+    default:
+      $zocalo='http://systemix.com.ar/sistemaIntegral/assets/images/zocalo_factura.png';
+}?>
 <style>
 .seccion{
     border-radius: 25px 25px 25px 25px;
@@ -32,7 +41,7 @@ body{
 <table width="620px" border="0">
 <tr>
 <td width="170px" height="50px" valign="top">
-<img src="<?php echo 'http://systemix.com.ar/sistemaIntegral/assets/images/zocalo_factura.png'; //echo site_url('../assets/images/zocalo_factura.png'); ?>" width="200px">
+<img src="<?php echo $zocalo; //echo site_url('../assets/images/zocalo_factura.png'); ?>" width="200px">
 </td>
 <td valign="top" width="80%">
   <table width="100%" border="0">

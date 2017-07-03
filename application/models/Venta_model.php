@@ -29,7 +29,7 @@ class Venta_model extends CI_Model {
 	}
 
 
-	private function _get_datatables_query()
+	private function _get_datatables_query($localid=null)
 
 	{
 
@@ -47,7 +47,9 @@ class Venta_model extends CI_Model {
 		//$this->db->join('productos', 'venta_renglones.productoid= producto.id');
 
 		$this->db->select('ventas.*, ventas_estados.nombre as estado_nombre, clientes.razon_social as cliente, vendedores.nombre as vendedor,IFNULL(SUM(  `total_renglon` ),0) AS total');
-		
+		if($localid!=null){
+			$this->db->where('ventas.localid',$localid);
+		}
 		$this->db->group_by('ventas.id'); 
 		
 		$i = 0;
@@ -139,11 +141,11 @@ class Venta_model extends CI_Model {
 		return $this->db->affected_rows();
 	}
 
-	function get_datatables()
+	function get_datatables($localid=null)
 
 	{
 
-		$this->_get_datatables_query();
+		$this->_get_datatables_query($localid);
 
 		if($_POST['length'] != -1)
 
@@ -214,69 +216,27 @@ class Venta_model extends CI_Model {
 		$this->db->where('fecha >=', $desde);
 		$this->db->where('fecha <=', $hasta);
 		
-		/*$i = 0;
-
 		
-
-		foreach ($this->column_search as $item) // loop column 
-
-		{
-
-			if(isset($_POST['search']['value'])) // if datatable send POST for search
-
-			{
-
-				
-
-				if($i===0) // first loop
-
-				{
-
-					$this->db->group_start(); // open bracket. query Where with OR clause better with bracket. because maybe can combine with other WHERE with AND.
-
-					$this->db->like($item, $_POST['search']['value']);
-
-				}
-
-				else
-
-				{
-
-					$this->db->or_like($item, $_POST['search']['value']);
-
-				}
-
-
-
-				if(count($this->column_search) - 1 == $i) //last loop
-
-					$this->db->group_end(); //close bracket
-
-			}
-
-			$i++;
-
-		}
-
+		$query = $this->db->get();
+		return $query->result();
+	}
+	public function reporte_ventas_por_vendedor($vendedor,$desde,$hasta){
+		$this->db->from($this->table);
+		$this->db->join('clientes', 'clientes.id = ventas.clienteid');
+		$this->db->join('vendedores', 'vendedores.id = ventas.vendedorid');
+		$this->db->join('localidades', 'localidades.id = clientes.localidadid');
+		$this->db->join('ventas_estados', 'ventas_estados.id = ventas.estadoid');
+		//$this->db->join('ventas_renglones', 'ventas_renglones.ventaid = ventas.id','left');
+		$this->db->select('ventas.*, 
+			vendedores.nombre as vendedor,
+			ventas_estados.nombre as estado_nombre,
+			clientes.razon_social as cliente, clientes.tel_codigo_area, clientes.tel_numero, clientes.cel_numero, clientes.direccion, clientes.cp,
+			clientes.email, clientes.dni, clientes.cuitcuil, clientes.web, clientes.ranking, localidades.nombre as localidad');
+		$this->db->where('vendedorid', $vendedor);
+		$this->db->where('fecha >=', $desde);
+		$this->db->where('fecha <=', $hasta);
 		
-
-		if(isset($_POST['order'])) // here order processing
-
-		{
-
-			$this->db->order_by($this->column_order[$_POST['order']['0']['column']], $_POST['order']['0']['dir']);
-
-		} 
-
-		else if(isset($this->order))
-
-		{
-
-			$order = $this->order;
-
-			$this->db->order_by(key($order), $order[key($order)]);
-
-		}*/
+		
 		$query = $this->db->get();
 		return $query->result();
 	}

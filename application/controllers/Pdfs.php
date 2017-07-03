@@ -23,8 +23,9 @@ class Pdfs extends MY_Controller {
         $this->load->view('pdfs_view', $data);
     }
     public function imprimir_lista_precios(){
+        $this->isAdmin();
         ini_set('max_execution_time', 1200);
-$this->load->library('Pdf');
+        $this->load->library('Pdf');
         $pdf = new Pdf('P', 'mm', 'A4', true, 'UTF-8', false);
         $pdf->SetCreator(PDF_CREATOR);
         $pdf->SetAuthor('Orshicell');
@@ -70,6 +71,7 @@ $this->load->library('Pdf');
 
     }
     public function imprimir_cuenta_corriente($clienteid) {
+        $this->isAdmin();
         $this->load->library('Pdf');
         $pdf = new Pdf('P', 'mm', 'A4', true, 'UTF-8', false);
         $pdf->SetCreator(PDF_CREATOR);
@@ -112,6 +114,7 @@ $this->load->library('Pdf');
     }
 
     public function imprimir_venta($ventaid) {
+        $this->isAdmin();
         $this->load->library('Pdf');
         $pdf = new Pdf('P', 'mm', 'A4', true, 'UTF-8', false);
         $pdf->SetCreator(PDF_CREATOR);
@@ -137,6 +140,7 @@ $this->load->library('Pdf');
         //$html=$this->load->view('factura_view',$data);
     }
     public function imprimir_venta_salvacell($ventaid) {
+        $this->isAdmin();
         $this->load->library('Pdf');
         $pdf = new Pdf('P', 'mm', 'A4', true, 'UTF-8', false);
         $pdf->SetCreator(PDF_CREATOR);

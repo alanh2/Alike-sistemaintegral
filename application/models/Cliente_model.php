@@ -13,13 +13,15 @@ class Cliente_model extends CI_Model {
 		parent::__construct();
 		$this->load->database();
 	}
-	private function _get_datatables_query()
+	private function _get_datatables_query($localid=null)
 	{
 		
 		$this->db->from($this->table);
 		$this->db->join('localidades', 'localidades.id = clientes.localidadid');
 		$this->db->select('clientes.*, localidades.nombre as localidad');
-
+		if($localid!=null){
+			$this->db->where('localid',$localid);
+		}
 		$i = 0;
 		
 		foreach ($this->column_search as $item) // loop column 
@@ -54,9 +56,9 @@ class Cliente_model extends CI_Model {
 		}
 	}
 
-	function get_datatables()
+	function get_datatables($localid=null)
 	{
-		$this->_get_datatables_query();
+		$this->_get_datatables_query($localid);
 		if($_POST['length'] != -1)
 		$this->db->limit($_POST['length'], $_POST['start']);
 		$query = $this->db->get();

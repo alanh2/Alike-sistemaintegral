@@ -20,11 +20,14 @@
                     <div class=" titulo">Ventas</div><br><hr/>
                     <a class="link" href="<?php echo site_url('venta/alta_venta/')?>" target="_blank" title="Nueva Venta">Nueva Venta</a><br><hr/>
                     <a class="link " href="<?php echo site_url('venta/')?>" target="_blank" title="Listar Ventas">Listado</a><br><hr/>
+                    <?php if(isset($_SESSION['admin'])&&($_SESSION['admin']['jerarquia']<4)){?>  
                     <span class="link">Ver</span>
                     <input onkeyup="javascript: if(event.keyCode == 13) window.open('<?php echo site_url('venta/alta_venta/')?>/'+$('#ventaid').val());" class="form-control" type="text" value="" id="ventaid" placeholder="Venta" />
+                    <?php }?>
 
                 </div>
             </div>
+            <?php if(isset($_SESSION['admin'])&&($_SESSION['admin']['jerarquia']<4)){?>
             <div class="col-lg-3 col-md-6">
                 <div class="menu">
                     <div class=" titulo">Cobros</div><br><hr/>
@@ -34,6 +37,7 @@
 
                 </div>
             </div>
+            <?php }?>
             <div class="col-lg-3 col-md-6">
                 <div class="menu">
                     <div class=" titulo">Clientes</div><br><hr/>
@@ -46,13 +50,14 @@
             <div class="col-lg-3 col-md-6">
                 <div class="menu">
                     <div class=" titulo">Productos</div><br><hr/>
-                    <a class="link" href="<?php echo site_url('producto/')?>" target="_blank" title="Productos">Listado</a><br><hr>
-                    <a class="link" href="<?php echo site_url('producto/lista_precios')?>" target="_blank" title="Gastos">Precios</a><br>
+                    <?php if(isset($_SESSION['admin'])&&($_SESSION['admin']['jerarquia']<4)){?><a class="link" href="<?php echo site_url('producto/')?>" target="_blank" title="Productos">Listado</a><br><hr><?php }?>
+                    <a class="link" href="<?php echo site_url('producto/lista_precios/3')?>" target="_blank" title="Gastos">Precios</a><br>
                 </div>
             </div>
         </div><br/>
         <div class="row">
 
+                <?php if(isset($_SESSION['admin'])&&($_SESSION['admin']['jerarquia']<4)){?>
             <div class="col-lg-3 col-md-6">
                 <div class="menu">
                     <div class=" titulo">Gastos</div><br><hr/>
@@ -60,7 +65,19 @@
                     <a class="link" href="<?php echo site_url('tipogasto/')?>" target="_blank" title="Listar Clientes">Tipo gastos</a><br><hr/>
 
                 </div>
-            </div>  
+            </div>
+
+                <?php }?>
+            <?php if(isset($_SESSION['admin'])&&($_SESSION['admin']['jerarquia']==1)){?>  
+            <div class="col-lg-3 col-md-6">
+                <div class="menu">
+                    <div class=" titulo">Admin</div><br><hr/>
+                    <a class="link" href="<?php echo site_url('sueldo/')?>" target="_blank" title="Sueldos">Sueldos</a><br><hr/>
+                    <a class="link" href="<?php echo site_url('venta/reporte_fin_de_mes/2017-04-01/2017-04-31/')?>" target="_blank" title="Reporte ventas fin de mes">Reporte venta</a><br><hr/>
+
+                </div>
+            </div>
+            <? } ?>
         </div>
     </div>
 </div>

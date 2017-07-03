@@ -1,113 +1,618 @@
+        <div id="page-wrapper">
+
+            <br>
+
+            <h3>Lista Precios</h3>
+
+            <br />
+
+            <br />
+
+            <br />
 <style>
-
-.seccion{
-    border-radius: 25px 25px 25px 25px;
-    border: 2px solid #73AD21;
-    padding: 20px; 
-    width: 200px;
-    height: 150px;
-    width: 680px;
-}
-body{
-
-}
-.renglones{
-    border-collapse: collapse;
-
-}
-.renglones th{
-    border: #aaa solid 2px;
-    text-align: center;
-}
-.renglones td{
-    padding: 5px;
-    border: #aaa solid 1px;
-    text-align: center;
-}
-.noborder td{
-    border:none;
-}
-*{
-    font-family: Helvetica;
-    font-size: 14px;
+    tr td:nth-child(2) {
+    display:none;
 }
 </style>
-<br/><br/>
-<table width="620px" border="0">
-<tr>
-<td width="170px" height="50px" valign="top">
-<img src="<?php echo 'http://systemix.com.ar/sistemaIntegral/assets/images/zocalo_factura.png'; //echo site_url('../assets/images/zocalo_factura.png'); ?>" width="200px">
-</td>
-<td valign="top" width="80%">
-    <br>
-            <h3>Lista Precios</h3>
-            <br />
-            <br />
-    <table border="0" class="renglones">
-    <thead>
-        <tr>
-            <th>ID:</th>
-            <th>Marca</th>
-            <th>Modelo</th>
-            <th>Subcategoria</th>
-            <th>Nombre</th>
-            <th>Color</th>
-            <?php if($data['lista']==null){?>
-            <th>1</th>
-            <th>2</th>
-            <th>3</th>
-            <th>4</th>
-            <?php }else{
-                echo "<th>$</th>";
-            }?>
-        </tr>
-    </thead>
-    <?php
-    foreach ($data['stock'] as $producto) {
-        if( true){// $producto->l1!=0 || $producto->l2!=0 || $producto->l3!=0 || $producto->l4!=0 ){
-    ?>
-    <tr>
-    <td><?php echo $producto->id;?></td>
-    <td><?php echo $producto->marca;?></td>
-    <td><?php echo $producto->modelo;?></td>
-    <td><?php echo $producto->subcategoria;?></td>
-    <td><?php echo $producto->producto;?></td>
-    <td><?php echo $producto->color;?></td>
+            <table id="table" class="table table-striped table-bordered" cellspacing="0" width="100%">
 
-    <?php if($data['lista']==null){?>
-    <td>$<?php echo $producto->l1;?></td>
-    <td>$<?php echo $producto->l2;?></td>
-    <td>$<?php echo $producto->l3;?></td>
-    <td>$<?php echo $producto->l4;?></td>
-    <?php }else{
-        switch ($data['lista']) {
-            case '1':
-            echo "<td>".$producto->l1."</td>";
-                break;
-            case '2':
-            echo "<td>".$producto->l2."</td>";
-                break;
-            case '3':
-            echo "<td>".$producto->l3."</td>";
-                break;
-            case '4':
-            echo "<td>".$producto->l4."</td>";
-                break;
-            default:
-            case '4':
-            echo "<td><td>";
-                break;
-                break;
-        }
-    }?>
-    </tr>
-     
-    <?php 
-        }
-    }?>
-    </table>            
-</td>
-</tr>
-</table>
+                <thead>
 
-<script type="text/javascript" src="<?php echo base_url('assets/jquery/jquery-2.1.4.min.js')?>"></script>
+                    <tr>
+
+                        <th style="width:25px;">ID</th>
+
+                        <th style="display:none;">Codigo</th>
+
+                        <th>Marca</th>
+
+                        <th>Modelo</th>
+
+                        <th><strong>Nombre</strong></th>
+
+                        <th>Categoria</th>
+
+                        <th>Subcategoria</th>
+
+                        <th>Precio</th>
+
+                        <th style="width:225px;">Accion</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                </tbody>
+
+    
+
+                <tfoot>
+
+                    <tr>
+
+                        <th>ID</th>
+
+                        <th style="display:none;">Codigo</th>
+
+                        <th>Marca</th>
+
+                        <th>Modelo</th>
+
+                        <th><strong>Nombre</strong></th>
+
+                        <th>Categoria</th>
+
+                        <th>Proveedor</th>
+
+                        <th>Action</th>
+
+                    </tr>
+
+                </tfoot>
+
+            </table> 
+
+        </div>
+
+
+
+<script src="<?php echo base_url('assets/jquery/jquery-2.1.4.min.js')?>"></script>
+
+<script src="<?php echo base_url('assets/bootstrap/js/bootstrap.min.js')?>"></script>
+
+<script src="<?php echo base_url('assets/datatables/js/jquery.dataTables.min.js')?>"></script>
+
+<script src="<?php echo base_url('assets/datatables/js/dataTables.bootstrap.js')?>"></script>
+
+<script src="<?php echo base_url('assets/bootstrap-datepicker/js/bootstrap-datepicker.min.js')?>"></script>
+
+<script src="<?php echo base_url('assets/js/common.js')?>"></script>
+
+
+
+<script src="<?php echo base_url('assets/dashboard/js/metisMenu.js')?>"></script>
+
+<script src="<?php echo base_url('assets/dashboard/js/raphael-min.js')?>"></script>
+
+<!--<script src="<?php echo base_url('assets/dashboard/js/morris.min.js')?>"></script>
+
+<script src="<?php echo base_url('assets/dashboard/js/morris-data.js')?>"></script>-->
+
+<script src="<?php echo base_url('assets/dashboard/js/sb-admin-2.js')?>"></script>
+
+
+
+<script type="text/javascript">
+
+var save_method; //for save method string
+
+var table;
+
+
+
+$(document).ready(function() {
+
+    $(document).keypress(function(event) {
+
+        if(event.charCode==43){//+
+
+            $("#agregar").trigger("click");
+
+        }
+
+        //alert('Handler for .keypress() called. - ' + event.charCode);
+
+    });
+
+
+
+    //datatables
+
+    table = $('#table').DataTable({ 
+
+
+
+        "responsive": true,
+
+        "processing": true, //Feature control the processing indicator.
+
+        "serverSide": true, //Feature control DataTables' server-side processing mode.
+
+        "order": [], //Initial no order.
+
+         // Load data for the table's content from an Ajax source
+
+        "ajax": {
+
+            "url": "<?php echo site_url('producto/ajax_list')?>",
+
+            "type": "POST"
+
+        },
+
+
+
+        //Set column definition initialisation properties.
+
+        "columnDefs": [
+
+        { 
+
+            "targets": [ -1], //last column
+
+            "orderable": false, //set not orderable
+
+        },
+
+        ],
+
+        "language":{
+
+            "sProcessing":     "Procesando...",
+
+            "sLengthMenu":     "Mostrar _MENU_ registros",
+
+            "sZeroRecords":    "No se encontraron resultados",
+
+            "sEmptyTable":     "Ningún dato disponible en esta tabla",
+
+            "sInfo":           "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+
+            "sInfoEmpty":      "Mostrando registros del 0 al 0 de un total de 0 registros",
+
+            "sInfoFiltered":   "(filtrado de un total de _MAX_ registros)",
+
+            "sInfoPostFix":    "",
+
+            "sSearch":         "Buscar:",
+
+            "sUrl":            "",
+
+            "sInfoThousands":  ",",
+
+            "sLoadingRecords": "Cargando...",
+
+            "oPaginate": {
+
+                "sFirst":    "Primero",
+
+                "sLast":     "Último",
+
+                "sNext":     "Siguiente",
+
+                "sPrevious": "Anterior"
+
+            }
+
+        },
+        "fnInitComplete": function(oSettings, json) {
+        var table = $('#example').DataTable();
+        $("#example tfoot th").each( function ( i ) {
+        var select = $('Filter on:')
+        .appendTo( this )
+        .on( 'change', function () {
+        table.column( i )
+        .search( $(this).val() )
+        .draw();
+        } );
+
+        table.column( i ).data().unique().sort().each( function ( d, j ) {
+        select.append( ''+d+'' )
+        } );
+        } );
+        }
+        
+    });//fin datatables
+
+
+    //get a reference to the select element
+
+    $select_categorias = $('#categoria');
+
+    //request the JSON data and parse into the select element
+
+    $.ajax({
+
+        url: "<?php echo site_url('categoria/ajax_dropdown')?>"
+
+        , "type": "POST"
+
+        , data:{length:'',start:0}
+
+        , dataType: 'JSON'
+
+        , success: function (data) {
+
+            //clear the current content of the select
+
+            $select_categorias.html('');
+
+            //iterate over the data and append a select option
+
+            $.each(data.categorias, function (key, val) {
+
+                $select_categorias.append('<option value="' + val.id + '">' + val.nombre + '</option>');
+
+            })
+
+        }
+
+        , error: function () {
+
+            //if there is an error append a 'none available' option
+
+            $select_categorias.html('<option id="-1">ninguna disponible</option>');
+
+        }
+
+    });
+
+
+
+    //datepicker
+
+    $('.datepicker').datepicker({
+
+        autoclose: true,
+
+        format: "yyyy-mm-dd",
+
+        todayHighlight: true,
+
+        orientation: "top auto",
+
+        todayBtn: true,
+
+        todayHighlight: true,  
+
+    });
+
+
+
+    //set input/textarea/select event when change value, remove class error and remove text help block 
+
+    $("input").change(function(){
+
+        $(this).parent().parent().removeClass('has-error');
+
+        $(this).next().empty();
+
+    });
+
+    $("textarea").change(function(){
+
+        $(this).parent().parent().removeClass('has-error');
+
+        $(this).next().empty();
+
+    });
+
+    $("select").change(function(){
+
+        $(this).parent().parent().removeClass('has-error');
+
+        $(this).next().empty();
+
+    });
+
+
+
+});
+
+
+
+function edit_producto(id)
+
+{
+
+    save_method = 'update';
+
+    $('#form')[0].reset(); // reset form on modals
+
+    $('.form-group').removeClass('has-error'); // clear error class
+
+    $('.help-block').empty(); // clear error string
+
+
+
+    //Ajax Load data from ajax
+
+    $.ajax({
+
+        url : "<?php echo site_url('producto/ajax_edit/')?>/" + id,
+
+        type: "GET",
+
+        dataType: "JSON",
+
+        success: function(data)
+
+        {
+
+            
+
+            $('[name="id"]').val(data.id);
+
+            $('[name="nombre"]').val(data.nombre);
+
+            $('[name="categoria"]').val(data.categoriaid);
+
+            $('#modal_form').modal('show'); // show bootstrap modal when complete loaded
+
+            $('.modal-title').text('Editar Producto'); // Set title to Bootstrap modal title
+
+
+
+        },
+
+        error: function (jqXHR, textStatus, errorThrown)
+
+        {
+
+            alert('Error get data from ajax');
+
+        }
+
+    });
+
+}
+
+
+
+function reload_table()
+
+{
+
+    table.ajax.reload(null,false); //reload datatable ajax 
+
+}
+
+
+
+function save()
+
+{
+
+    $('#btnSave').text('saving...'); //change button text
+
+    $('#btnSave').attr('disabled',true); //set button disable 
+
+    var url;
+
+
+
+    if(save_method == 'add') {
+
+        url = "<?php echo site_url('producto/ajax_add')?>";
+
+    } else {
+
+        url = "<?php echo site_url('producto/ajax_update')?>";
+
+    }
+
+
+
+    // ajax adding data to database
+
+    $.ajax({
+
+        url : url,
+
+        type: "POST",
+
+        data: $('#form').serialize(),
+
+        dataType: "JSON",
+
+        success: function(data)
+
+        {
+
+
+
+            if(data.status) //if success close modal and reload ajax table
+
+            {
+
+                $('#modal_form').modal('hide');
+
+                reload_table();
+
+            }
+
+            else
+
+            {
+
+                for (var i = 0; i < data.inputerror.length; i++) 
+
+                {
+
+                    $('[name="'+data.inputerror[i]+'"]').parent().parent().addClass('has-error'); //select parent twice to select div form-group class and add has-error class
+
+                    $('[name="'+data.inputerror[i]+'"]').next().text(data.error_string[i]); //select span help-block class set text error string
+
+                }
+
+            }
+
+            $('#btnSave').text('guardar'); //change button text
+
+            $('#btnSave').attr('disabled',false); //set button enable 
+
+
+
+
+
+        },
+
+        error: function (jqXHR, textStatus, errorThrown)
+
+        {
+
+            alert('Error adding / update data');
+
+            $('#btnSave').text('guardar'); //change button text
+
+            $('#btnSave').attr('disabled',false); //set button enable 
+
+
+
+        }
+
+    });
+
+}
+
+
+
+function delete_producto(id)
+
+{
+
+    if(confirm('Esta seguro que desea borrar este producto?'))
+
+    {
+
+        // ajax delete data to database
+
+        $.ajax({
+
+            url : "<?php echo site_url('producto/ajax_delete')?>/"+id,
+
+            type: "POST",
+
+            dataType: "JSON",
+
+            success: function(data)
+
+            {
+
+                //if success reload ajax table
+
+                $('#modal_form').modal('hide');
+
+                reload_table();
+
+            },
+
+            error: function (jqXHR, textStatus, errorThrown)
+
+            {
+
+                alert('Error deleting data');
+
+            }
+
+        });
+
+
+
+    }
+
+}
+
+
+
+</script>
+
+
+
+<!-- Bootstrap modal -->
+
+<div class="modal fade" id="modal_form" role="dialog">
+
+    <div class="modal-dialog">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+
+                <h3 class="modal-title">Formulario de Productos</h3>
+
+            </div>
+
+            <div class="modal-body form">
+
+                <form action="#" id="form" class="form-horizontal">
+
+                    <input type="hidden" value="" name="id"/> 
+
+                    <div class="form-body">
+
+                        <div class="form-group">
+
+                            <label class="control-label col-md-3">Nombre</label>
+
+                            <div class="col-md-9">
+
+                                <input name="nombre" placeholder="Nombre" class="form-control" type="text">
+
+                                <span class="help-block"></span>
+
+                            </div>
+
+                        </div>
+
+                        <div class="form-group">
+
+                            <label class="control-label col-md-3">  </label>
+
+                            <div class="col-md-9">
+
+                                <select id="categoria" name="categoria" class="form-control">
+
+                                </select>
+
+                                <span class="help-block"></span>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+            <div class="modal-footer">
+
+                <button type="button" id="btnSave" onclick="save()" class="btn btn-primary">Guardar</button>
+
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+
+            </div>
+
+        </div><!-- /.modal-content -->
+
+    </div><!-- /.modal-dialog -->
+
+</div><!-- /.modal -->
+
+<!-- End Bootstrap modal -->

@@ -141,7 +141,7 @@ $(document).ready(function() {
 
         "ajax": {
 
-            "url": "<?php echo site_url('venta/ajax_list')?>",
+            "url": "<?php echo site_url('venta/ajax_list/'.$_SESSION['admin']['localid'])?>",
 
             "type": "POST"
 

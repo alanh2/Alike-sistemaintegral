@@ -21,6 +21,7 @@ class Producto extends MY_Controller {
 	}
 
 	public function ajustar_colores($id){
+		$this->isAdmin();
 		$this->load->helper('url');
 
 		$data['view']='producto_ajustar_colores_view';
@@ -35,6 +36,8 @@ class Producto extends MY_Controller {
 
 	{
 
+		$this->isAdmin();
+		
 		$this->load->helper('url');
 
 		$data['view']='producto_view';
@@ -48,6 +51,7 @@ class Producto extends MY_Controller {
 	public function busqueda()
 
 	{
+		$this->isAdmin();
 
 		$this->load->helper('url');
 
@@ -140,6 +144,7 @@ class Producto extends MY_Controller {
 	}
 
 	public function lista_precios($lista=null){
+		$this->isAdmin();
 		$this->load->helper('url');
 		$data['view']='producto_lista_precios_view';
 		$data['data']['stock'] = $this->producto->get_lista_precios($lista);
@@ -583,6 +588,7 @@ class Producto extends MY_Controller {
 		
 
 	public function alta_producto($id=NULL){
+		$this->isAdmin();
 
 		if($id==NULL){
 			$data['data']['save_method']='add';
@@ -603,6 +609,7 @@ class Producto extends MY_Controller {
 
 	}
 	public function clonar_producto($id=NULL){
+		$this->isAdmin();
 
 		if($id==NULL){
 			//$data['data']['save_method']='add';
@@ -699,6 +706,7 @@ class Producto extends MY_Controller {
 	public function stock($id)
 
 	{
+		$this->isAdmin();
 
 		$this->load->helper('url');
 

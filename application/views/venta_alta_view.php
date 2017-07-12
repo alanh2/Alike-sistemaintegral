@@ -511,6 +511,8 @@ $('.porcentaje').change(function () {
             
             <?php }else{?>
                 $('[name="cliente"]').val('504');
+                $('[name="vendedor"]').val(<?php echo $_SESSION['admin']['vendedorid']; ?>);
+
             <?php }?>
             _cargar_mensajes($('#cliente').val()); 
 

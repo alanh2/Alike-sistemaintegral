@@ -641,82 +641,62 @@ cobros = $('#cobrosdt').DataTable({
 });
 
 </script>
-<div class="modal-body form">
-
+<div class="modal fade" id="modal" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h3 class="modal-title">Formulario de </h3>
+            </div>
+            <div class="modal-body form">
                 <form action="#" id="form" class="form-horizontal">
-
                     <input type="hidden" value="" name="id"/>
                     <input type="hidden" value="<?php echo $venta->id;?>" name="venta"/> 
-
                     <div class="form-body">
-
                         <div class="form-group">
-
                             <label class="control-label col-md-3">Nombre</label>
-
                             <div class="col-md-9">
-
                                 <input id="producto" name="producto" placeholder="Producto" class="form-control" type="text" autocomplete="off">
                                 <input type="hidden" name="productovalue" id="productoValue" />
                                 <span class="help-block"></span>
-
                             </div>
-
                         </div>
-
                         <div class="form-group">
-
                             <label class="control-label col-md-3">Color</label>
-
                             <div class="col-md-9">
-
                                 <select id="stock" name="stock" class="form-control">
-
                                 </select>
-
                                 <span class="help-block"></span>
-
                             </div>
-
                         </div>
-
                         <div class="form-group">
-
                             <label class="control-label col-md-3">Cantidad</label>
-
                             <div class="col-md-9">
-
                                 <input id="cantidad" name="cantidad" placeholder="Cantidad" class="form-control" type="text">
                                 <span class="help-block"></span>
-
                             </div>
-
                         </div>
-
                         <div class="form-group">
-
                             <label class="control-label col-md-3">Precio</label>
-
                             <div class="col-md-9">
-
                                 <input id="precio" name="precio" placeholder="Precio" class="form-control" type="text">
                                 <span class="help-block"></span>
-
                             </div>
-
                         </div>
-
                     </div>
-
                 </form>
-
             </div>
-
+            <div class="modal-footer">
+                <!--button type="button" id="btnCobroSave" onclick="save_cobro()" class="btn btn-primary">Guardar</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button-->
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 <style>
 .ui-front{
     z-index: 99999;
 }
-
 .btn.btn-success {
     float: left;
     margin-bottom: 20px;

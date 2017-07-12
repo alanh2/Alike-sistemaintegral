@@ -28,6 +28,7 @@ class Sueldo_model extends CI_Model {
 
 	}
 
+
 	private function _get_datatables_query()
 
 	{
@@ -140,7 +141,32 @@ class Sueldo_model extends CI_Model {
 
 	}
 
+	public function get_cuentas_anual(){
+		$query= $this->db->query("SELECT vendedores.nombre as vendedor,sueldo
+	  ,SUM(IF(month(fecha) = 1, monto,0)) as enero
+	  ,SUM(IF(month(fecha) = 2, monto,0)) as febrero
+	  ,SUM(IF(month(fecha) = 3, monto,0)) as marzo
+	  ,SUM(IF(month(fecha) = 4, monto,0)) as abril
+	  ,SUM(IF(month(fecha) = 5, monto,0)) as mayo
+	  ,SUM(IF(month(fecha) = 6, monto,0)) as junio
+	  ,SUM(IF(month(fecha) = 7, monto,0)) as julio
+	  ,SUM(IF(month(fecha) = 8, monto,0)) as agosto
+	  ,SUM(IF(month(fecha) = 9, monto,0)) as septiembre
+	  ,SUM(IF(month(fecha) = 10, monto,0)) as octubre
+	  ,SUM(IF(month(fecha) = 11, monto,0)) as noviembre
+	  ,SUM(IF(month(fecha) = 12, monto,0)) as diciembre
+	   FROM `sueldo_pagos`
+	   INNER JOIN vendedores on sueldo_pagos.vendedorid=vendedores.id
+	   WHERE vendedorid!=1
+		GROUP BY vendedorid
+		ORDER BY vendedores.nombre
+	   ");
+		//echo $this->db->last_query();
+	
+		return $query->result();
 
+		
+	}
 
 	public function count_all()
 

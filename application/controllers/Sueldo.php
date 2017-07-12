@@ -37,7 +37,107 @@ class Sueldo extends MY_Controller {
 
 	}
 
+	public function estados()
 
+	{
+		$this->isAdmin();
+
+		$this->load->helper('url');
+
+		$data['view']='sueldo_estados_view';
+
+		$data['data']='';//aqui va la data que se le quiera pasar a la vista a travez de la master
+
+		$this->load->view('master_view',$data);
+
+	}
+
+	public function ajax_cuentas_anual($year=null){
+		
+		$this->load->helper('url');
+
+		$list = $this->sueldo->get_cuentas_anual($year);
+
+		$data = array();
+
+		$no = $_POST['start'];
+
+		foreach ($list as $cuenta) {
+
+			$no++;
+
+			$row = array();
+
+			$row[] = $cuenta->vendedor." ( ".$cuenta->sueldo." ) ";
+
+			$row[] = $cuenta->enero;
+
+			$row[] = $cuenta->febrero;
+
+			$row[] = $cuenta->marzo;
+
+			$row[] = $cuenta->abril;
+
+			$row[] = $cuenta->mayo;
+
+			$row[] = $cuenta->junio;
+
+			$row[] = $cuenta->julio;
+
+			$row[] = $cuenta->agosto;
+
+			$row[] = $cuenta->septiembre;
+
+			$row[] = $cuenta->octubre;
+
+			$row[] = $cuenta->noviembre;
+		
+			$row[] = $cuenta->diciembre;
+
+			//add html for action
+/*
+			if($this->able_to_delete($sueldo->id)){
+
+			$row[] = '
+
+			      <a class="btn btn-sm btn-primary" href="javascript:void(0)" title="Edit" onclick="edit_pago_sueldo('."'".$sueldo->id."'".')"><i class="glyphicon glyphicon-pencil"></i> Editar</a>
+
+				  <a class="btn btn-sm btn-danger" href="javascript:void(0)" title="Delete" onclick="delete_pago_sueldo('."'".$sueldo->id."'".')"><i class="glyphicon glyphicon-trash"></i> Borrar</a>';
+
+			}else{
+
+			$row[] = '
+
+			      <a class="btn btn-sm btn-primary" href="javascript:void(0)" title="Edit" onclick="edit_sueldo('."'".$sueldo->id."'".')"><i class="glyphicon glyphicon-pencil"></i> Editar</a>';
+
+			
+
+			}
+*/
+			$data[] = $row;
+
+		}
+
+
+
+		$output = array(
+
+						"draw" => $_POST['draw'],
+
+						"recordsTotal" => $this->sueldo->count_all(),
+
+						"recordsFiltered" => $this->sueldo->count_filtered(),
+
+						"data" => $data,
+
+				);
+
+		//output to json format
+
+		echo json_encode($output);
+
+
+	}
 
 	public function ajax_list()
 

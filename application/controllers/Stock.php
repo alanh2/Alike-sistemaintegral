@@ -27,7 +27,7 @@ class Stock extends MY_Controller {
 		$this->load->view('master_view',$data);
 
 	}
-	public function ajax_transferencia(){
+	public function ajax_transferencia($vendedor){
 
 		$this->_validate();
 		$stockid=$this->input->post('id');
@@ -44,7 +44,7 @@ class Stock extends MY_Controller {
 		
 		$this->stock->update(array('id' => $stock_origen->stock_id), $data_stock_origen);
 		$this->stock->update(array('id' => $stock_destino->stock_id), $data_stock_destino);				
-		$data_stock_transferencia=array('origenid'=>$stock_origen->stock_id,'destinoid'=>$stock_destino->stock_id,'cantidad'=>$cantidad,'vendedorid'=>'1','fecha'=> date('Y-m-d H:i:s'));
+		$data_stock_transferencia=array('origenid'=>$stock_origen->stock_id,'destinoid'=>$stock_destino->stock_id,'cantidad'=>$cantidad,'vendedorid'=>$vendedor,'fecha'=> date('Y-m-d H:i:s'));
 		$this->stock->registrar_transferencia($data_stock_transferencia);
 
 		//echo $this->db->last_query();
@@ -143,6 +143,8 @@ class Stock extends MY_Controller {
 
 						"data" => $data,
 
+//						"query"=>$this->db->last_query(),
+
 				);
 
 		//output to json format
@@ -152,12 +154,12 @@ class Stock extends MY_Controller {
 	}
 
 	
-public function ajax_color_por_producto_para_venta($producto=NULL, $venta=NULL)
+public function ajax_color_por_producto_para_venta($producto=NULL, $venta=NULL, $localid=null)//para que recibe venta?
 
 	{	
 		if($producto!=NULL){
-			if($venta!=NULL){
-				$list = $this->stock->get_por_producto_para_venta($producto,$venta);
+			if(($venta!=NULL)&&($localid!=NULL)){
+				$list = $this->stock->get_por_producto_para_venta($producto,$venta,$localid);
 			}else{
 				$list = $this->stock->get_por_producto($producto);
 			}
@@ -165,7 +167,6 @@ public function ajax_color_por_producto_para_venta($producto=NULL, $venta=NULL)
 
 			$list = $this->stock->get_datatables();
 		}
-		
 		$data = array();
 
 

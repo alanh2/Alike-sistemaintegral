@@ -62,28 +62,6 @@ function add_cobro()
     $('#nombre').focus();
 }
 
-function mostrar_campos(metodo){
-    $(".metodo").hide();
-    switch ($("#metodos").val()){
-        case "1":
-            break;
-        case "2":
-            $(".metodo.cheque").show();
-            break;
-        case "3":
-            $(".metodo.mercadopago").show();
-            break;
-        case "4":
-            $(".metodo.transferencia").show();
-            break;
-        case "7":
-            $(".metodo.tarjeta").show();
-            break;
-    }
-}
-$("#metodos").change(function(){
-    mostrar_campos($("#metodos").val());
-});
 
 function edit_cobro(id)
 {
@@ -208,21 +186,6 @@ function reload_cobros()
 }
     //datepicker
 
-$('.datepickerCobro').datepicker({
-
-    autoclose: true,
-
-    format: "yyyy-mm-dd",
-
-    todayHighlight: true,
-
-    orientation: "top auto",
-
-    todayBtn: true,
-
-    todayHighlight: true,  
-
-});
 </script>
 <!-- Bootstrap modal -->
 <div class="modal fade" id="modal_form_cobro" role="dialog">
@@ -331,3 +294,14 @@ $('.datepickerCobro').datepicker({
     display: none;
 }
 </style>
+<script type="text/javascript">
+    //datepicker
+    $('.datepickerCobro').datepicker({
+        autoclose: true,
+        format: "yyyy-mm-dd",
+        todayHighlight: true,
+        orientation: "top auto",
+        todayBtn: true,
+        todayHighlight: true,  
+    });
+</script>

@@ -280,7 +280,7 @@ class Venta_model extends CI_Model {
 
 	}
 
-	public function total_debido_by_venta($id, $montocobro, $cobroid=NULL){//Cuanto resta de pagar una venta, para validar el maximo de pago posible en abm cobros dentro de venta.
+	public function total_debido_by_venta($id, $montocobro, $montoventa=NULL, $cobroid=NULL){//Cuanto resta de pagar una venta, para validar el maximo de pago posible en abm cobros dentro de venta.
 		$this->db->from($this->table);
 		$this->db->join('aplicaciones_cobro_venta', 'aplicaciones_cobro_venta.ventaid = ventas.id', 'left');
 		$this->db->select('SUM(aplicaciones_cobro_venta.monto) as cobrado, ventas.total as total');
@@ -292,6 +292,9 @@ class Venta_model extends CI_Model {
 		$query = $this->db->get();
 
 		$row = $query->row();
+		if ($montocobro != NULL){
+			$montocobro -= $montoventa;
+		}
 		if (!isset($row->total)){
 			return 1;
 		}else{

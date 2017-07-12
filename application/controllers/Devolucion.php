@@ -34,13 +34,15 @@ class Devolucion extends MY_Controller {
 
 		$this->load->model('notacredito_model','notacredito');
 
+		$this->load->model('cashback_model','cashback');
+
 
 	}
 
 	public function index()
 
 	{
-		
+
 		$this->load->helper('url');
 
 		$data['view']='devolucion_view';
@@ -137,17 +139,6 @@ class Devolucion extends MY_Controller {
 		}
 	}
 
-	public function ver_detalles($id=NULL){
-		if ($id != null){
-			$data['view']='venta_detalle_view';
-			$data['venta'] = $this->venta->get_by_id($id);
-			//$data['venta']->total = $this->venta->get_total($id)->total;
-			$this->load->view('master_view',$data);
-
-		}else{
-			$this->index();
-		}
-	}
 
 	
 	public function alta_devolucion($id=NULL){
@@ -165,97 +156,6 @@ class Devolucion extends MY_Controller {
 		$data['view']='devolucion_alta_view';
 		$this->load->view('master_view',$data);
 
-	}
-
-	//En esta parte se agregan productos a la venta
-	public function renglones_venta($id=NULL){
-		if($id==NULL){
-			$this->alta_venta();
-		}else{
-			$this->load->helper('url');
-			$data['view']='venta_renglones_view';
-			$this->load->view('master_view',$data);
-		}
-
-	}
-	
-	public function ajax_venta($id=NULL){
-		if($id!=NULL){
-			$data=$this->venta->get_by_id($id);
-			echo json_encode($data);
-		}
-	}
-
-	public function ajax_venta2($id=NULL){
-		if($id!=NULL){
-			$data=$this->venta->get_by_id($id);
-			//Mientras tanto, hasta que se haga el campo autovaluado de total en ventas
-			$data->total=$this->venta->get_total($id)->total;
-			echo json_encode($data);
-		}
-	}
-
-	public function ajax_datos_envio_por_venta($ventaid)
-	{
-		$data = $this->envioventa->get_by_venta($ventaid);
-		echo json_encode($data);
-	}
-
-	public function completar_envio(){
-		$data = $this->input->post();
-		$this->db->trans_begin(); 
-		if ($data['metodo_envio_anterior'] != ''){
-			$envtablaid = $this->enviometodo->actualizar($data);
-
-			$this->envio->update(array('id' => $data['id']),array('metodoenvio'=> $data['metodo'], 'operacion'=> 1, 'fechaestimada'=> $data['fecha_estimada'], 'recibe'=> $data['recibe'], 'dni'=> $data['dni'], 'envtablaid'=> $envtablaid));
-
-		}else{
-			$envtablaid = $this->enviometodo->add_envio($data);
-
-			$envioid = $this->envio->save(array('metodoenvio'=> $data['metodo'], 'operacion'=> 1, 'fechaestimada'=> $data['fecha_estimada'], 'recibe'=> $data['recibe'], 'dni'=> $data['dni'], 'envtablaid'=> $envtablaid));
-			$this->envioventa->save(array('ventaid'=> $data['ventaid'], 'envioid'=> $envioid));
-		}
-
-		if ($this->db->trans_status() === FALSE)
-		{
-	        $this->db->trans_rollback();
-	    	$output['resultado'] = 'Error';
-		}
-		else
-		{
-	        $this->db->trans_commit();
-	    	$output['resultado'] = 'Ok';
-		}
-
-		echo json_encode($output);
-	}
-
-	public function completar_venta(){
-		$data = $this->input->post();
-		$this->db->trans_begin(); 
-		$transaccion_result = $this->transaccion->add_transaccion($data['metodo'],1,$data);
-		$cobro_result = $this->cobro->save(array('clienteid'=> $data['clienteid'], 'monto'=> $data['monto'],'fecha'=> date('Y-m-d H:i:s'), 'metodoid' => $transaccion_result, 'metododepagoid' => $data['metodo']));
-		$aplicacion_result = $this->aplicacionCobroVenta->save(array('cobroid'=> $cobro_result, 'ventaid'=> $data['ventaid'], 'monto'=> $data['monto']));
-
-		$output = array(
-						"transaccion" => $transaccion_result,
-						"cobro" => $cobro_result,
-						"aplicacion" => $aplicacion_result,
-						"data" => $data
-				);
-
-		if ($this->db->trans_status() === FALSE || !isset($transaccion_result) || !isset($cobro_result) || !isset($aplicacion_result))
-		{
-	        $this->db->trans_rollback();
-	    	$output['resultado'] = 'Error';
-		}
-		else
-		{
-	        $this->db->trans_commit();
-	    	$output['resultado'] = 'Ok';
-		}
-
-		echo json_encode($output);
 	}
 
 	public function ajax_list()
@@ -326,23 +226,11 @@ class Devolucion extends MY_Controller {
 
 	}
 
-	public function ajax_edit($id)
-
-	{
-
-		$data = $this->venta->get_by_id($id);
-
-		echo json_encode($data);
-
-	}
-
-
-
 	public function ajax_add($ventaid=null)
 
 	{
 
-		//$this->_validate();
+		$this->_validate();
 		$venta=$this->venta->get_by_id($ventaid);
 		$data = array(
 
@@ -421,10 +309,15 @@ class Devolucion extends MY_Controller {
 			//print_r($dataGasto);
 			//$gastoid =$this->gasto->save($dataGasto);
 					//echo $this->db->last_query();*/
-
-			$dataNotaCredito = array('monto'=>$monto_devolucion->total,'saldo'=>$monto_devolucion->total,'fecha' => date("Y-m-d H:i:s"),'devolucionid'=>$devolucionid, 'clienteid'=>$venta->clienteid/*,'gastoid'=>$gastoid*/);
-			$nota_creditoid = $this->notacredito->save($dataNotaCredito);
-
+			if (isset($_POST['cashonota'])){
+				if($this->input->post('cashonota')==2){
+					$dataNotaCredito = array('monto'=>$monto_devolucion->total,'saldo'=>$monto_devolucion->total,'fecha' => date("Y-m-d H:i:s"),'devolucionid'=>$devolucionid, 'clienteid'=>$venta->clienteid/*,'gastoid'=>$gastoid*/);
+					$nota_creditoid = $this->notacredito->save($dataNotaCredito);
+				}else{
+					$dataCashBack= array('monto'=>$monto_devolucion->total,'fecha' => date("Y-m-d H:i:s"),'devolucionid'=>$devolucionid, 'clienteid'=>$venta->clienteid);
+					$cash_backid = $this->cashback->save($dataCashBack);
+				}
+			}
 		/*if ($this->db->trans_status() === FALSE)
 		{
 	        $this->db->trans_rollback();
@@ -439,41 +332,6 @@ class Devolucion extends MY_Controller {
 		//print_r($output);
 
 		//print_r($this->input->post());
-	}
-
-
-
-
-	public function ajax_update()
-
-	{
-
-		$this->_validate();
-
-		$data = array(
-
-				'clienteid' => $this->input->post('cliente'),
-
-				'vendedorid' => $this->input->post('vendedor'),
-
-			);
-
-		$this->venta->update(array('id' => $this->input->post('id')), $data);
-		
-		echo json_encode(array("status" => TRUE, 'id' => $this->input->post('id')));
-
-	}
-
-
-
-	public function ajax_delete($id)
-
-	{
-
-		$this->venta->delete_by_id($id);
-
-		echo json_encode(array("status" => TRUE));
-
 	}
 
 	public function ajax_detalle($id)
@@ -655,13 +513,13 @@ public function ajax_renglones($id)
 
 		$data['status'] = TRUE;
 
-		if($this->input->post('cliente') == '')
+		if($this->input->post('cashonota') == '')
 
 		{
 
-			$data['inputerror'][] = 'cliente';
+			$data['inputerror'][] = 'cashonota';
 
-			$data['error_string'][] = 'Debe seleccionar un cliente';
+			$data['error_string'][] = 'Debe seleccionar si es cash o nota de credito';
 
 			$data['status'] = FALSE;
 
@@ -669,7 +527,7 @@ public function ajax_renglones($id)
 
 
 
-		if($this->input->post('vendedor') == '')
+		/*if($this->input->post('vendedor') == '')
 
 		{
 
@@ -680,7 +538,7 @@ public function ajax_renglones($id)
 			$data['status'] = FALSE;
 
 		}
-
+*/
 		if($data['status'] === FALSE)
 
 		{
@@ -692,58 +550,6 @@ public function ajax_renglones($id)
 		}
 
 	}
-	private function _validate_renglon()
-
-	{
-
-		$data = array();
-
-		$data['error_string'] = array();
-
-		$data['inputerror'] = array();
-
-		$data['status'] = TRUE;
-
-
-
-		if($this->input->post('cliente') == '')
-
-		{
-
-			$data['inputerror'][] = 'cliente';
-
-			$data['error_string'][] = 'Debe seleccionar un cliente';
-
-			$data['status'] = FALSE;
-
-		}
-
-
-
-		if($this->input->post('vendedor') == '')
-
-		{
-
-			$data['inputerror'][] = 'vendedor';
-
-			$data['error_string'][] = 'Debe seleccionar un vendedor';
-
-			$data['status'] = FALSE;
-
-		}
-
-		if($data['status'] === FALSE)
-
-		{
-
-			echo json_encode($data);
-
-			exit();
-
-		}
-
-	}
-
 
 
 }

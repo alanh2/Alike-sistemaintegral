@@ -70,6 +70,17 @@ class Pdfs extends MY_Controller {
         //}
 
     }
+    
+    public function lista_precios($lista=null){
+        $this->isAdmin();
+        $this->load->helper('url');
+        $data['view']='producto_lista_precios_view';
+        $data['data']['stock'] = $this->producto->get_lista_precios($lista);
+        $data['data']['lista'] = $lista;
+        $this->load->view('master_view',$data);
+        //echo $this->db->last_query();
+
+    }
     public function imprimir_cuenta_corriente($clienteid) {
         $this->isAdmin();
         $this->load->library('Pdf');

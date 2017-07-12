@@ -56,6 +56,17 @@ class Venta extends MY_Controller {
 
 	}
 
+	public function reportes(){
+		
+		$this->isAdmin();
+		
+		$this->load->helper('url');
+		$data['view']='venta_reportes_view';
+		//$data['data'][''] = $lista;
+		$this->load->view('master_view',$data);
+		
+	}
+
 	public function add_venta_post(){
 
 		$data = $this->input->post('data');
@@ -506,13 +517,13 @@ class Venta extends MY_Controller {
 		echo json_encode($output);
 	}
 
-	public function ajax_list()
+	public function ajax_list($localid=null)
 
 	{
 
 		$this->load->helper('url');
 
-		$list = $this->venta->get_datatables();
+		$list = $this->venta->get_datatables($localid);
 
 		$data = array();
 
@@ -599,6 +610,10 @@ class Venta extends MY_Controller {
 				'fecha' => date("Y-m-d H:i:s"),
 
 				'estadoid' => '0',
+
+				'localid' => $_SESSION['admin']['localid'],
+
+				'usuarioid' => $_SESSION['admin']['id'],
 
 			);
 

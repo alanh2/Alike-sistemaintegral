@@ -176,22 +176,6 @@ function save_envio()
 
         }
     });
-
-    $('.datepickerEnvio').datepicker({
-
-    autoclose: true,
-
-    format: "yyyy-mm-dd",
-
-    todayHighlight: true,
-
-    orientation: "top auto",
-
-    todayBtn: true,
-
-    todayHighlight: true,  
-
-});
 }
 
 function delete_envio(id)
@@ -322,7 +306,18 @@ function reload_envios()
 </div><!-- /.modal -->
 <!-- End Bootstrap modal -->
 <style>
-.metodo{
+.metodoEnvio{
     display: none;
 }
 </style>
+<script type="text/javascript">
+    //datepicker
+    $('.datepickerEnvio').datepicker({
+        autoclose: true,
+        format: "yyyy-mm-dd",
+        todayHighlight: true,
+        orientation: "top auto",
+        todayBtn: true,
+        todayHighlight: true,  
+    });
+</script>

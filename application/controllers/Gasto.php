@@ -27,17 +27,19 @@ class Gasto extends MY_Controller {
 	{
 
 		$this->isAdmin();
-		
-		$this->load->helper('url');
+		if (($_SESSION['admin']['vendedorid']==5)||($_SESSION['admin']['vendedorid']==9)){
+			$this->load->helper('url');
 
-		$data['view']='gasto_view';
+			$data['view']='gasto_view';
 
-		$data['data']='';//aqui va la data que se le quiera pasar a la vista a travez de la master
+			$data['data']='';//aqui va la data que se le quiera pasar a la vista a travez de la master
 
-		$data['search']=$search;
+			$data['search']=$search;
 
-		$this->load->view('master_view',$data);
-
+			$this->load->view('master_view',$data);
+		}else{
+			echo "<H1>ACCESO DENEGADO</H1>";
+		}
 	}
 
 
@@ -73,20 +75,12 @@ class Gasto extends MY_Controller {
 			$row[] = $gasto->vendedor;
 
 			//add html for action
-			/*if($this->able_to_delete($gasto->id)){
-
 			$row[] = '
 
 			      <a class="btn btn-sm btn-primary" href="javascript:void(0)" title="Edit" onclick="edit_gasto('."'".$gasto->id."'".')"><i class="glyphicon glyphicon-pencil"></i> Editar</a>
 
 				  <a class="btn btn-sm btn-danger" href="javascript:void(0)" title="Hapus" onclick="delete_gasto('."'".$gasto->id."'".')"><i class="glyphicon glyphicon-trash"></i> Borrar</a>';
-			}else{
 			
-				$row[] = '
-			
-			      <a class="btn btn-sm btn-primary" href="javascript:void(0)" title="Edit" onclick="edit_gasto('."'".$gasto->id."'".')"><i class="glyphicon glyphicon-pencil"></i> Editar</a>';
-			}
-			*/
 
 			$data[] = $row;
 

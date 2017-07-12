@@ -31,6 +31,18 @@
             <button class="btn btn-success all2stock"><i class="glyphicon glyphicon-list"></i> Todos a STOCK</button>
             <button class="btn btn-success all2RMA"><i class="glyphicon glyphicon-list"></i> Todos a RMA</button>
             <form>
+            
+            <br/><br/><br/>
+            <div class="form-group">
+                <div class="col-md-6">
+                <span class="form-control" style="text-align: center; font-weight: bold;">Efectivo</span>
+                <input type="radio" name="cashonota" value="1" class="form-control"><br/>
+                <span class="form-control" style="text-align: center; font-weight: bold;">Nota de credito</span>
+                <input type="radio" name="cashonota" value="2" class="form-control" id="cashonota">
+                    <span class="help-block"></span>
+                </div>
+            </div>
+            
             <table id="table" class="table table-striped table-bordered" cellspacing="0" width="100%">
 
                 <thead>
@@ -239,11 +251,12 @@ $(document).ready(function() {
 $('#table tbody').on( 'click', 'tr', function () {
         //$(this).toggleClass('selected');
     } );
+//$("input:radio:even:eq(0)").prop("checked", true) seleccionar un index indicado
     $('.all2stock').click(function(){
-        $("input:radio:even").prop("checked", true).trigger("click");
+        $("input:radio:even:gt(0)").prop("checked", true).trigger("click");
     });
     $('.all2RMA').click(function(){
-        $("input:radio:odd").prop("checked", true).trigger("click");
+        $("input:radio:odd:gt(0)").prop("checked", true).trigger("click");
     });
    /* $('#selectAll').click(function(){
         $(table.rows().nodes()).addClass('selected');
@@ -267,7 +280,7 @@ $('#table tbody').on( 'click', 'tr', function () {
          });
          //console.log(devoluciones);
          //console.log('JSON: ');
-         console.log(JSON.stringify(devoluciones));
+         console.log(JSON.stri*ngify(devoluciones));
          */
          /*var prueba = [];
          prueba[0]= 'a';
@@ -320,7 +333,7 @@ $('#table tbody').on( 'click', 'tr', function () {
 
                         $('[name="'+data.inputerror[i]+'"]').parent().parent().addClass('has-error'); //select parent twice to select div form-group class and add has-error class
 
-                        $('[name="'+data.inputerror[i]+'"]').next().text(data.error_string[i]); //select span help-block class set text error string
+                        $('[id="'+data.inputerror[i]+'"]').next().text(data.error_string[i]); //select span help-block class set text error string
 
                     }
 

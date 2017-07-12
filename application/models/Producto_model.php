@@ -43,7 +43,34 @@ class Producto_model extends CI_Model {
 		return $rowcount;
 
 	}
+	public function get_reporte($local=null,$marca=null,$modelo=null,$categoria=null,$subcategoria=null,$proveedor=null){
+		$query=$this->db->query("SELECT CONCAT(stock.id,'/',stock.producto_colorid,'/',productos_colores.productoid) as S_PC_P, locales.nombre as local, marcas.nombre as marca, modelos.nombre as modelo, subcategorias.nombre as subcategoria, productos.nombre as producto, colores.nombre as color, stock.cantidad, productos_colores.costo,
+			ROUND(productos_colores.costo + productos_colores.costo*productos_colores.porcentaje1/'100') as 'l1',
+			ROUND(productos_colores.costo + productos_colores.costo*productos_colores.porcentaje2/'100') as 'l2', 
+			ROUND(productos_colores.costo + productos_colores.costo*productos_colores.porcentaje3/'100') as 'l3', 
+			ROUND(productos_colores.costo + productos_colores.costo*productos_colores.porcentaje4/'100') as 'l4'
+			FROM `stock`
+			INNER JOIN productos_colores on stock.producto_colorid = productos_colores.id 
+			INNER JOIN productos on productos_colores.productoid= productos.id 
+			INNER JOIN subcategorias on productos.subcategoriaid= subcategorias.id
+			INNER JOIN categorias on categorias.id= subcategorias.categoriaid 
+			INNER JOIN modelos on productos.modeloid= modelos.id 
+			INNER JOIN marcas on marcas.id=modelos.marcaid 
+			INNER JOIN colores on productos_colores.colorid= colores.id 
+			INNER JOIN locales on stock.localid= locales.id
+			INNER JOIN proveedores on productos.proveedorid= proveedores.id
+			WHERE  cantidad >0 AND productos.id <> 605 /* Aca excluimos servicio tecnico*/
+			AND locales.id LIKE '".$local."' AND
+			marcas.id LIKE '".$marca."' AND
+			modelos.id LIKE '".$modelo."' AND
+			categorias.id LIKE '".$categoria."' AND
+			subcategorias.id LIKE '".$subcategoria."' AND
+			proveedores.id LIKE '".$proveedor."'
+			ORDER BY marcas.nombre,modelos.nombre
+			");
+		return $query->result();
 
+	}
 	public function get_lista_precios($lista=null){
 		$l1=$l2=$l3=$l4="";
 		switch ($lista) {
@@ -54,10 +81,10 @@ class Producto_model extends CI_Model {
 				$l2="ROUND(productos_colores.costo + productos_colores.costo*productos_colores.porcentaje2/'100') as 'l2' ";
 				break;
 			case '3':
-				$l2="ROUND(productos_colores.costo + productos_colores.costo*productos_colores.porcentaje3/'100') as 'l3' ";
+				$l3="ROUND(productos_colores.costo + productos_colores.costo*productos_colores.porcentaje3/'100') as 'l3' ";
 				break;
 			case '4':
-				$l2="ROUND(productos_colores.costo + productos_colores.costo*productos_colores.porcentaje4/'100') as 'l4' ";
+				$l4="ROUND(productos_colores.costo + productos_colores.costo*productos_colores.porcentaje4/'100') as 'l4' ";
 				break;
 			default:
 				$l1="ROUND(productos_colores.costo + productos_colores.costo*productos_colores.porcentaje1/'100') as 'l1', ";
@@ -285,14 +312,17 @@ class Producto_model extends CI_Model {
 
 		$table="stock";
 		$where= array('producto_colorid'=>$producto_colorid);
+		$where1= array('producto_colorid'=>$producto_colorid,'localid'=>'1');
+		//$where2= array('producto_colorid'=>$producto_colorid,'localid'=>'2');
+		//$where3= array('producto_colorid'=>$producto_colorid,'localid'=>'3');
 		$query = $this->db->get_where($table,$where);
-		$data1=array('cantidad'=>$stock,'localid'=>1,'producto_colorid'=>$producto_colorid);
-		$data2=array('cantidad'=>'0','localid'=>2,'producto_colorid'=>$producto_colorid);
-		$data3=array('cantidad'=>'0','localid'=>3,'producto_colorid'=>$producto_colorid);
+		$data1=array('cantidad'=>$stock,'localid'=>'1','producto_colorid'=>$producto_colorid);
+		$data2=array('cantidad'=>'0','localid'=>'2','producto_colorid'=>$producto_colorid);
+		$data3=array('cantidad'=>'0','localid'=>'3','producto_colorid'=>$producto_colorid);
 		if($this->db->affected_rows()>0){
-			$this->db->update($table, $data1, $where);
-			$this->db->update($table, $data1, $where);
-			$this->db->update($table, $data1, $where);
+			$this->db->update($table, $data1, $where1);
+			//$this->db->update($table, $data2, $where2);
+			//$this->db->update($table, $data3, $where3);
 		}
 		else{
 			$this->db->insert($table, $data1);

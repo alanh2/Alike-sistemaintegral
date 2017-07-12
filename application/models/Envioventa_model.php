@@ -53,6 +53,18 @@ class Envioventa_model extends CI_Model {
 		return $query->row();
 	}
 
+
+	public function get_total_envio_by_venta($ventaid)
+	{
+		$this->db->from($this->table);
+		$this->db->join('envios', 'ventas_envios.envioid = envios.id');
+		$this->db->select('sum(envios.costo) as total');
+		$this->db->where('ventas_envios.ventaid',$ventaid);
+		$this->db->group_by('ventas_envios.ventaid');
+		$query = $this->db->get();
+		return $query->row();
+	}
+
 	public function save($data)
 	{
 		$this->db->insert($this->table, $data);

@@ -48,6 +48,29 @@ class Producto extends MY_Controller {
 
 	}
 
+	public function reportes(){
+		
+		$this->isAdmin();
+		
+		$this->load->helper('url');
+		$data['view']='producto_reportes_view';
+		//$data['data'][''] = $lista;
+		$this->load->view('master_view',$data);
+		
+	}
+	public function generar_reporte(){
+		
+		$this->isAdmin();
+		
+		$this->load->helper('url');
+		$data['view']='producto_reporte_view';
+		$data['data']['reporte']=$this->producto->get_reporte($this->input->get('local'),$this->input->get('marca'),$this->input->get('modelo'),$this->input->get('categoria'),$this->input->get('subcategoria'),$this->input->get('proveedor'));
+		//$data['data'][''] = $lista;
+		$this->load->view('master_view',$data);
+		//echo $this->db->last_query();
+		
+		//print_r($_GET);	
+	}	
 	public function busqueda()
 
 	{
@@ -144,6 +167,17 @@ class Producto extends MY_Controller {
 	}
 
 	public function lista_precios($lista=null){
+		$this->isAdmin();
+		$this->load->helper('url');
+		$data['view']='producto_lista_precios_view';
+		$data['data']['stock'] = $this->producto->get_lista_precios($lista);
+		$data['data']['lista'] = $lista;
+		$this->load->view('master_view',$data);
+		//echo $this->db->last_query();
+
+	}
+
+	public function producto_lista_precios_view_con_busqueda($lista=null){
 		$this->isAdmin();
 		$this->load->helper('url');
 		$data['view']='producto_lista_precios_view';

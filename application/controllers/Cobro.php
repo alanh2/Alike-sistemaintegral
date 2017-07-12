@@ -13,6 +13,7 @@ class Cobro extends MY_Controller {
 		$this->load->model('cuentacorriente_model','cuentaCorriente');
 		$this->load->model('notacredito_model','notaCredito');
 		$this->load->model('venta_model','venta');
+		$this->load->model('envioventa_model','envioVenta');
 		$this->load->model('aplicacioncobroventa_model','aplicacionCobroVenta');
 
 	}
@@ -72,6 +73,15 @@ class Cobro extends MY_Controller {
 		//output to json format
 		echo json_encode($output);
 	}
+
+	private function total_envio($ventaid){
+		$resultado = $this->envioVenta->get_total_envio_by_venta($ventaid);
+		if ($resultado != null){
+			return $resultado->total;
+		}else{
+			return 0;
+		}
+	}
 	
 	public function ajax_add($ventaid=NULL)
 	{
@@ -80,7 +90,11 @@ class Cobro extends MY_Controller {
 		if ($this->input->post('pagado') == 'on'){
 			$pagado = 1;
 		}
-		if ((($ventaid != NULL && $this->venta->total_debido_by_venta($ventaid, $monto) == 1) || ($ventaid == NULL)) && $monto > 0)//el ==1 seria equivalente a true y chequea que la suma de los montos de los cobros de la venta sea <= que el total de la venta
+		$total_envio = 0;
+		if ($ventaid != NULL){
+			$total_envio = $this->total_envio($ventaid);
+		}
+		if ((($ventaid != NULL && $this->venta->total_debido_by_venta($ventaid, $monto, $total_envio) == 1) || ($ventaid == NULL)) && $monto > 0)//el ==1 seria equivalente a true y chequea que la suma de los montos de los cobros de la venta sea <= que el total de la venta
 		{
 
 			$this->db->trans_begin(); 
@@ -141,7 +155,11 @@ class Cobro extends MY_Controller {
 			}
 
 		}else{
-			$output['resultado'] = 'Error, supera monto total de venta';
+			if ($monto =< 0){
+				$output['resultado'] = 'Error, el monto ingresado no es correcto';
+			}else{
+				$output['resultado'] = 'Error, supera monto total de venta';
+			}
 		}
 		echo json_encode($output);
 	}
@@ -154,7 +172,11 @@ class Cobro extends MY_Controller {
 		if ($this->input->post('pagado') == "on"){
 			$pagado = 1;
 		}
-		if ((($ventaid != NULL && $this->venta->total_debido_by_venta($ventaid, $monto, $cobroid) == 1) || ($ventaid == NULL)) && $monto > 0) //idem que ajax_add pero con el cobroid trato diferente el cobro que modifico
+		$total_envio = 0;
+		if ($ventaid != NULL){
+			$total_envio = $this->total_envio($ventaid);
+		}
+		if ((($ventaid != NULL && $this->venta->total_debido_by_venta($ventaid, $monto, $total_envio, $cobroid) == 1) || ($ventaid == NULL)) && $monto > 0) //idem que ajax_add pero con el cobroid trato diferente el cobro que modifico
 		{
 			$this->db->trans_begin(); 
 	        $datametodo = array(
@@ -208,7 +230,11 @@ class Cobro extends MY_Controller {
 		    	$output['resultado'] = 'Ok';
 			}
 		}else{
-			$output['resultado'] = 'Error, supera monto total de venta';
+			if ($monto =< 0){
+				$output['resultado'] = 'Error, el monto ingresado no es correcto';
+			}else{
+				$output['resultado'] = 'Error, supera monto total de venta';
+			}
 		}
 		echo json_encode($output);
 	}

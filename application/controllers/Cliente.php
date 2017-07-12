@@ -17,6 +17,7 @@ class Cliente extends MY_Controller {
 
 	public function index()
 	{
+		$this->isAdmin();
 		$this->load->helper('url');
 		$data['view']='cliente_view';
 		$data['data']='';//aqui va la data que se le quiera pasar a la vista a travez de la master
@@ -29,6 +30,7 @@ class Cliente extends MY_Controller {
 	}
 	public function cuenta($clienteid)
 	{
+		$this->isAdmin();
 		$this->load->helper('url');
 		$notasCredito = $this->notacredito->get_resumen_by_clienteid($clienteid);
 		$ventas = $this->venta->get_resumen_by_clienteid($clienteid);
@@ -51,6 +53,7 @@ class Cliente extends MY_Controller {
 
 	public function detalle_cuenta_cliente($clienteid)
 	{
+		$this->isAdmin();
 		$this->load->helper('url');
 /*		$notasCredito = $this->notacredito->get_resumen_by_clienteid($clienteid);
 		$ventas = $this->venta->get_resumen_by_clienteid($clienteid);
@@ -73,10 +76,10 @@ class Cliente extends MY_Controller {
 		$this->load->view('master_view',$data);
 	}
 
-	public function ajax_list()
+	public function ajax_list($localid=null)
 	{
 		$this->load->helper('url');
-		$list = $this->cliente->get_datatables();
+		$list = $this->cliente->get_datatables($localid);
 		$data = array();
 		$no = $_POST['start'];
 		foreach ($list as $cliente) {
@@ -161,6 +164,7 @@ class Cliente extends MY_Controller {
 				'dni' => $this->input->post('dni'),
 				'cuitcuil' => $this->input->post('cuitcuil'),
 				'web' => $this->input->post('web'),
+				'localid'=>$_SESSION['admin']['localid'],
 		);
 		$insert = $this->cliente->save($data);
 		

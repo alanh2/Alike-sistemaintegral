@@ -34,12 +34,12 @@ class Envio extends MY_Controller {
 	{
 		$data =$this->envio->get_by_id($id);
 		$metodo = $this->enviometodo->get_datos_metodo_by_id($data->envtablaid, $data->metodoenvio);
-		unset($metodo->costo); //borrar cuando se saque el campo costo de cada tabla de metodo de envio
+		unset($metodo->costo);
 		$data = array_merge((array) $data,(array) $metodo);
 		echo json_encode($data);
 	}
 
-	public function ajax_list()// hacer q reciba el id null y sacar el ajax_detalle
+	public function ajax_list()
 	{
 		$this->load->helper('url');
 		$list = $this->envio->get_datatables();
@@ -66,8 +66,7 @@ class Envio extends MY_Controller {
 		//output to json format
 		echo json_encode($output);
 	}
-
-	public function pasar_costos(){// script para ejecutar solo en el traspaso de costos de la tabla del metodo a la de envios (migracion x unica vez)
+	public function pasar_costos(){
 		$tiposenvios = array('0','env_retiros','env_ocas','env_ocaexpress','env_motos','env_otros');
 
 		$this->db->from('envios');
@@ -170,7 +169,7 @@ class Envio extends MY_Controller {
         		"metodoenvio" => $metodoEnvio,
         		"fechaestimada" => $this->input->post('fecha_estimada'),
         		"envtablaid" => $metodoEnvioid,
-        		"clienteid" => $this->input->post('clienteid'),
+        		"clienteid" => $this->input->post('cliente'),
         );
 
 		$this->envio->update(array('id' => $envioid),$dataenvio);
@@ -181,7 +180,7 @@ class Envio extends MY_Controller {
 
         $datadetallecc = array(
         		"monto" => $costo,
-        		"clienteid" => $this->input->post('clienteid'),
+        		"clienteid" => $this->input->post('cliente'),
         		"tipo_operacionid" => 2, //envio
         		"operacionid" => $envioid,
         		"vendedorid" => 1,
@@ -207,9 +206,8 @@ class Envio extends MY_Controller {
 		$this->db->trans_begin();
 		$envio = $this->envio->get_by_id($id);
 		$this->envio->delete_by_id($id);
-		$this->enviometodo->delete_by_id($envio->envtablaid, $envio->metodoenvio);
+		$this->enviometodo->delete_by_id($id, $envio->envtablaid);
 		$this->envioVenta->delete_by_envioid($id);
-		$this->detalleCuentacorriente->eliminar_detalle_cc(2, $id);// busca por tipo_operacion_id y operacionid
 
 		if ($this->db->trans_status() === FALSE)
 		{
@@ -224,7 +222,7 @@ class Envio extends MY_Controller {
 		echo json_encode($output);
 	}
 
-	public function ajax_detalle($id)//para detalle
+	public function ajax_detalle($id)
 	{
 		$this->load->helper('url');
 

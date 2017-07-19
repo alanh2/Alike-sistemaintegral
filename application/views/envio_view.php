@@ -1,33 +1,30 @@
         <div id="page-wrapper">
             <br>
-            <h3>Cobros</h3>
+            <h3>Envios</h3>
             <br />
-            <button id="agregar" class="btn btn-success" onclick="add_cobro()"><i class="glyphicon glyphicon-plus"></i> Agregar Cobro</button>
-            <button class="btn btn-default" onclick="reload_cobros()"><i class="glyphicon glyphicon-refresh"></i> Recargar</button>
+            <button id="agregar" class="btn btn-success" onclick="add_envio()"><i class="glyphicon glyphicon-plus"></i> Agregar Envio</button>
+            <button class="btn btn-default" onclick="reload_envios()"><i class="glyphicon glyphicon-refresh"></i> Recargar</button>
             <br />
             <br />
             <table id="table" class="table table-striped table-bordered" cellspacing="0" width="100%">
                 <thead>
                     <tr>
                         <th style="width:25px;">ID</th>
-                        <th>Cliente</th>
+                        <th>Fecha estimada</th>
                         <th>Monto</th>
-                        <th>Fecha</th>
-                        <th>Método de pago</th>
-                        <th style="width:150px;">Acción</th>
+                        <th>Metodo</th>
+                        <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
                 </tbody>
-    
                 <tfoot>
                     <tr>
                         <th>ID</th>
-                        <th>Cliente</th>
+                        <th>Fecha estimada</th>
                         <th>Monto</th>
-                        <th>Fecha</th>
-                        <th>Método de pago</th>
-                        <th>Acción</th>
+                        <th>Metodo</th>
+                        <th>Acciones</th>
                     </tr>
                 </tfoot>
             </table> 
@@ -45,7 +42,7 @@
 <script src="<?php echo base_url('assets/dashboard/js/sb-admin-2.js')?>"></script>
 
 <script type="text/javascript">
-var cobros;
+var envios;
 
 $(document).ready(function() {
 	$(document).keypress(function(event) {
@@ -55,7 +52,7 @@ $(document).ready(function() {
 		//alert('Handler for .keypress() called. - ' + event.charCode);
 	});
     //datatables
-    cobros = $('#table').DataTable({ 
+    envios = $('#table').DataTable({ 
 
 		"responsive": true,
         "processing": true, //Feature control the processing indicator.
@@ -63,7 +60,7 @@ $(document).ready(function() {
         "order": [], //Initial no order.
 		 // Load data for the table's content from an Ajax source
         "ajax": {
-            "url": "<?php echo site_url('cobro/ajax_list')?>",
+            "url": "<?php echo site_url('envio/ajax_list')?>",
             "type": "POST"
         },
 
@@ -124,5 +121,5 @@ $("select").change(function(){
 });
 </script>
 <?php
-    $this->view('_cobro_modal_view.php');
+    $this->view('_envio_modal_view.php');
 ?>

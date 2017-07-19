@@ -31,6 +31,9 @@ $(document).ready(function() {
     $("#metodosEnvio").change(function(){
         mostrar_campos_envio($("#metodosEnvio").val());
     });
+    $("#clientesEnvio").change(function(){
+        $('[name="clienteid"]').val($("#clientesEnvio").val());
+    });
     
     $select_motos = $('#motoid');
     $.ajax({
@@ -53,6 +56,25 @@ $(document).ready(function() {
         }
 
     });
+<?php 
+if ($ventaidasociada == ''){ ?> 
+    $select_clientes_envio = $('#clientesEnvio');
+    $.ajax({
+        url: "<?php echo site_url('cliente/ajax_dropdown')?>"
+        , "type": "POST"
+        , data:{length:'',start:0}
+        , dataType: 'JSON'
+        , success: function (data) {
+            $select_clientes_envio.html('');
+            $.each(data.clientes, function (key, val) {
+                $select_clientes_envio.append('<option value="' + val.id + '">' + val.nombre + '</option>');
+            })
+        }
+        , error: function () {
+            $select_clientes_envio.html('<option id="-1">ninguno disponible</option>');
+        }
+    });
+<?php } ?>
 });
     function mostrar_campos_envio(metodo){
         $(".metodoEnvio").hide();
@@ -98,9 +120,12 @@ function edit_envio(id)
         dataType: "JSON",
         success: function(data)
         {
-            
+<?php 
+    if ($ventaidasociada == ''){ ?> 
+            $("#clientesEnvio").val(data.clienteid);
+<?php } ?>
             $('[name="id"]').val(id);
-            $("#cliente").val(data.clienteid);
+            $("#clienteid").val(data.clienteid);
             $("#metodosEnvio").val(data.metodoenvio);
             $('[name="metodo_anterior"]').val(data.metodoenvio);
             $('[name="mov_tabla_id_anterior"]').val(data.envtablaid);
@@ -121,7 +146,6 @@ function edit_envio(id)
             
             $('#modal_form_envio').modal('show'); // show bootstrap modal when complete loaded
             $('.modal-title').text('Editar Envio'); // Set title to Bootstrap modal title
-            $('[name="cliente"]').focus();
 
         },
         error: function (jqXHR, textStatus, errorThrown)
@@ -223,6 +247,15 @@ function reload_envios()
                     <input id="clienteid" name="clienteid" type="hidden" value="<?php echo $clienteidasociado; ?>"/>
                     <input id="metodo_envio_anterior" name="metodo_envio_anterior" type="hidden"/>
                     <input id="env_tabla_id_anterior" name="env_tabla_id_anterior" type="hidden"/>
+<?php               if ($ventaidasociada == ''){ ?>
+                    <div class="form-group">
+                        <label class="control-label col-md-5">Cliente</label>
+                        <div class="col-md-6">
+                            <select id="clientesEnvio" name="clienteEnvio" class="form-control"></select>
+                            <span class="help-block"></span>
+                        </div>
+                    </div>
+<?php               }   ?>
                     <div class="form-group">
                         <label class="control-label col-md-5">Elija el método de envio</label>
                         <div class="col-md-6">

@@ -27,9 +27,6 @@ class Enviometodo_model extends CI_Model {
 	public function add_envio($data)
 	{
 		$datosEnvio = $this->_armarEnvio($data);
-/*		$this->db->insert($this->tiposenvios[$data['metodoenvio']], $datosEnvio);
-		return $this->db->insert_id();
-		*/
 		return $this->save($this->tiposenvios[$data['metodoenvio']], $datosEnvio);
 		 
 	}
@@ -53,7 +50,7 @@ class Enviometodo_model extends CI_Model {
 		
 		switch ($data['metodoenvio']) {
 			case $retiro:
-				$datos_preparados['id'] = null;
+				$datos_preparados['id'] = $data['env_tabla_id_anterior'];//para que no tire error y quede extensible
 				break;
 			case $oca:
 				$datos_preparados['direccion'] = $data['direccion'];

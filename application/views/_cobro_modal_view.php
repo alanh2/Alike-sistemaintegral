@@ -9,25 +9,6 @@
     }
  ?>
 <script type="text/javascript">
-$(document).ready(function() {
-    $select_metodos = $('#metodos');
-    $.ajax({
-        url: "<?php echo site_url('metodopago/ajax_dropdown')?>"
-        , "type": "GET"
-        , data:{}
-        , dataType: 'JSON'
-        , success: function (data) {
-            $select_metodos.html('');
-            $.each(data.metodos, function (key, val) {
-                $select_metodos.append('<option value="' + val.id + '">' + val.nombre + '</option>');
-            })
-        }
-        , error: function () {
-            $select_metodos.html('<option id="-1">ninguna disponible</option>');
-
-        }
-
-    });
     function mostrar_campos(metodo){
         $(".metodo").hide();
         switch ($("#metodos").val()){
@@ -47,6 +28,43 @@ $(document).ready(function() {
                 break;
         }
     }
+$(document).ready(function() {
+    $select_metodos = $('#metodos');
+    $.ajax({
+        url: "<?php echo site_url('metodopago/ajax_dropdown')?>"
+        , "type": "GET"
+        , data:{}
+        , dataType: 'JSON'
+        , success: function (data) {
+            $select_metodos.html('');
+            $.each(data.metodos, function (key, val) {
+                $select_metodos.append('<option value="' + val.id + '">' + val.nombre + '</option>');
+            })
+        }
+        , error: function () {
+            $select_metodos.html('<option id="-1">ninguna disponible</option>');
+
+        }
+    });
+<?php 
+if ($ventaidasociada == ''){ ?> 
+    $select_clientes = $('#clientes');
+    $.ajax({
+        url: "<?php echo site_url('cliente/ajax_dropdown')?>"
+        , "type": "POST"
+        , data:{length:'',start:0}
+        , dataType: 'JSON'
+        , success: function (data) {
+            $select_clientes.html('');
+            $.each(data.clientes, function (key, val) {
+                $select_clientes.append('<option value="' + val.id + '">' + val.nombre + '</option>');
+            })
+        }
+        , error: function () {
+            $select_clientes.html('<option id="-1">ninguna disponible</option>');
+        }
+    });
+<?php } ?>
     $("#metodos").change(function(){
         mostrar_campos($("#metodos").val());
     });
@@ -77,7 +95,10 @@ function edit_cobro(id)
         dataType: "JSON",
         success: function(data)
         {
-            
+<?php 
+    if ($ventaidasociada == ''){ ?> 
+            $("#clientes").val(data.clienteid);
+<?php } ?>
             $('[name="id"]').val(id);
             $("#cliente").val(data.clienteid);
             $("#metodos").val(data.metododepagoid);
@@ -201,6 +222,15 @@ function reload_cobros()
                     <input type="hidden" name="mov_tabla_id_anterior"/>
                     <input type="hidden" name="metodo_anterior"/>
                     <input type="hidden" id="cliente" name="cliente" value="<?php echo $clienteidasociado; ?>" />
+<?php               if ($ventaidasociada == ''){ ?>
+                    <div class="form-group">
+                        <label class="control-label col-md-5">Cliente</label>
+                        <div class="col-md-6">
+                            <select id="clientes" name="cliente" class="form-control"></select>
+                            <span class="help-block"></span>
+                        </div>
+                    </div>
+<?php               }   ?>
                     <div class="form-group">
                         <label class="control-label col-md-5">Elija el método de pago</label>
                         <div class="col-md-6">

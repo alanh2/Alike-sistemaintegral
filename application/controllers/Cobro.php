@@ -155,7 +155,7 @@ class Cobro extends MY_Controller {
 			}
 
 		}else{
-			if ($monto =< 0){
+			if ($monto <= 0){
 				$output['resultado'] = 'Error, el monto ingresado no es correcto';
 			}else{
 				$output['resultado'] = 'Error, supera monto total de venta';
@@ -230,7 +230,7 @@ class Cobro extends MY_Controller {
 		    	$output['resultado'] = 'Ok';
 			}
 		}else{
-			if ($monto =< 0){
+			if ($monto <= 0){
 				$output['resultado'] = 'Error, el monto ingresado no es correcto';
 			}else{
 				$output['resultado'] = 'Error, supera monto total de venta';

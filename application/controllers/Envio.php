@@ -48,8 +48,8 @@ class Envio extends MY_Controller {
 			$no++;
 			$row = array();
 			$row[] = $envio->id;
-			//row[] = $envio->costo;
 			$row[] = $envio->fechaestimada;
+			$row[] = $envio->costo;
 			$row[] = $envio->metodo_envio;
 			$row[] = '<a class="btn btn-sm btn-primary" href="javascript:void(0)" title="Edit" onclick="edit_envio('."'".$envio->id."'".')"><i class="glyphicon glyphicon-pencil"></i> Editar</a> '
 				  .'<a class="btn btn-sm btn-danger" href="javascript:void(0)" title="Delete" onclick="delete_envio('."'".$envio->id."'".')"><i class="glyphicon glyphicon-trash"></i> Borrar</a>';
@@ -169,7 +169,7 @@ class Envio extends MY_Controller {
         		"metodoenvio" => $metodoEnvio,
         		"fechaestimada" => $this->input->post('fecha_estimada'),
         		"envtablaid" => $metodoEnvioid,
-        		"clienteid" => $this->input->post('cliente'),
+        		"clienteid" => $this->input->post('clienteid'),
         );
 
 		$this->envio->update(array('id' => $envioid),$dataenvio);

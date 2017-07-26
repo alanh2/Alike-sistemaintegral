@@ -15,7 +15,7 @@ class Dashboard extends MY_Controller {
 		parent::__construct();
 
 		$this->is_logged_in();
-
+		
 		//$this->load->model('dashboard_model','dashboard');
 
 	}

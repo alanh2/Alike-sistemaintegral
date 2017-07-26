@@ -20,6 +20,14 @@ class Stock extends MY_Controller {
 
 	}
 
+	public function reporte_tranferencias()
+	{
+		$this->load->helper('url');
+		$data['view']='stock_transferencia_reporte_view';
+		$data['data']='';//aqui va la data que se le quiera pasar a la vista a travez de la master
+		$this->load->view('master_view',$data);
+
+	}
 	public function transferencia_entre_locales(){
 		$this->load->helper('url');
 		$data['view']='stock_transferencia_view';
@@ -27,12 +35,12 @@ class Stock extends MY_Controller {
 		$this->load->view('master_view',$data);
 
 	}
-	public function ajax_transferencia($vendedor){
+	public function ajax_transferencia(){
 
 		$this->_validate();
 		$stockid=$this->input->post('id');
 		$cantidad=$this->input->post('cantidad');
-
+		$vendedor=$this->input->post('vendedorid');
 		$stock_origen=$this->stock->get_by_id($stockid);//stock origen
 		//print_r($stock_origen);
 		$stock_destino=$this->stock->get_by_producto_color_local($stock_origen->producto_colorid,$this->input->post('destino'));//stock destino
@@ -79,6 +87,80 @@ class Stock extends MY_Controller {
 
 
 	public function ajax_list()
+
+	{
+
+		$this->load->helper('url');
+
+		$list = $this->stock->get_datatables();
+
+		$data = array();
+
+		if(isset($_POST['start'])){
+			$start=$_POST['start'];
+		}else{
+			$start=0;
+		}
+		$no = $start;
+		foreach ($list as $producto) {
+			//Mientras se filtra aca el local, luego refactor para meterlo en el model
+			//if ($producto->localid==$_SESSION['admin']['localid']){
+				$producto->id=$producto->stock_id;//Aca se pone distinto para poder traer todos los campos de productos y no haya conflicto con el campo ID
+				$no++;
+
+				$row = array();
+
+				$row[] = $producto->id;
+
+				$row[] = $producto->codigo;
+
+				$row[] = $producto->marca;
+
+				$row[] = $producto->modelo;
+
+				$row[] = $producto->subcategoria;
+
+				$row[] = $producto->nombre." - ".$producto->color;
+
+				$row[] = $producto->local;
+
+				$row[] = $producto->cantidad;
+
+				$transferencia='<a class="btn btn-sm btn-primary" href="javascript:void(0)" title="Transfer" onclick="transferir_stock('."'".$producto->id."'".')"><i class="glyphicon glyphicon-transfer"></i> Transferir stock</a>';
+				$editar='<a class="btn btn-sm btn-primary" href="javascript:void(0)" title="Edit" onclick="edit_stock('."'".$producto->id."'".')"><i class="glyphicon glyphicon-pencil"></i> Ajustar stock</a>';
+				$action=$editar;
+				if ($producto->cantidad>0){
+					$action.=$transferencia;
+				}
+				$row[] = $action;
+		
+
+				$data[] = $row;
+			//}//Fin validacion local
+		}
+
+
+
+		$output = array(
+
+						"draw" => $_POST['draw'],
+
+						"recordsTotal" => $this->stock->count_all(),
+
+						"recordsFiltered" => $this->stock->count_filtered(),
+
+						"data" => $data,
+
+//						"query"=>$this->db->last_query(),
+
+				);
+
+		//output to json format
+
+		echo json_encode($output);
+
+	}
+	public function ajax_transferencias()
 
 	{
 

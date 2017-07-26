@@ -28,6 +28,8 @@
 
                         <th>Fecha</th>
 
+                        <th>Mes Pagado</th>
+
                         <th style="width:225px;">Accion</th>
 
                     </tr>
@@ -51,6 +53,8 @@
                         <th>Monto</th>
                         
                         <th>Fecha</th>
+
+                        <th>Mes Pagado</th>
 
                         <th>Action</th>
 
@@ -379,7 +383,10 @@ function edit_pago_sueldo(id)
 			$('[name="id"]').val(data.id);
 
             $('[name="monto"]').val(data.monto);
+
             $('[name="fecha"]').val(data.fecha);
+
+            $('[name="mes_pagado"]').val(data.mes_pagado);
 
             $('[name="vendedor"]').val(data.vendedorid);
 
@@ -521,7 +528,7 @@ function save()
 
 
 
-function delete_sueldo(id)
+function delete_pago_sueldo(id)
 
 {
 
@@ -640,6 +647,26 @@ function delete_sueldo(id)
 
                             </div>
 
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-3">Mes pagado</label>
+                            <div class="col-md-9">
+                                <select name="mes_pagado" class="form-control">
+                                    <option value="1">Enero</option>
+                                    <option value="2">Febrero</option>
+                                    <option value="3">Marzo</option>
+                                    <option value="4">Abril</option>
+                                    <option value="5">Mayo</option>
+                                    <option value="6">Junio</option>
+                                    <option value="7">Julio</option>
+                                    <option value="8">Agosto</option>
+                                    <option value="9">Septiembre</option>
+                                    <option value="10">Octubre</option>
+                                    <option value="11">Noviembre</option>
+                                    <option value="12">Diciembre</option>
+                                </select>
+                                <span class="help-block"></span>
+                            </div>
                         </div>
 
                     </div>

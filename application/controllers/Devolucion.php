@@ -53,93 +53,6 @@ class Devolucion extends MY_Controller {
 
 	}
 
-	public function add_venta_post(){
-
-		$data = $this->input->post('data');
-
-    	$data = json_decode($data);
-
-		$data=$data->venta;
-
-		//print_r($data);
-
-		//$this->_validate();
-
-		$venta = array(
-
-				   'clienteid'=>$data->cliente->ID,
-
-				   'fecha'=>$data->fecha,
-
-				   'subtotal'=>$data->subtotal,
-
-				   'descuento'=>$data->descuento,
-
-				   'total'=>$data->total,
-
-				   
-
-				);
-
-		$insert = $this->venta->save($venta);
-
-		$venta_id=$this->db->insert_id();
-
-		foreach($data->renglones as $key=>$value){
-
-			$renglon = array(
-
-					   'ventaid'=>$venta_id,
-
-					   'productoid'=>$value->ID,
-
-					   'cantidad'=>$value->cantidad,
-
-					   'preciounidad'=>$value->precio
-
-					);		
-
-			$insert = $this->venta->save_renglon($renglon);
-
-			$this->producto->salida_stock($value->ID, $value->cantidad);
-
-		}
-
-		echo $this->db->last_query();
-
-		echo json_encode(array("status" => TRUE));
-
-	}
-
-	public function imprimir_remito($id=NULL){
-		if ($id != null){
-			$data['view']='venta_detalle_view';
-			$data['venta'] = $this->venta->get_by_id($id);
-			//$data['venta_renglones']=$this->ajax_detalle($id);
-			//$this->load->view('factura_view',$data);
-			$this->load->library('pdf');
-			$this->pdf->load_view('factura_view',$data);
-			$this->pdf->render();
-			$this->pdf->stream($id."f.pdf");
-			/*
-
-			require_once site_url('http://systemix.com.ar/sistemaIntegral/dompdf/autoload.inc.php');
-			use Dompdf\Dompdf;
-			// instantiate and use the dompdf class
-			$dompdf = new Dompdf();
-			$dompdf->loadHtml(file_get_contents( $this->load->view('factura_view',$data,TRUE)) );//site_url('venta/preparar_remito/'.$id
-			// (Optional) Setup the paper size and orientation
-			$dompdf->setPaper('A4');
-			// Render the HTML as PDF
-			$dompdf->render();
-			// Output the generated PDF to Browser
-			$dompdf->stream();
-			*/
-
-		}
-	}
-
-
 	
 	public function alta_devolucion($id=NULL){
 		$this->isAdmin();
@@ -191,7 +104,7 @@ class Devolucion extends MY_Controller {
 
 
 			//add html for action
-/*
+			/*
 			if(strtotime($devolucion->fecha) < strtotime('-30 days')){
 				$row[] = '<a class="btn btn-sm btn-info" href="'.site_url('venta/ver_detalles/'.$devolucion->id).'" title="Ver Detalles"><i class="glyphicon glyphicon-list"></i> ver </a>
 				<a class="btn btn-sm btn-success" href="'.site_url('venta/alta_venta/'.$devolucion->id).'" title="Modificar"><i class="fa fa-edit"></i> Mod </a>';
@@ -263,75 +176,34 @@ class Devolucion extends MY_Controller {
 					$devolucion[$venta_renglon]["RMA"]+=1;
 				}
 			}
-			//We check to make sure that the value is either null or just an empty string
-			/*if (is_null($value) || $value=="") {
-				//unset($data[$key]);
-			}else{
-				$devolucion_renglon=$this->add_renglon($insert,$key,$value);
-
-				$this->devolucion->actualizar_total($insert);
-
-				$venta_renglon=$this->venta_renglones->get_by_id($key);
-
-				$stock=$this->stock->get_by_id($venta_renglon->stockid);//stock original
-
-				$stock_cantidad_final=$stock->cantidad+$value;
-
-				$dataStock= array('cantidad'=>$stock_cantidad_final);
-
-				$this->stock->update(array('id' => $venta_renglon->stockid), $dataStock);
-		
-		
-			}*/
 
 		}
 		//print_r($devolucion);
 		foreach ($devolucion as $venta_renglonid=>$devoluciones){
 			$devolucion_renglon=$this->add_renglon($devolucionid,$venta_renglonid,$devoluciones['stock'],$devoluciones['RMA']);
-			$venta_renglon=$this->venta_renglones->get_by_id($venta_renglon);
+			$venta_renglon=$this->venta_renglones->get_by_id($venta_renglonid);
 			$stock=$this->stock->get_by_id($venta_renglon->stockid);
 			$stock_cantidad_final=$stock->cantidad+$devoluciones['stock'];
 			$stock_rma_final=$stock->rma+$devoluciones['RMA'];
 			$dataStock= array('cantidad'=>$stock_cantidad_final,'rma'=>$stock_rma_final);
 			$this->stock->update(array('id' => $venta_renglon->stockid), $dataStock);
 		}
-			$this->devolucion->actualizar_total($devolucionid);
-			$monto_devolucion=$this->devolucion->get_total($devolucionid);
 
-			/*$dataGasto=array();//ver datos gasto
-			$dataGasto = array(
-			'nombre' => 'Nota de Credito - Devolucion - Venta -'.$ventaid,
-			'tipos_gastoid' => '2',
-			'monto' => $monto_devolucion->total,
-			'fecha' => date("Y-m-d H:i:s"),
-			'vendedorid' => '1',
-			);
-			//print_r($dataGasto);
-			//$gastoid =$this->gasto->save($dataGasto);
-					//echo $this->db->last_query();*/
+			$this->devolucion->actualizar_total($devolucionid);
+			//echo $this->db->last_query();
+			$monto_devolucion=$this->devolucion->get_total($devolucionid);
+			//echo $monto_devolucion;
 			if (isset($_POST['cashonota'])){
 				if($this->input->post('cashonota')==2){
-					$dataNotaCredito = array('monto'=>$monto_devolucion->total,'saldo'=>$monto_devolucion->total,'fecha' => date("Y-m-d H:i:s"),'devolucionid'=>$devolucionid, 'clienteid'=>$venta->clienteid/*,'gastoid'=>$gastoid*/);
+					$dataNotaCredito = array('monto'=>$monto_devolucion->total,'saldo'=>$monto_devolucion->total,'fecha' => date("Y-m-d H:i:s"),'devolucionid'=>$devolucionid, 'clienteid'=>$venta->clienteid);
 					$nota_creditoid = $this->notacredito->save($dataNotaCredito);
+					echo json_encode(array("status" => TRUE));
 				}else{
 					$dataCashBack= array('monto'=>$monto_devolucion->total,'fecha' => date("Y-m-d H:i:s"),'devolucionid'=>$devolucionid, 'clienteid'=>$venta->clienteid);
 					$cash_backid = $this->cashback->save($dataCashBack);
+					echo json_encode(array("status" => TRUE));
 				}
 			}
-		/*if ($this->db->trans_status() === FALSE)
-		{
-	        $this->db->trans_rollback();
-	    	$output['resultado'] = 'Error';
-		}
-		else
-		{
-	        $this->db->trans_commit();
-	    	$output['resultado'] = 'Ok';
-		//echo json_encode(array("status" => TRUE));
-		}*/
-		//print_r($output);
-
-		//print_r($this->input->post());
 	}
 
 	public function ajax_detalle($id)
@@ -469,7 +341,7 @@ public function ajax_renglones($id)
 
 		$insert = $this->devolucion_renglones->save($data);
 
-		echo json_encode(array("status" => TRUE));
+		//echo json_encode(array("status" => TRUE));
 
 	}
 

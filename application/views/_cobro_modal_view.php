@@ -68,6 +68,9 @@ if ($ventaidasociada == ''){ ?>
     $("#metodos").change(function(){
         mostrar_campos($("#metodos").val());
     });
+    $("#clientes").change(function(){
+        $("#cliente").val($("#clientes").val());
+    });
 });
 
 function add_cobro()

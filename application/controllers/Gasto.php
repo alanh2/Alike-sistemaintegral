@@ -27,7 +27,7 @@ class Gasto extends MY_Controller {
 	{
 
 		$this->isAdmin();
-		if (($_SESSION['admin']['vendedorid']==5)||($_SESSION['admin']['vendedorid']==9)){
+		if (($_SESSION['admin']['vendedorid']==5)||($_SESSION['admin']['vendedorid']==9)||($_SESSION['admin']['vendedorid']==16)){
 			$this->load->helper('url');
 
 			$data['view']='gasto_view';
@@ -202,7 +202,9 @@ class Gasto extends MY_Controller {
 
 				'fecha' => date("Y-m-d H:i:s"),
 
-				'vendedorid' => '1',
+				'vendedorid' => $this->input->post('vendedorid'),
+
+				'localid' => $this->input->post('localid'),
 
 				);
 

@@ -150,7 +150,7 @@ $(document).ready(function() {
 
         "ajax": {
 
-            "url": "<?php echo site_url('stock/ajax_list')?>",
+            "url": "<?php echo site_url('stock/ajax_transferencias')?>",
 
             "type": "POST"
 

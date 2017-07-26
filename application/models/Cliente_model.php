@@ -71,6 +71,31 @@ class Cliente_model extends CI_Model {
 		$query = $this->db->get();
 		return $query->result();
 	}
+
+	function get_all()
+	{
+		$this->db->select('*');
+		$this->db->from($this->table);
+		$query = $this->db->get();
+		return $query->result();
+	}
+	public function get_saldo($clienteid){
+		$query= $this->db->query('SELECT SUM(monto) as monto FROM(
+		SELECT "venta",id,total*(-1) as monto FROM `ventas` WHERE clienteid='.$clienteid.' 
+		UNION SELECT "cobros",`cobros`.`id` as `id`, IF(metododepagoid=5,`cobros`.`monto`*(-1),`cobros`.`monto`) as monto FROM `cobros` JOIN `metodos_pago` ON `metodos_pago`.`id` = `cobros`.`metododepagoid` 
+		LEFT JOIN `aplicaciones_cobro_venta` ON `cobros`.`id` = `aplicaciones_cobro_venta`.`cobroid` WHERE `clienteid` = '.$clienteid.' AND (aplicaciones_cobro_venta.id IS NULL AND metododepagoid="5" OR metododepagoid!="5")
+		UNION SELECT "nota_credito",id,monto FROM nota_credito WHERE clienteid='.$clienteid.'
+		) as a');
+		//echo $this->db->last_query();
+		return $query->row();
+		/*SELECT SUM(monto) FROM(
+SELECT "venta",id,total*(-1) as monto FROM `ventas` WHERE clienteid=56 
+UNION SELECT "cobros",`cobros`.`id` as `id`, IF(metododepagoid=5,`cobros`.`monto`*(-1),`cobros`.`monto`) as monto FROM `cobros` JOIN `metodos_pago` ON `metodos_pago`.`id` = `cobros`.`metododepagoid` 
+LEFT JOIN `aplicaciones_cobro_venta` ON `cobros`.`id` = `aplicaciones_cobro_venta`.`cobroid` WHERE `clienteid` = '56' AND (aplicaciones_cobro_venta.id IS NULL AND metododepagoid="5" OR metododepagoid!="5")
+UNION SELECT "nota_credito",id,monto FROM nota_credito WHERE clienteid=56
+) as a*/
+
+	}
 	function get_por_categoria($categoria)
 	{
 		$this->db->from($this->table);

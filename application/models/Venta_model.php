@@ -29,6 +29,34 @@ class Venta_model extends CI_Model {
 	}
 
 
+	public function get_reporte($local=null,$fechadesde=null,$fechahasta=null,$cliente=null,$vendedor=null){
+		$this->db->from($this->table);
+		$this->db->join('clientes', 'clientes.id = ventas.clienteid');
+		$this->db->join('vendedores', 'vendedores.id = ventas.vendedorid');
+		$this->db->join('localidades', 'localidades.id = clientes.localidadid');
+		$this->db->join('locales', 'locales.id = ventas.localid');;
+		$this->db->join('ventas_estados', 'ventas_estados.id = ventas.estadoid');
+		$this->db->join('ventas_renglones', 'ventas_renglones.ventaid = ventas.id','left');
+		$this->db->join('stock', 'stock.id = ventas_renglones.stockid', 'left');
+		$this->db->join('productos_colores', 'stock.producto_colorid = productos_colores.id', 'left');
+		$this->db->select('ventas.*,SUM(productos_colores.costo*ventas_renglones.cantidad) as costo_venta,
+			vendedores.nombre as vendedor,
+			ventas_estados.nombre as estado_nombre,
+			locales.nombre as local,
+			clientes.razon_social as cliente, clientes.tel_codigo_area, clientes.tel_numero, clientes.cel_numero, clientes.direccion, clientes.cp,
+			clientes.email, clientes.dni, clientes.cuitcuil, clientes.web, clientes.ranking, localidades.nombre as localidad');
+		$this->db->where('fecha >=', $fechadesde);
+		$this->db->where('fecha <=', $fechahasta);
+		$this->db->where('total >','0' );
+		$this->db->like('clienteid', $cliente);
+		$this->db->like('ventas.localid', $local);
+		$this->db->group_by('ventas.id'); 
+		//$this->db->order_by('total');
+		$query = $this->db->get();
+		
+		return $query->result();
+
+	}
 	private function _get_datatables_query($localid=null)
 
 	{

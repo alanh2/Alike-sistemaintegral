@@ -177,7 +177,7 @@ class Devolucion_model extends CI_Model {
 		$this->db->where('ventaid',$id);
 
 		$query = $this->db->get();*/
-		$query= $this->db->query("SELECT SUM(total) as total FROM( (SELECT IFNULL(SUM(precio_unitario*cantidad),0) as total FROM `devoluciones_renglones`
+		$query= $this->db->query("SELECT SUM(total) as total FROM( (SELECT IFNULL(SUM(precio_unitario*devoluciones_renglones.cantidad),0) as total FROM `devoluciones_renglones`
 			INNER JOIN `ventas_renglones` ON `devoluciones_renglones`.`venta_renglonid`= `ventas_renglones`.`id`
 		 WHERE `devolucionid` = '".$id."' GROUP BY `devolucionid`) UNION (SELECT 0 total)) as tabla");
 		//echo $this->db->last_query();

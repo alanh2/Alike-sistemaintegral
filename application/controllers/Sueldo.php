@@ -165,6 +165,23 @@ class Sueldo extends MY_Controller {
 
 			$row[] = $sueldo->fecha;
 
+			 switch ($sueldo->mes_pagado) { 
+				case 1: $month_text = "Enero"; break; 
+				case 2: $month_text = "Febrero"; break; 
+				case 3: $month_text = "Marzo"; break; 
+				case 4: $month_text = "Abril"; break; 
+				case 5: $month_text = "Mayo"; break; 
+				case 6: $month_text = "Junio"; break; 
+				case 7: $month_text = "Julio"; break; 
+				case 8: $month_text = "Agosto"; break; 
+				case 9: $month_text = "Septiembre"; break; 
+				case 10: $month_text = "Octubre"; break; 
+				case 11: $month_text = "Noviembre"; break; 
+				case 12: $month_text = "Diciembre"; break;
+				default:  $month_text = "Ninguno";
+			 } 
+
+			$row[] = $month_text;
 			//add html for action
 
 			if($this->able_to_delete($sueldo->id)){
@@ -289,6 +306,8 @@ class Sueldo extends MY_Controller {
 
 				'fecha' => $this->input->post('fecha'),
 
+				'mes_pagado' => $this->input->post('mes_pagado'),
+
 				);
 
 		$insert = $this->sueldo->save($data);
@@ -312,6 +331,9 @@ class Sueldo extends MY_Controller {
 				'vendedorid' => $this->input->post('vendedor'),
 
 				'fecha' => $this->input->post('fecha'),
+
+				'mes_pagado' => $this->input->post('mes_pagado'),
+
 
 			);
 

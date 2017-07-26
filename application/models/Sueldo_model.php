@@ -41,6 +41,9 @@ class Sueldo_model extends CI_Model {
 
 		$this->db->select('sueldo_pagos.*, vendedores.nombre as vendedor');
 
+		$this->db->where('vendedorid !=','1');
+		$this->db->where('vendedorid !=','3');
+		$this->db->where('vendedorid !=','9');
 
 
 		$i = 0;
@@ -141,7 +144,7 @@ class Sueldo_model extends CI_Model {
 
 	}
 
-	public function get_cuentas_anual(){
+	public function get_cuentas_anual(){//Aca hay qeu cambiar ese month(fecha) por mes_pagado, e indicar el año antes de hacer el reporte, o ponerle un default por el año actual.
 		$query= $this->db->query("SELECT vendedores.nombre as vendedor,sueldo
 	  ,SUM(IF(month(fecha) = 1, monto,0)) as enero
 	  ,SUM(IF(month(fecha) = 2, monto,0)) as febrero
@@ -157,7 +160,7 @@ class Sueldo_model extends CI_Model {
 	  ,SUM(IF(month(fecha) = 12, monto,0)) as diciembre
 	   FROM `sueldo_pagos`
 	   INNER JOIN vendedores on sueldo_pagos.vendedorid=vendedores.id
-	   WHERE vendedorid!=1
+	   WHERE vendedorid!=1 and vendedorid!=3 and vendedorid!=9
 		GROUP BY vendedorid
 		ORDER BY vendedores.nombre
 	   ");

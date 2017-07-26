@@ -68,7 +68,7 @@
             </div>
 
                 <?php }?>
-            <?php if(isset($_SESSION['admin'])&&($_SESSION['admin']['jerarquia']==1)){?>  
+            <?php if(isset($permisos['gastos'])){?>  
             <div class="col-lg-3 col-md-6">
                 <div class="menu">
                     <div class=" titulo">Admin</div><br><hr/>

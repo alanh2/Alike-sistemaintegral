@@ -59,7 +59,7 @@ class Venta_renglones_model extends CI_Model {
 		$this->db->join('devoluciones_renglones', 'devoluciones_renglones.venta_renglonid = ventas_renglones.id','left');
 		
 		$this->db->select('ventas_renglones.*, ventas_estados.nombre as estado_nombre,devoluciones_renglones.cantidad as devueltos, concat(subcategorias.nombre," ", productos.nombre," ", marcas.nombre," ", modelos.nombre )as producto, colores.nombre as color');
-
+		$this->db->group_by("ventas_renglones.id"); 
 		if ($ventaid !=NULL){
 			$this->db->where('ventaid',$ventaid);	
 		}

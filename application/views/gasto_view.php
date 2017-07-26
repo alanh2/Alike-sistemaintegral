@@ -162,6 +162,7 @@ function edit_gasto(id)
 			$('[name="id"]').val(data.id);
             $('[name="tipo"]').val(data.tipo_gastoid);
             $('[name="nombre"]').val(data.nombre);
+            $('[name="monto"]').val(data.monto);
             $('#modal_form').modal('show'); // show bootstrap modal when complete loaded
             $('.modal-title').text('Editar Gasto'); // Set title to Bootstrap modal title
 			$('[name="nombre"]').focus();
@@ -265,6 +266,8 @@ function delete_gasto(id)
             <div class="modal-body form">
                 <form action="#" id="form" class="form-horizontal">
                     <input type="hidden" value="" name="id"/> 
+                    <input type="hidden" value="<?php echo $_SESSION['admin']['vendedorid'];?>" name="vendedorid"/> 
+                    <input type="hidden" value="<?php echo $_SESSION['admin']['localid'];?>" name="localid"/> 
                     <div class="form-body">
                         <div class="form-group">
                             <label class="control-label col-md-3">Nombre</label>

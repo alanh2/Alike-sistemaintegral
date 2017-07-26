@@ -67,6 +67,19 @@ class Venta extends MY_Controller {
 		
 	}
 
+	public function generar_reporte(){
+		
+		$this->isAdmin();
+		
+		$this->load->helper('url');
+		$data['view']='venta_reporte_view';
+		$data['data']['reporte']=$this->venta->get_reporte($this->input->get('local'),$this->input->get('fechadesde'),$this->input->get('fechahasta'),$this->input->get('cliente'),$this->input->get('vendedor'));
+		//$data['data'][''] = $lista;
+		$this->load->view('master_view',$data);
+		//echo $this->db->last_query();
+		
+		//print_r($_GET);	
+	}	
 	public function add_venta_post(){
 
 		$data = $this->input->post('data');
@@ -154,7 +167,7 @@ class Venta extends MY_Controller {
 	public function reporte_simple($desde,$hasta){
 		$this->isAdmin();
 		$this->load->helper('url');
-		$data['view']='venta_reporte_view';
+		$data['view']='venta_reporte_simple_view';
 		$data['data']['reporte'] = $this->venta->reporte_simple($desde,$hasta);
 		//print_r($data['data']['reporte']);
 		//echo $this->db->last_query();

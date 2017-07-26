@@ -46,6 +46,7 @@ body{
     <table border="0" class="renglones">
     <thead>
         <tr>
+            <th>Indice</th>
             <th>ID(S/PC/P)</th>
             <th>Local</th>
             <th>Marca</th>
@@ -65,7 +66,7 @@ body{
     <?php
     $totalCantidad=0;
     $totalCostoCantidad=0;
-
+    $i=1;
     foreach ($data['reporte'] as $producto) {
         if( true){// $producto->l1!=0 || $producto->l2!=0 || $producto->l3!=0 || $producto->l4!=0 ){
             $costoCantidad= $producto->cantidad*$producto->costo;;
@@ -73,6 +74,7 @@ body{
             $totalCostoCantidad+=$costoCantidad;
     ?>
         <tr>
+        <td><?php echo $i;?></td>
         <td><?php echo $producto->S_PC_P;?></td>
         <td><?php echo $producto->local;?></td>
         <td><?php echo $producto->marca;?></td>
@@ -101,6 +103,7 @@ body{
         </tr>
          
     <?php 
+        $i++;   
         }
     }?>
     </table>            

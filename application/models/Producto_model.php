@@ -59,7 +59,7 @@ class Producto_model extends CI_Model {
 			INNER JOIN colores on productos_colores.colorid= colores.id 
 			INNER JOIN locales on stock.localid= locales.id
 			INNER JOIN proveedores on productos.proveedorid= proveedores.id
-			WHERE  cantidad >0 AND productos.id <> 605 /* Aca excluimos servicio tecnico*/
+			WHERE  /*cantidad >0 AND*/ productos.id <> 605 /* Aca excluimos servicio tecnico*/
 			AND locales.id LIKE '".$local."' AND
 			marcas.id LIKE '".$marca."' AND
 			modelos.id LIKE '".$modelo."' AND

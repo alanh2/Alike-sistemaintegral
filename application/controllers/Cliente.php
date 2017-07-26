@@ -28,6 +28,23 @@ class Cliente extends MY_Controller {
 	        return strnatcmp($a[$clave], $b[$clave]);
 	    };
 	}
+	public function saldos()
+	{
+		$this->load->helper('url');
+		$clientes=$this->cliente->get_all();
+		foreach ($clientes as $cliente) {
+			$saldo=$this->cliente->get_saldo($cliente->id);
+			if (!is_null($saldo->monto)&&($saldo->monto!='0')){
+				$saldos[$cliente->id]=array("saldo"=>$saldo->monto,"razon_social"=>$cliente->razon_social);
+	        	$data['data']['saldos'] = $saldos;
+			}
+			//echo $cliente;
+    	}
+    	//print_r($saldos);
+        $html=$this->load->view('cliente_saldos_view',$data);
+	}
+
+
 	public function cuenta($clienteid)
 	{
 		$this->isAdmin();
